@@ -335,7 +335,7 @@ local function GetExecutorName()
 end
 
 --==================================================
--- 🆕 FUNGSI LOGO WEBHOOK
+-- FUNGSI LOGO WEBHOOK
 --==================================================
 local function GetZryxLogoUrl()
     local success, response = pcall(function()
@@ -351,11 +351,10 @@ local function GetZryxLogoUrl()
             return HttpService:JSONDecode(response)
         end)
         if ok and data and data.data and data.data[1] and data.data[1].imageUrl then
-            -- Pakai timestamp sebagai cache buster (pasti bypass cache Discord)
-            return data.data[1].imageUrl .. "?t=" .. tostring(os.time())
+            return data.data[1].imageUrl .. "?t=" .. tostring(os.time()) .. "&r=" .. tostring(math.random(1000, 9999))
         end
     end
-    return ZRYX_LOGO_FALLBACK .. "&t=" .. tostring(os.time())
+    return ZRYX_LOGO_FALLBACK .. "&t=" .. tostring(os.time()) .. "&r=" .. tostring(math.random(1000, 9999))
 end
 
 local cachedLogoUrl = nil
@@ -367,15 +366,16 @@ local function GetCachedLogoUrl()
 end
 
 --==================================================
--- 🆕🆕🆕 FUNGSI AVATAR HEADSHOT (MULTI-FALLBACK)
--- Pakai 3 endpoint berurutan, yang pertama berhasil = dipakai
--- Cache buster = timestamp unik (bypass cache Discord 100%)
+-- 🔥 FUNGSI AVATAR HEADSHOT (SUPER RELIABLE)
+-- Multi-fallback dengan cache buster agresif
 --==================================================
 local function GetPlayerHeadshotUrl(userId)
     local HttpService = game:GetService("HttpService")
     local timestamp = tostring(os.time())
+    local random = tostring(math.random(10000, 99999))
+    local cacheBuster = "?t=" .. timestamp .. "&r=" .. random
     
-    -- 🔥 ENDPOINT 1: thumbnails.roblox.com/v1/users/avatar-headshot (PALING RELIABLE)
+    -- 🔥 ENDPOINT 1: thumbnails.roblox.com/v1/users/avatar-headshot
     local ok1, res1 = pcall(function()
         return game:HttpGet(
             "https://thumbnails.roblox.com/v1/users/avatar-headshot"
@@ -393,13 +393,13 @@ local function GetPlayerHeadshotUrl(userId)
             local state = data.data[1].state
             local imageUrl = data.data[1].imageUrl
             if state == "Completed" and imageUrl and imageUrl ~= "" then
-                warn("[Zryx] Avatar URL (endpoint 1): " .. imageUrl)
-                return imageUrl .. "&t=" .. timestamp
+                warn("[Zryx] ✅ Avatar URL (endpoint 1): " .. imageUrl)
+                return imageUrl .. cacheBuster
             end
         end
     end
     
-    -- 🔥 ENDPOINT 2: thumbnails.roblox.com/v1/avatar-headshot (tanpa /users)
+    -- 🔥 ENDPOINT 2: thumbnails.roblox.com/v1/avatar-headshot
     local ok2, res2 = pcall(function()
         return game:HttpGet(
             "https://thumbnails.roblox.com/v1/avatar-headshot"
@@ -416,31 +416,19 @@ local function GetPlayerHeadshotUrl(userId)
         if decodeOk and data and data.data and data.data[1] then
             local imageUrl = data.data[1].imageUrl
             if imageUrl and imageUrl ~= "" then
-                warn("[Zryx] Avatar URL (endpoint 2): " .. imageUrl)
-                return imageUrl .. "&t=" .. timestamp
+                warn("[Zryx] ✅ Avatar URL (endpoint 2): " .. imageUrl)
+                return imageUrl .. cacheBuster
             end
         end
     end
     
-    -- 🔥 ENDPOINT 3: Roblox Users API (ambil thumbnail dari data user)
-    local ok3, res3 = pcall(function()
-        return game:HttpGet(
-            "https://users.roblox.com/v1/users/" .. userId
-        )
-    end)
-    if ok3 and res3 then
-        -- Fallback terakhir: pakai URL format langsung
-        warn("[Zryx] Avatar URL (endpoint 3 fallback): direct URL")
-    end
-    
-    -- 🔥 FALLBACK TERAKHIR: URL format langsung Roblox
-    -- URL ini PASTI bekerja karena tidak perlu API call
+    -- 🔥 FALLBACK: URL format langsung Roblox
     local fallbackUrl = "https://www.roblox.com/headshot-thumbnail/image?userId="
         .. userId
         .. "&width=150&height=150&format=png"
-        .. "&t=" .. timestamp
+        .. cacheBuster
     
-    warn("[Zryx] Avatar URL (final fallback): " .. fallbackUrl)
+    warn("[Zryx] ⚠️ Avatar URL (fallback): " .. fallbackUrl)
     return fallbackUrl
 end
 
@@ -541,9 +529,8 @@ local function SendDiscordWebhook(customTitle, customDesc, forceSend)
     local logoUrl = GetCachedLogoUrl()
     local avatarUrl = GetCachedAvatarUrl(userId)
     
-    -- 🔥 DEBUG: Tampilkan URL avatar yang dipakai di console
-    warn("[Zryx Webhook] Avatar URL: " .. tostring(avatarUrl))
-    warn("[Zryx Webhook] Logo URL: " .. tostring(logoUrl))
+    warn("[Zryx Webhook] 🖼️ Avatar URL: " .. tostring(avatarUrl))
+    warn("[Zryx Webhook] 🎨 Logo URL: " .. tostring(logoUrl))
     
     local payload = {
         ["username"] = "Zryx Auto Farm",
@@ -685,7 +672,6 @@ local TeleportService = game:GetService("TeleportService")
 local Players = game:GetService("Players")
 local IgnoredServers = {}
 
-local WAITING_DELAY = 10
 local RATE_LIMIT_WAIT = 8
 local GENERAL_ERROR_WAIT = 3
 
@@ -807,6 +793,16 @@ local function PersistentServerHop()
     end
 end
 
+--==================================================
+-- 🔥 SERVER HOP UTAMA (LOGIKA YANG BENAR!)
+-- 
+-- ALUR:
+-- 1. Habis escape → LANGSUNG hop
+-- 2. Sendirian → LANGSUNG hop
+-- 3. Round aktif + Spectator/Killer → HOP (gak bisa farming)
+-- 4. Round aktif + Survivor → JANGAN hop (biarkan auto farm)
+-- 5. Tidak ada round → JANGAN hop (tunggu sampai jadi Survivor)
+--==================================================
 local function ServerHop()
     Library:Notify({ Title = "🚀 ServerHop", Description = "Smart hop mode activated!", Time = 2 })
 
@@ -814,6 +810,9 @@ local function ServerHop()
         local playerCount = #Players:GetPlayers()
         local role = GetRole()
 
+        -- =====================================================
+        -- CASE 1: HABIS ESCAPE → LANGSUNG HOP
+        -- =====================================================
         if HopAfterBeatTriggered then
             HopAfterBeatTriggered = false
             Library:Notify({ Title = "🏁 Escape Done!", Description = "Hopping to new server NOW...", Time = 2 })
@@ -822,6 +821,9 @@ local function ServerHop()
             continue
         end
 
+        -- =====================================================
+        -- CASE 2: SENDIRIAN → LANGSUNG HOP
+        -- =====================================================
         if playerCount <= 1 then
             Library:Notify({ Title = "👤 Alone!", Description = "Hopping immediately...", Time = 2 })
             PersistentServerHop()
@@ -829,42 +831,43 @@ local function ServerHop()
             continue
         end
 
+        -- =====================================================
+        -- CASE 3: ROUND AKTIF + SURVIVOR → JANGAN HOP
+        -- Biarkan auto farm jalan
+        -- =====================================================
+        if IsRound and role == "Survivor" then
+            task.wait(1)
+            continue
+        end
+
+        -- =====================================================
+        -- CASE 4: ROUND AKTIF + SPECTATOR/KILLER → HOP
+        -- Karena gak bisa farming, langsung hop
+        -- =====================================================
+        if IsRound and (role == "Spectator" or role == "Killer") then
+            Library:Notify({ 
+                Title = "🎭 " .. role .. " in Round", 
+                Description = "Can't farm, hopping now...", 
+                Time = 2 
+            })
+            PersistentServerHop()
+            task.wait(3)
+            continue
+        end
+
+        -- =====================================================
+        -- CASE 5: TIDAK ADA ROUND (LOBBY/INTERMISSION)
+        -- JANGAN HOP! Tunggu sampai jadi Survivor
+        -- =====================================================
         if not IsRound then
-            Library:Notify({ Title = "⏳ Waiting for Round", Description = string.format("Round not started. Hopping in %ds...", WAITING_DELAY), Time = 3 })
-            local waited = 0
-            local shouldHop = true
-            while waited < WAITING_DELAY and Toggles.ServerHop.Value and not Library.Unloaded do
-                task.wait(1)
-                waited = waited + 1
-                if #Players:GetPlayers() <= 1 then
-                    Library:Notify({ Title = "👤 Alone Detected!", Description = "Skipping wait, hopping NOW...", Time = 2 })
-                    shouldHop = true
-                    break
-                end
-                if IsRound and GetRole() == "Survivor" then
-                    Library:Notify({ Title = "🎮 Round Started!", Description = "You're Survivor, auto farm running...", Time = 2 })
-                    shouldHop = false
-                    break
-                end
-            end
-            if shouldHop and Toggles.ServerHop.Value and not Library.Unloaded then
-                Library:Notify({ Title = "🔄 Hopping Now", Description = "Wait time finished, finding new server...", Time = 2 })
-                PersistentServerHop()
-                task.wait(3)
-            end
-            continue
-        end
-
-        if role == "Survivor" then
+            -- Tunggu diam-diam, cek tiap 1 detik
+            -- Kalau sudah jadi Survivor dan round mulai, biarkan auto farm
+            -- Kalau jadi Spectator/Killer dan round mulai, hop
             task.wait(1)
             continue
         end
 
-        if role == "Spectator" or role == "Killer" then
-            task.wait(1)
-            continue
-        end
-
+        -- Default: tunggu sebentar
         task.wait(1)
     end
 end
@@ -873,7 +876,16 @@ end
 -- UI SETUP
 --==================================================
 AutoFarmGroup:AddToggle("EnableAutoFarm", { Text = "Enable Auto Farm", Tooltip = "Teleport Survivor to the detected finish location", Default = false })
-AutoFarmGroup:AddToggle("ServerHop", { Text = "Server Hop (Smart)", Tooltip = "Alone=Instant hop | No round=10s then hop | After escape=Instant hop", Default = false, Callback = function(Value) if Value then task.spawn(function() ServerHop() end) end end })
+AutoFarmGroup:AddToggle("ServerHop", { 
+    Text = "Server Hop (Smart)", 
+    Tooltip = "Alone/Spec/Killer=Hop | Survivor=Auto Farm | No Round=Wait", 
+    Default = false, 
+    Callback = function(Value) 
+        if Value then 
+            task.spawn(function() ServerHop() end) 
+        end 
+    end 
+})
 
 local LOADER_URL = "https://raw.githubusercontent.com/zaerrruwww/zaerytta/refs/heads/main/zaer.lua"
 local AutoExecuteQueued = false
@@ -896,7 +908,6 @@ AutoFarmGroup:AddToggle("AutoExecute", { Text = "Auto Execute", Tooltip = "Autom
 WebhookGroup:AddToggle("EnableWebhook", { Text = "Enable Webhook", Tooltip = "Enable webhook notifications with Zryx logo", Default = false })
 WebhookGroup:AddInput("WebhookLink", { Text = "Webhook Link", Default = "", Placeholder = "Enter webhook URL...", Numeric = false, Finished = false, ClearTextOnFocus = false })
 WebhookGroup:AddButton("Test Webhook", function()
-    -- 🔥 CLEAR CACHE sebelum test (pakai timestamp baru)
     cachedAvatarUrls = {}
     cachedLogoUrl = nil
     
