@@ -1,1 +1,1201 @@
-pcall(function()setfflag(string.char(84,101,108,101,112,111,114,116,83,101,114,118,105,99,101),string.char(68,105,115,97,98,108,101,84,101,108,101,112,111,114,116,69,114,114,111,114,115),string.char(116,114,117,101))end)local _a=string.char(104,116,116,112,115,58,47,47,114,97,119,46,103,105,116,104,117,98,117,115,101,114,99,111,110,116,101,110,116,46,99,111,109,47,100,101,105,118,105,100,99,111,109,115,111,110,111,47,79,98,115,105,100,105,97,110,47,109,97,105,110,47)local _b=loadstring(game:HttpGet(_a..string.char(76,105,98,114,97,114,121,46,108,117,97)))()local _c=loadstring(game:HttpGet(_a..string.char(97,100,100,111,110,115,47,84,104,101,109,101,77,97,110,97,103,101,114,46,108,117,97)))()local _d=loadstring(game:HttpGet(_a..string.char(97,100,100,111,110,115,47,83,97,118,101,77,97,110,97,103,101,114,46,108,117,97)))()local _e=_b._e local _f=_b._f _b.ForceCheckbox=false _b.ShowToggleFrameInKeybinds=true local _g=94272208451726 local _h=string.char(104,116,116,112,115,58,47,47,119,119,119,46,114,111,98,108,111,120,46,99,111,109,47,97,115,115,101,116,45,116,104,117,109,98,110,97,105,108,47,105,109,97,103,101,63,97,115,115,101,116,73,100,61).._g..string.char(38,119,105,100,116,104,61,53,49,50,38,104,101,105,103,104,116,61,53,49,50,38,102,111,114,109,97,116,61,112,110,103)local _i={SkyBlue=Color3.fromHex(string.char(50,57,66,54,70,54)),White=Color3.fromHex(string.char(70,70,70,70,70,70)),Magenta=Color3.fromHex(string.char(69,67,52,48,55,65)),LightGray=Color3.fromHex(string.char(70,53,70,53,70,53)),DarkBlueGray=Color3.fromHex(string.char(51,55,52,55,52,70)),DarkBlue=Color3.fromHex(string.char(48,50,55,55,66,68)),BorderBlue=Color3.fromHex(string.char(56,49,68,52,70,65)),}local _j=_b:CreateWindow({Title=string.char(90,114,121,120,32,65,117,116,111,32,70,97,114,109),Footer=string.char(118,101,114,115,105,111,110,58,32,49,46,48,46,48),Icon=_g,NotifySide=string.char(82,105,103,104,116),ShowCustomCursor=true,})pcall(function()_j:SetCornerRadius(14)end)local function _k()task.wait(2)pcall(function()local _l=game:GetService(string.char(80,108,97,121,101,114,115))local _m=_l._m local _n=_m:WaitForChild(string.char(80,108,97,121,101,114,71,117,105))local _o=nil for _p,_q in ipairs(_n:GetChildren())do if _q:IsA(string.char(83,99,114,101,101,110,71,117,105))then _o=_q break end end if not _o then for _p,_q in ipairs(game:GetService(string.char(67,111,114,101,71,117,105)):GetChildren())do if _q:IsA(string.char(83,99,114,101,101,110,71,117,105))then _o=_q break end end end if not _o then return end local _r=string.char(114,98,120,97,115,115,101,116,105,100,58,47,47).._g for _p,_s in ipairs(_o:GetDescendants())do if(_s:IsA(string.char(73,109,97,103,101,76,97,98,101,108))or _s:IsA(string.char(73,109,97,103,101,66,117,116,116,111,110)))then local _t=_s.AbsoluteSize if _t and _t.X>=14 and _t.X<=50 and _t.Y>=14 and _t.Y<=50 then local _u=_s.AbsolutePosition if _u and _u.Y<80 then _s.Image=_r _s.ImageTransparency=0 pcall(function()_s.ImageColor3=Color3.new(1,1,1)end)pcall(function()_s.Size=UDim2.new(0,48,0,48)end)end end end end local function _v(_w)for _p,_s in ipairs(_w:GetChildren())do pcall(function()if _s:IsA(string.char(70,114,97,109,101))then local _x=_s.Name or""if _x==string.char(83,99,114,101,101,110)or _x==string.char(66,97,99,107,103,114,111,117,110,100)or _x==string.char(77,97,105,110)then _s.BackgroundColor3=_i.SkyBlue elseif _x==string.char(67,111,110,116,101,110,116)or _x==string.char(67,111,110,116,97,105,110,101,114)or _x==string.char(66,111,100,121)or _x==string.char(73,110,110,101,114,70,114,97,109,101)then _s.BackgroundColor3=_i.White elseif _x:find(string.char(71,114,111,117,112,98,111,120))or _x:find(string.char(71,114,111,117,112))then _s.BackgroundColor3=_i.White pcall(function()_s.BorderSizePixel=1 _s.BorderColor3=_i.BorderBlue end)end end if _s:IsA(string.char(84,101,120,116,76,97,98,101,108))then local _y=_s.Text or""local _z=_s.Parent and _s.Parent.Name or""if _y:find(string.char(90,114,121,120))or _y:find(string.char(65,117,116,111,32,70,97,114,109))or _y:find(string.char(65,85,84,79,32,70,65,82,77))then _s.TextColor3=_i.Magenta pcall(function()_s.Font=Enum.Font.GothamBold _s.TextSize=20 end)elseif _z:find(string.char(72,101,97,100,101,114))or _z:find(string.char(84,105,116,108,101))then _s.TextColor3=_i.Magenta else _s.TextColor3=_i.DarkBlueGray end end if _s:IsA(string.char(84,101,120,116,66,117,116,116,111,110))then local _y=_s.Text or""if _y:find(string.char(65,67,84,73,86,65,84,69))or _y:find(string.char(69,78,65,66,76,69))or _y:find(string.char(83,84,65,82,84))then _s.BackgroundColor3=_i.DarkBlue _s.BorderSizePixel=0 for _p,_A in ipairs(_s:GetChildren())do if _A:IsA(string.char(84,101,120,116,76,97,98,101,108))or _A:IsA(string.char(84,101,120,116,66,117,116,116,111,110))then _A.TextColor3=_i.White end end else _s.BackgroundColor3=_i.White _s.BorderSizePixel=2 _s.BorderColor3=_i.SkyBlue for _p,_A in ipairs(_s:GetChildren())do if _A:IsA(string.char(84,101,120,116,76,97,98,101,108))then _A.TextColor3=_i.DarkBlueGray end if _A:IsA(string.char(73,109,97,103,101,76,97,98,101,108))or _A:IsA(string.char(73,109,97,103,101,66,117,116,116,111,110))then _A.ImageColor3=_i.DarkBlue end end end pcall(function()local _B=_s:FindFirstChildOfClass(string.char(85,73,67,111,114,110,101,114))if _B then _B.CornerRadius=UDim.new(0,10)else local _C=Instance.new(string.char(85,73,67,111,114,110,101,114))_C.CornerRadius=UDim.new(0,10)_C.Parent=_s end end)end if _s:IsA(string.char(85,73,67,111,114,110,101,114))then pcall(function()if _s.CornerRadius.Offset<10 then _s.CornerRadius=UDim.new(0,12)end end)end end)_v(_s)end end _v(_o)local _D=nil for _p,_s in ipairs(_o:GetDescendants())do if _s:IsA(string.char(70,114,97,109,101))and(_s.Name==string.char(77,97,105,110)or _s.Name==string.char(67,111,110,116,101,110,116)or _s.Name==string.char(67,111,110,116,97,105,110,101,114))then _D=_s break end end if not _D then local _E=0 for _p,_s in ipairs(_o:GetDescendants())do if _s:IsA(string.char(70,114,97,109,101))then local _F=_s.AbsoluteSize if _F and(_F.X*_F.Y)>_E then _E=_F.X*_F.Y _D=_s end end end end if _D then pcall(function()local _H=_D:FindFirstChild(string.char(90,114,121,120,76,111,103,111,67,111,110,116,97,105,110,101,114))if _H then _H:Destroy()end end)pcall(function()_D.BackgroundColor3=_i.White end)local _I=Instance.new(string.char(70,114,97,109,101))_I.Name=string.char(90,114,121,120,76,111,103,111,67,111,110,116,97,105,110,101,114)_I.Size=UDim2.new(1,0,0,200)_I.Position=UDim2.new(0,0,0,0)_I.BackgroundTransparency=1 _I.ZIndex=100 _I.Parent=_D local _J=Instance.new(string.char(73,109,97,103,101,76,97,98,101,108))_J.Name=string.char(90,114,121,120,76,111,103,111,66,97,99,107,103,114,111,117,110,100)_J.Size=UDim2.new(0,500,0,160)_J.Position=UDim2.new(0.5,-250,0,15)_J.Image=_r _J.BackgroundTransparency=1 _J.ImageTransparency=0.85 _J.ScaleType=Enum.ScaleType.Fit _J.ZIndex=101 _J.Parent=_I local _K=Instance.new(string.char(85,73,67,111,114,110,101,114))_K.CornerRadius=UDim.new(0,25)_K.Parent=_J local _L=Instance.new(string.char(73,109,97,103,101,76,97,98,101,108))_L.Name=string.char(90,114,121,120,77,97,105,110,76,111,103,111)_L.Size=UDim2.new(0,420,0,135)_L.Position=UDim2.new(0.5,-210,0.5,-67)_L.Image=_r _L.BackgroundTransparency=1 _L.ImageTransparency=0 _L.ScaleType=Enum.ScaleType.Fit _L.ZIndex=102 _L.Parent=_I local _M=Instance.new(string.char(85,73,67,111,114,110,101,114))_M.CornerRadius=UDim.new(0,22)_M.Parent=_L local _N=Instance.new(string.char(84,101,120,116,76,97,98,101,108))_N.Name=string.char(90,114,121,120,84,105,116,108,101)_N.Size=UDim2.new(1,0,0,30)_N.Position=UDim2.new(0,0,0,170)_N.BackgroundTransparency=1 _N.Text=string.char(65,85,84,79,32,70,65,82,77,32,77,69,78,85)_N.TextColor3=_i.Magenta _N.TextSize=20 _N.Font=Enum.Font.GothamBold _N.ZIndex=101 _N.Parent=_I end end)end task.spawn(_k)pcall(function()task.spawn(function()while not _b.Unloaded do task.wait(5)pcall(_k)end end)end)_j:SetSidebarWidth(40)local _O={AutoFarm=_j:AddTab("",string.char(122,97,112)),Settings=_j:AddTab("",string.char(115,101,116,116,105,110,103,115)),}local _P=_O.AutoFarm:AddLeftGroupbox(string.char(65,117,116,111,32,70,97,114,109),string.char(122,97,112))local _Q=_O.AutoFarm:AddRightGroupbox(string.char(87,101,98,104,111,111,107),string.char(119,101,98,104,111,111,107))local _R={LastFinishPos=nil,BeatSurvivorDone=false,}local _S=false local function _T()local _U=game:GetService(string.char(80,108,97,121,101,114,115))._m if not _U.Team then returnstring.char(85,110,107,110,111,119,110)end local _x=_U.Team.Name if _x==string.char(75,105,108,108,101,114)then returnstring.char(75,105,108,108,101,114)end if _x==string.char(83,117,114,118,105,118,111,114,115)then returnstring.char(83,117,114,118,105,118,111,114)end if _x==string.char(83,112,101,99,116,97,116,111,114)or _x==string.char(83,112,101,99,116,97,116,111,114,115)then returnstring.char(83,112,101,99,116,97,116,111,114)end returnstring.char(76,111,98,98,121)end local function _V()local _U=game:GetService(string.char(80,108,97,121,101,114,115))._m local _W=_U.Character return _W and _W:FindFirstChild(string.char(72,117,109,97,110,111,105,100,82,111,111,116,80,97,114,116))end local function _X(_Y)local _Z=(syn and syn.request)or(http and http.request)or http_request or request or(fluxus and fluxus.request)or(krnl and krnl.request)if _Z then return _Z(_Y)end return nil end local function _aa()return(identifyexecutor and identifyexecutor())or(getexecutorname and getexecutorname())orstring.char(85,110,107,110,111,119,110,32,69,120,101,99,117,116,111,114)end local function _ba(_ca)if _f.EnableNotifications and _f.EnableNotifications._Lb==false then return end _b:Notify(_ca)end local function _da()local _ea,_fa=pcall(function()return game:HttpGet(string.char(104,116,116,112,115,58,47,47,116,104,117,109,98,110,97,105,108,115,46,114,111,98,108,111,120,46,99,111,109,47,118,49,47,97,115,115,101,116,115,63,97,115,115,101,116,73,100,115,61).._g..string.char(38,115,105,122,101,61,53,49,50,120,53,49,50,38,102,111,114,109,97,116,61,80,110,103,38,105,115,67,105,114,99,117,108,97,114,61,102,97,108,115,101))end)if _ea and _fa then local _ga=game:GetService(string.char(72,116,116,112,83,101,114,118,105,99,101))local _ha,_ia=pcall(function()return _ga:JSONDecode(_fa)end)if _ha and _ia and _ia._ia and _ia._ia[1]and _ia._ia[1].imageUrl then return _ia._ia[1].imageUrl..string.char(63,116,61)..tostring(os.time())..string.char(38,114,61)..tostring(math.random(1000,9999))end end return _h..string.char(63,116,61)..tostring(os.time())..string.char(38,114,61)..tostring(math.random(1000,9999))end local _ja=nil local function _ka()if not _ja then _ja=_da()end return _ja end local function _la(_ma)local _ga=game:GetService(string.char(72,116,116,112,83,101,114,118,105,99,101))local _na=string.char(63,116,61)..tostring(os.time())..string.char(38,114,61)..tostring(math.random(10000,99999))local _oa,_pa=pcall(function()return game:HttpGet(string.char(104,116,116,112,115,58,47,47,116,104,117,109,98,110,97,105,108,115,46,114,111,98,108,111,120,46,99,111,109,47,118,49,47,117,115,101,114,115,47,97,118,97,116,97,114,45,104,101,97,100,115,104,111,116)..string.char(63,117,115,101,114,73,100,115,61).._ma..string.char(38,115,105,122,101,61,49,48,48,120,49,48,48,38,102,111,114,109,97,116,61,80,110,103,38,105,115,67,105,114,99,117,108,97,114,61,102,97,108,115,101))end)if _oa and _pa then local _ha,_ia=pcall(function()return _ga:JSONDecode(_pa)end)if _ha and _ia and _ia._ia and _ia._ia[1]and _ia._ia[1].state==string.char(67,111,109,112,108,101,116,101,100)and _ia._ia[1].imageUrl then return _ia._ia[1].imageUrl.._na end end local _qa,_ra=pcall(function()return game:HttpGet(string.char(104,116,116,112,115,58,47,47,116,104,117,109,98,110,97,105,108,115,46,114,111,98,108,111,120,46,99,111,109,47,118,49,47,97,118,97,116,97,114,45,104,101,97,100,115,104,111,116)..string.char(63,117,115,101,114,73,100,115,61).._ma..string.char(38,115,105,122,101,61,49,48,48,120,49,48,48,38,102,111,114,109,97,116,61,80,110,103,38,105,115,67,105,114,99,117,108,97,114,61,102,97,108,115,101))end)if _qa and _ra then local _ha,_ia=pcall(function()return _ga:JSONDecode(_ra)end)if _ha and _ia and _ia._ia and _ia._ia[1]and _ia._ia[1].imageUrl then return _ia._ia[1].imageUrl.._na end end returnstring.char(104,116,116,112,115,58,47,47,119,119,119,46,114,111,98,108,111,120,46,99,111,109,47,104,101,97,100,115,104,111,116,45,116,104,117,109,98,110,97,105,108,47,105,109,97,103,101,63,117,115,101,114,73,100,61).._ma..string.char(38,119,105,100,116,104,61,49,53,48,38,104,101,105,103,104,116,61,49,53,48,38,102,111,114,109,97,116,61,112,110,103).._na end local _sa={}local function _ta(_ma)if not _sa[_ma]then _sa[_ma]=_la(_ma)end return _sa[_ma]end local _ua=string.char(86,68,95,65,117,116,111,70,97,114,109,95,65,116,116,114,105,98,117,116,101,115,46,106,115,111,110)local _va=nil local function _wa()if type(isfile)~=string.char(102,117,110,99,116,105,111,110)or type(readfile)~=string.char(102,117,110,99,116,105,111,110)then return nil end if not isfile(_ua)then return nil end local _ga=game:GetService(string.char(72,116,116,112,83,101,114,118,105,99,101))local _ea,_ia=pcall(function()return _ga:JSONDecode(readfile(_ua))end)if not _ea or type(_ia)~=string.char(116,97,98,108,101)then return nil end local _m=game:GetService(string.char(80,108,97,121,101,114,115))._m if tonumber(_ia.UserId)~=_m.UserId then return nil end return{_La=tonumber(_ia._La),_Ma=tonumber(_ia._Ma),_Na=tonumber(_ia._Na),_Oa=tonumber(_ia._Oa)}end local function _xa(_ya)if type(writefile)~=string.char(102,117,110,99,116,105,111,110)then return false end local _ga=game:GetService(string.char(72,116,116,112,83,101,114,118,105,99,101))local _m=game:GetService(string.char(80,108,97,121,101,114,115))._m local _ia={UserId=_m.UserId,_La=_ya._La,_Ma=_ya._Ma,_Na=_ya._Na,_Oa=_ya._Oa,UpdatedAt=os.time()}return pcall(function()writefile(_ua,_ga:JSONEncode(_ia))end)end _va=_wa()local function _za(_Aa,_Ba)_Aa=tonumber(_Aa)or 0 if _Ba==nil then return 0 end return _Aa-(tonumber(_Ba)or 0)end local function _Ca(_Da,_Ea,_Fa)if not _Fa and(not _f.EnableWebhook or not _f.EnableWebhook._Lb)then return false,string.char(87,101,98,104,111,111,107,32,68,105,115,97,98,108,101,100)end local _Ga=_e.WebhookLink and _e.WebhookLink._Lb or""if not _Ga or _Ga==""or not string.find(_Ga,string.char(100,105,115,99,111,114,100,46,99,111,109,47,97,112,105,47,119,101,98,104,111,111,107,115))then return false,string.char(73,110,118,97,108,105,100,32,87,101,98,104,111,111,107,32,85,82,76)end local _ga=game:GetService(string.char(72,116,116,112,83,101,114,118,105,99,101))local _m=game:GetService(string.char(80,108,97,121,101,114,115))._m local _Ha=_m.DisplayName local _ma=_m.UserId local _Ia=game.JobId~=""and game.JobId orstring.char(83,105,110,103,108,101,112,108,97,121,101,114)local _Ja=string.char(104,116,116,112,115,58,47,47,119,119,119,46,114,111,98,108,111,120,46,99,111,109,47,117,115,101,114,115,47).._ma..string.char(47,112,114,111,102,105,108,101)local _Ka=_m:GetAttributes()local _La=tonumber(_Ka._La)or 0 local _Ma=tonumber(_Ka._Ma)or 0 local _Na=tonumber(_Ka._Na)or 0 local _Oa=tonumber(_Ka._Oa)or 0 local _Pa=tonumber(_Ka._Pa)or 0 if not _va then _va={_La=_La,_Ma=_Ma,_Na=_Na,_Oa=_Oa}end local _Qa=_ka()local _Ra=_ta(_ma)local _Sa={[string.char(117,115,101,114,110,97,109,101)]=string.char(90,114,121,120,32,65,117,116,111,32,70,97,114,109),[string.char(97,118,97,116,97,114,95,117,114,108)]=_Qa,[string.char(101,109,98,101,100,115)]={{[string.char(97,117,116,104,111,114)]={[string.char(110,97,109,101)]=string.format(string.char(37,115,32,183,32,76,101,118,101,108,32,37,100),_Ha,_Pa),[string.char(117,114,108)]=_Ja,[string.char(105,99,111,110,95,117,114,108)]=_Ra},[string.char(116,105,116,108,101)]=_Da orstring.char(90,114,121,120,32,65,117,116,111,32,70,97,114,109),[string.char(100,101,115,99,114,105,112,116,105,111,110)]=_Ea orstring.char(65,117,116,111,32,70,97,114,109,32,83,101,115,115,105,111,110),[string.char(117,114,108)]=_Ja,[string.char(99,111,108,111,114)]=2733558,[string.char(102,105,101,108,100,115)]={{[string.char(110,97,109,101)]=string.char(55357,56448,32,83,73,78),[string.char(118,97,108,117,101)]=string.format(string.char(37,115,32,40,42,42,37,43,100,42,42,41),tostring(_La),_za(_La,_va._La)),[string.char(105,110,108,105,110,101)]=false},{[string.char(110,97,109,101)]=string.char(55358,56810,32,69,88,80),[string.char(118,97,108,117,101)]=string.format(string.char(37,115,32,40,42,42,37,43,100,42,42,41),tostring(_Ma),_za(_Ma,_va._Ma)),[string.char(105,110,108,105,110,101)]=false},{[string.char(110,97,109,101)]=string.char(55357,56617,32,83,99,114,101,119,115),[string.char(118,97,108,117,101)]=string.format(string.char(37,115,32,40,42,42,37,43,100,42,42,41),tostring(_Na),_za(_Na,_va._Na)),[string.char(105,110,108,105,110,101)]=false},{[string.char(110,97,109,101)]=string.char(9881,65039,32,71,101,97,114,115),[string.char(118,97,108,117,101)]=string.format(string.char(37,115,32,40,42,42,37,43,100,42,42,41),tostring(_Oa),_za(_Oa,_va._Oa)),[string.char(105,110,108,105,110,101)]=false},{[string.char(110,97,109,101)]=string.char(55356,56724,32,83,101,114,118,101,114,32,73,68),[string.char(118,97,108,117,101)]=string.format(string.char(96,96,96,10,37,115,10,96,96,96),_Ia),[string.char(105,110,108,105,110,101)]=false}},[string.char(116,104,117,109,98,110,97,105,108)]={[string.char(117,114,108)]=_Qa},[string.char(102,111,111,116,101,114)]={[string.char(116,101,120,116)]=string.format(string.char(90,114,121,120,32,65,117,116,111,32,70,97,114,109,32,183,32,37,115),_aa()),[string.char(105,99,111,110,95,117,114,108)]=_Qa},[string.char(116,105,109,101,115,116,97,109,112)]=os.date(string.char(33,37,89,45,37,109,45,37,100,84,37,72,58,37,77,58,37,83,46,48,48,48,90))}}}local _fa=_X({Url=_Ga,Method=string.char(80,79,83,84),Headers={[string.char(67,111,110,116,101,110,116,45,84,121,112,101)]=string.char(97,112,112,108,105,99,97,116,105,111,110,47,106,115,111,110)},Body=_ga:JSONEncode(_Sa)})if _fa and(_fa.StatusCode==200 or _fa.StatusCode==204)then local _Ta={_La=_La,_Ma=_Ma,_Na=_Na,_Oa=_Oa}_va=_Ta _xa(_Ta)return true,string.char(87,101,98,104,111,111,107,32,115,117,99,99,101,115,115,102,117,108,108,121,32,115,101,110,116,33)end return false,string.char(70,97,105,108,101,100,32,83,116,97,116,117,115,58,32)..tostring(_fa and _fa.StatusCode orstring.char(78,111,32,82,101,115,112,111,110,115,101))end local function _Ua()if not _f.EnableAutoFarm._Lb then _R.BeatSurvivorDone=false _R.LastFinishPos=nil return end if _T()~=string.char(83,117,114,118,105,118,111,114)then return end local _Va=_V()if not _Va then return end local _Wa=game:GetService(string.char(87,111,114,107,115,112,97,99,101)):FindFirstChild(string.char(77,97,112))if not _Wa then return end local _Xa=nil pcall(function()if _Wa:FindFirstChild(string.char(82,111,111,102,116,111,112,72,105,116,98,111,120))or _Wa:FindFirstChild(string.char(82,111,111,102,116,111,112))then _Xa=Vector3.new(3098.16,454.04,-4918.74)return end if _Wa:FindFirstChild(string.char(72,111,111,107,115,77,101,97,116))then _Xa=Vector3.new(1546.12,152.21,-796.72)return end if _Wa:FindFirstChild(string.char(99,104,117,114,99,104,98,101,108,108))then _Xa=Vector3.new(760.98,-20.14,-78.48)return end local _Ya=_Wa:FindFirstChild(string.char(70,105,110,105,115,104,108,105,110,101))or _Wa:FindFirstChild(string.char(70,105,110,105,115,104,76,105,110,101))or _Wa:FindFirstChild(string.char(70,105,110,105,110,115,104,108,105,110,101))if _Ya then if _Ya:IsA(string.char(66,97,115,101,80,97,114,116))then _Xa=_Ya.Position elseif _Ya:IsA(string.char(77,111,100,101,108))then local _Za=_Ya:FindFirstChildWhichIsA(string.char(66,97,115,101,80,97,114,116))if _Za then _Xa=_Za.Position end end return end for _p,_s in ipairs(_Wa:GetDescendants())do if _s.Name:lower():find(string.char(102,105,110,105,115,104))then if _s:IsA(string.char(66,97,115,101,80,97,114,116))then _Xa=_s.Position break elseif _s:IsA(string.char(77,111,100,101,108))then local _Za=_s:FindFirstChildWhichIsA(string.char(66,97,115,101,80,97,114,116))if _Za then _Xa=_Za.Position break end end end end if not _Xa then for _p,_s in ipairs(_Wa:GetDescendants())do if _s:IsA(string.char(77,101,115,104,80,97,114,116))and _s.Material==Enum.Material.Limestone then _Xa=Vector3.new(-947.90,152.12,-7579.52)break end end end if not _Xa then for _p,_s in ipairs(_Wa:GetDescendants())do if _s:IsA(string.char(77,101,115,104,80,97,114,116))and _s.Material==Enum.Material.Leather then _Xa=Vector3.new(1546.12,152.21,-796.72)break end end end end)if not _Xa then return end if _R.LastFinishPos then local _ab=(_Xa-_R.LastFinishPos).Magnitude if _ab>50 then _R.BeatSurvivorDone=false end end if _R.BeatSurvivorDone then return end task.wait(6)local _bb=_V()if not _bb then return end _bb.CFrame=CFrame.new(_Xa+Vector3.new(0,3,0))_R.BeatSurvivorDone=true _R.LastFinishPos=_Xa task.wait(5)_Ca()if _f._Ib and _f._Ib._Lb then _S=true end end local _cb=string.char(83,101,114,118,101,114,72,111,112,46,116,120,116)local _db=3600 local _ga=game:GetService(string.char(72,116,116,112,83,101,114,118,105,99,101))local _eb=game:GetService(string.char(84,101,108,101,112,111,114,116,83,101,114,118,105,99,101))local _l=game:GetService(string.char(80,108,97,121,101,114,115))local _fb={}local _gb=8 local _hb=3 local function _ib()if not isfile(_cb)then return{}end local _jb={}local _kb=os.time()for _p,_lb in ipairs(readfile(_cb):split(string.char(10)))do local _Ia,_mb=_lb:match(string.char(40,91,94,124,93,43,41,124,63,40,37,100,42,41))_mb=tonumber(_mb)or 0 if _Ia and _Ia~=""and _kb-_mb<_db then _jb[_Ia]=_mb end end return _jb end local function _nb(_jb)local _ob={}for _Ia,_mb in pairs(_jb)do table.insert(_ob,_Ia..string.char(124).._mb)end writefile(_cb,table.concat(_ob,string.char(10)))end _fb=_ib()local _pb=false local _qb=game:GetService(string.char(82,101,112,108,105,99,97,116,101,100,83,116,111,114,97,103,101))local _rb=_qb:WaitForChild(string.char(82,101,109,111,116,101,115))local _sb=_rb:WaitForChild(string.char(83,116,97,116,117,115,85,112,100,97,116,101,69,118,101,110,116))local _tb=_rb:WaitForChild(string.char(84,105,109,101,85,112,100,97,116,101,69,118,101,110,116))_sb.OnClientEvent:Connect(function(_ub)if _ub==string.char(87,97,105,116,105,110,103,70,111,114,80,108,97,121,101,114,115)or _ub==string.char(73,110,116,101,114,109,105,115,115,105,111,110,83,116,97,114,116,105,110,103)or _ub==string.char(73,110,116,101,114,109,105,115,115,105,111,110)then _pb=false _R.BeatSurvivorDone=false end end)_tb.OnClientEvent:Connect(function(_ub)if _ub==string.char(82,111,117,110,100)then _pb=true end end)local function _vb()local _wb=0 local _xb=""while _f._Ib._Lb and not _b.Unloaded do _wb=_wb+1 local _ea,_yb=pcall(function()return _ga:JSONDecode(game:HttpGet(string.char(104,116,116,112,115,58,47,47,103,97,109,101,115,46,114,111,98,108,111,120,46,99,111,109,47,118,49,47,103,97,109,101,115,47)..game.PlaceId..string.char(47,115,101,114,118,101,114,115,47,80,117,98,108,105,99,63,108,105,109,105,116,61,49,48,48)..string.char(38,115,111,114,116,79,114,100,101,114,61,65,115,99)..string.char(38,101,120,99,108,117,100,101,70,117,108,108,71,97,109,101,115,61,116,114,117,101)..string.char(38,99,117,114,115,111,114,61).._xb))end)if not _ea or not _yb or not _yb._ia then task.wait(5)_xb=""continue end local _zb=false for _p,_Ab in ipairs(_yb._ia)do if not _f._Ib._Lb or _b.Unloaded then return end if _Ab._Gb and _Ab._Gb~=game.JobId and _Ab.playing and _Ab.playing>=1 and _Ab.playing<=3 and not _fb[_Ab._Gb]then _zb=true local _Bb=false local _Cb=0 while not _Bb and _f._Ib._Lb and not _b.Unloaded do _Cb=_Cb+1 local _Db,_Eb=pcall(function()_eb:TeleportToPlaceInstance(game.PlaceId,_Ab._Gb,_l._m)end)if _Db then _ba({Title=string.char(9989,32,72,79,80,32,83,85,67,67,69,83,83,33),Description=string.format(string.char(84,101,108,101,112,111,114,116,101,100,32,97,102,116,101,114,32,37,100,32,97,116,116,101,109,112,116,115),_wb),Time=3})return true else local _Fb=tostring(_Eb)if string.find(_Fb,string.char(55,55,49))or string.find(_Fb,string.char(83,101,114,118,101,114,32,105,115,32,110,111,32,108,111,110,103,101,114,32,97,118,97,105,108,97,98,108,101))then _fb[_Ab._Gb]=os.time()+300 _nb(_fb)break elseif string.find(_Fb,string.char(55,55,50))or string.find(_Fb,string.char(84,111,111,77,97,110,121,82,101,113,117,101,115,116,115))then task.wait(_gb)elseif string.find(_Fb:lower(),string.char(102,117,108,108))or string.find(_Fb,string.char(55,53,49))then _fb[_Ab._Gb]=os.time()+600 _nb(_fb)break else task.wait(_hb)end end end task.wait(1)end end if not _zb then _xb=_yb.nextPageCursor or""if _xb==""then task.wait(5)_xb=""local _kb=os.time()for _Gb,_Hb in pairs(_fb)do if _kb-_Hb>_db then _fb[_Gb]=nil end end _nb(_fb)else task.wait(0.5)end else _xb=""end task.wait(1)end end local function _Ib()while _f._Ib._Lb and not _b.Unloaded do local _Jb=#_l:GetPlayers()local _Kb=_T()if _S then _S=false _ba({Title=string.char(55356,57281,32,69,115,99,97,112,101,32,68,111,110,101,33),Description=string.char(72,111,112,112,105,110,103,32,116,111,32,110,101,119,32,115,101,114,118,101,114,32,78,79,87,46,46,46),Time=2})_vb()task.wait(3)continue end if _Jb<=1 then _ba({Title=string.char(55357,56420,32,65,108,111,110,101,33),Description=string.char(72,111,112,112,105,110,103,32,105,109,109,101,100,105,97,116,101,108,121,46,46,46),Time=2})_vb()task.wait(3)continue end if _pb and _Kb==string.char(83,117,114,118,105,118,111,114)then task.wait(1)continue end if _pb and _Kb==string.char(75,105,108,108,101,114)then _ba({Title=string.char(55357,56618,32,75,105,108,108,101,114,32,105,110,32,82,111,117,110,100),Description=string.char(72,111,112,112,105,110,103,32,110,111,119,46,46,46),Time=2})_vb()task.wait(3)continue end if _pb and _Kb==string.char(83,112,101,99,116,97,116,111,114)then _vb()task.wait(3)continue end task.wait(1)end end _P:AddToggle(string.char(69,110,97,98,108,101,65,117,116,111,70,97,114,109),{Text=string.char(69,110,97,98,108,101,32,65,117,116,111,32,70,97,114,109),Tooltip=string.char(84,101,108,101,112,111,114,116,32,83,117,114,118,105,118,111,114,32,116,111,32,116,104,101,32,100,101,116,101,99,116,101,100,32,102,105,110,105,115,104,32,108,111,99,97,116,105,111,110),Default=false,})_P:AddToggle(string.char(83,101,114,118,101,114,72,111,112),{Text=string.char(83,101,114,118,101,114,32,72,111,112,32,40,83,109,97,114,116,41),Tooltip=string.char(65,108,111,110,101,47,75,105,108,108,101,114,47,83,112,101,99,61,72,111,112,32,124,32,83,117,114,118,105,118,111,114,61,65,117,116,111,32,70,97,114,109,32,124,32,78,111,32,82,111,117,110,100,61,87,97,105,116),Default=false,Callback=function(_Lb)if _Lb then task.spawn(function()_Ib()end)end end,})local _Mb=string.char(104,116,116,112,115,58,47,47,114,97,119,46,103,105,116,104,117,98,117,115,101,114,99,111,110,116,101,110,116,46,99,111,109,47,122,97,101,114,114,114,117,119,119,119,47,122,97,101,114,121,116,116,97,47,114,101,102,115,47,104,101,97,100,115,47,109,97,105,110,47,122,97,101,114,46,108,117,97)local _Nb=false local function _Ob()if _Nb then return end if not _f.AutoExecute._Lb then return end if type(queue_on_teleport)~=string.char(102,117,110,99,116,105,111,110)then _ba({Title=string.char(65,117,116,111,32,69,120,101,99,117,116,101),Description=string.char(113,117,101,117,101,95,111,110,95,116,101,108,101,112,111,114,116,32,105,115,32,110,111,116,32,97,118,97,105,108,97,98,108,101,46),Time=5,})return end local _Pb=string.format([[loadstring(game:HttpGet(%q))()]],_Mb)local _ea,_Qb=pcall(function()queue_on_teleport(_Pb)end)if _ea then _Nb=true _ba({Title=string.char(65,117,116,111,32,69,120,101,99,117,116,101),Description=string.char(83,99,114,105,112,116,32,113,117,101,117,101,100,32,102,111,114,32,110,101,120,116,32,116,101,108,101,112,111,114,116,46),Time=3,})else _ba({Title=string.char(65,117,116,111,32,69,120,101,99,117,116,101),Description=string.char(70,97,105,108,101,100,58,32)..tostring(_Qb),Time=5,})end end _P:AddToggle(string.char(65,117,116,111,69,120,101,99,117,116,101),{Text=string.char(65,117,116,111,32,69,120,101,99,117,116,101),Tooltip=string.char(69,120,101,99,117,116,101,32,122,97,101,114,46,108,117,97,32,97,102,116,101,114,32,115,101,114,118,101,114,32,104,111,112),Default=false,Callback=function(_Lb)if _Lb then _Ob()else _Nb=false end end,})_Q:AddToggle(string.char(69,110,97,98,108,101,87,101,98,104,111,111,107),{Text=string.char(69,110,97,98,108,101,32,87,101,98,104,111,111,107),Tooltip=string.char(69,110,97,98,108,101,32,119,101,98,104,111,111,107,32,110,111,116,105,102,105,99,97,116,105,111,110,115,32,119,105,116,104,32,90,114,121,120,32,98,114,97,110,100,105,110,103),Default=false,})_Q:AddInput(string.char(87,101,98,104,111,111,107,76,105,110,107),{Text=string.char(87,101,98,104,111,111,107,32,76,105,110,107),Default="",Placeholder=string.char(69,110,116,101,114,32,119,101,98,104,111,111,107,32,85,82,76,46,46,46),Numeric=false,Finished=false,ClearTextOnFocus=false,})_Q:AddButton(string.char(84,101,115,116,32,87,101,98,104,111,111,107),function()_sa={}_ja=nil local _ha,_Rb=_Ca(string.char(55357,56596,32,87,101,98,104,111,111,107,32,84,101,115,116),string.char(67,111,110,102,105,103,117,114,97,116,105,111,110,32,116,101,115,116,32,102,114,111,109,32,42,42,90,114,121,120,32,65,117,116,111,32,70,97,114,109,42,42,33),true)if _ha then _ba({Title=string.char(87,101,98,104,111,111,107,32,83,117,99,99,101,115,115),Description=string.char(84,101,115,116,32,109,101,115,115,97,103,101,32,115,101,110,116,33),Icon=string.char(99,104,101,99,107),Time=3})else _ba({Title=string.char(87,101,98,104,111,111,107,32,70,97,105,108,101,100),Description=_Rb,Icon=string.char(120),Time=4})end end)local _Sb=_O.Settings:AddLeftGroupbox(string.char(77,101,110,117),string.char(119,114,101,110,99,104))_Sb:AddToggle(string.char(75,101,121,98,105,110,100,77,101,110,117,79,112,101,110),{Default=_b.KeybindFrame.Visible,Text=string.char(79,112,101,110,32,75,101,121,98,105,110,100,32,77,101,110,117),Callback=function(_Lb)_b.KeybindFrame.Visible=_Lb end,})_Sb:AddToggle(string.char(83,104,111,119,67,117,115,116,111,109,67,117,114,115,111,114),{Text=string.char(67,117,115,116,111,109,32,67,117,114,115,111,114),Default=_b.ShowCustomCursor,Callback=function(_Lb)_b.ShowCustomCursor=_Lb end,})_Sb:AddToggle(string.char(69,110,97,98,108,101,78,111,116,105,102,105,99,97,116,105,111,110,115),{Text=string.char(69,110,97,98,108,101,32,78,111,116,105,102,105,99,97,116,105,111,110,115),Tooltip=string.char(84,111,103,103,108,101,32,111,110,47,111,102,102,32,115,101,109,117,97,32,110,111,116,105,102,105,107,97,115,105,32,115,99,114,105,112,116),Default=true,})_Sb:AddDropdown(string.char(78,111,116,105,102,105,99,97,116,105,111,110,83,105,100,101),{Values={string.char(76,101,102,116),string.char(82,105,103,104,116)},Default=string.char(82,105,103,104,116),Text=string.char(78,111,116,105,102,105,99,97,116,105,111,110,32,83,105,100,101),Callback=function(_Lb)_b:SetNotifySide(_Lb)end,})_Sb:AddDropdown(string.char(68,80,73,68,114,111,112,100,111,119,110),{Values={string.char(53,48,37),string.char(55,53,37),string.char(49,48,48,37),string.char(49,50,53,37),string.char(49,53,48,37),string.char(49,55,53,37),string.char(50,48,48,37)},Default=string.char(49,48,48,37),Text=string.char(68,80,73,32,83,99,97,108,101),Callback=function(_Lb)local _Tb=tonumber(_Lb:gsub(string.char(37,37),""))_b:SetDPIScale(_Tb)end,})_Sb:AddSlider(string.char(85,73,67,111,114,110,101,114,83,108,105,100,101,114),{Text=string.char(67,111,114,110,101,114,32,82,97,100,105,117,115),Default=14,Min=0,Max=25,Rounding=0,Callback=function(_Lb)_j:SetCornerRadius(_Lb)end,})_Sb:AddDivider()_Sb:AddLabel(string.char(77,101,110,117,32,98,105,110,100)):AddKeyPicker(string.char(77,101,110,117,75,101,121,98,105,110,100),{Default=string.char(82,105,103,104,116,83,104,105,102,116),NoUI=true,Text=string.char(77,101,110,117,32,107,101,121,98,105,110,100),})_Sb:AddButton(string.char(85,110,108,111,97,100),function()_b:Unload()end)_b.ToggleKeybind=_e.MenuKeybind _c:SetLibrary(_b)_d:SetLibrary(_b)_c:SetFolder(string.char(65,117,116,111,70,97,114,109))_d:SetFolder(string.char(65,117,116,111,70,97,114,109))_d:SetSubFolder(string.char(83,101,116,116,105,110,103,115))_d:IgnoreThemeSettings()_d:SetIgnoreIndexes({string.char(77,101,110,117,75,101,121,98,105,110,100)})_d:BuildConfigSection(_O.Settings)_c:ApplyToTab(_O.Settings)_d:LoadAutoloadConfig()_Ob()_b:Notify({Title=string.char(90,114,121,120,32,65,117,116,111,32,70,97,114,109),Description=string.char(83,99,114,105,112,116,32,76,111,97,100,101,100,32,83,117,99,99,101,115,115,102,117,108,108,121,33),Icon=string.char(114,98,120,97,115,115,101,116,105,100,58,47,47).._g,Time=4})task.spawn(function()while not _b.Unloaded do pcall(function()_Ua()end)task.wait(1)end end)
+--==================================================
+-- ZRYX AUTO FARM - FINAL VERSION
+-- Obsidian UI + Beat Survivor + Smart Server Hop
+--==================================================
+
+pcall(function()
+    setfflag("TeleportService", "DisableTeleportErrors", "true")
+end)
+
+--==================================================
+-- LIBRARY LOADER
+--==================================================
+local repo = "https://raw.githubusercontent.com/deividcomsono/Obsidian/main/"
+local Library = loadstring(game:HttpGet(repo .. "Library.lua"))()
+local ThemeManager = loadstring(game:HttpGet(repo .. "addons/ThemeManager.lua"))()
+local SaveManager = loadstring(game:HttpGet(repo .. "addons/SaveManager.lua"))()
+local Options = Library.Options
+local Toggles = Library.Toggles
+Library.ForceCheckbox = false
+Library.ShowToggleFrameInKeybinds = true
+
+--==================================================
+-- CONFIGURATION
+--==================================================
+local ZRYX_LOGO_ID = 94272208451726
+local ZRYX_LOGO_FALLBACK = "https://www.roblox.com/asset-thumbnail/image?assetId=" 
+    .. ZRYX_LOGO_ID 
+    .. "&width=512&height=512&format=png"
+
+local ZRYX_COLORS = {
+    SkyBlue      = Color3.fromHex("29B6F6"),
+    White        = Color3.fromHex("FFFFFF"),
+    Magenta      = Color3.fromHex("EC407A"),
+    LightGray    = Color3.fromHex("F5F5F5"),
+    DarkBlueGray = Color3.fromHex("37474F"),
+    DarkBlue     = Color3.fromHex("0277BD"),
+    BorderBlue   = Color3.fromHex("81D4FA"),
+}
+
+--==================================================
+-- WINDOW CREATION
+--==================================================
+local Window = Library:CreateWindow({
+    Title = "Zryx Auto Farm",
+    Footer = "version: 1.0.0",
+    Icon = ZRYX_LOGO_ID,
+    NotifySide = "Right",
+    ShowCustomCursor = true,
+})
+
+pcall(function()
+    Window:SetCornerRadius(14)
+end)
+
+--==================================================
+-- ZRYX THEME APPLIER
+--==================================================
+local function ApplyZryxTheme()
+    task.wait(2)
+    pcall(function()
+        local Players = game:GetService("Players")
+        local LocalPlayer = Players.LocalPlayer
+        local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+        -- Cari ScreenGui Obsidian
+        local targetGui = nil
+        for _, gui in ipairs(PlayerGui:GetChildren()) do
+            if gui:IsA("ScreenGui") then
+                targetGui = gui
+                break
+            end
+        end
+        if not targetGui then
+            for _, gui in ipairs(game:GetService("CoreGui"):GetChildren()) do
+                if gui:IsA("ScreenGui") then
+                    targetGui = gui
+                    break
+                end
+            end
+        end
+        if not targetGui then return end
+
+        local LOGO_ID = "rbxassetid://" .. ZRYX_LOGO_ID
+
+        -- Perbesar icon header
+        for _, obj in ipairs(targetGui:GetDescendants()) do
+            if (obj:IsA("ImageLabel") or obj:IsA("ImageButton")) then
+                local size = obj.AbsoluteSize
+                if size and size.X >= 14 and size.X <= 50 and size.Y >= 14 and size.Y <= 50 then
+                    local pos = obj.AbsolutePosition
+                    if pos and pos.Y < 80 then
+                        obj.Image = LOGO_ID
+                        obj.ImageTransparency = 0
+                        pcall(function() obj.ImageColor3 = Color3.new(1,1,1) end)
+                        pcall(function() obj.Size = UDim2.new(0, 48, 0, 48) end)
+                    end
+                end
+            end
+        end
+
+        -- Apply warna ke semua elemen
+        local function applyColorsRecursive(parent)
+            for _, obj in ipairs(parent:GetChildren()) do
+                pcall(function()
+                    if obj:IsA("Frame") then
+                        local name = obj.Name or ""
+                        if name == "Screen" or name == "Background" or name == "Main" then
+                            obj.BackgroundColor3 = ZRYX_COLORS.SkyBlue
+                        elseif name == "Content" or name == "Container" or name == "Body" or name == "InnerFrame" then
+                            obj.BackgroundColor3 = ZRYX_COLORS.White
+                        elseif name:find("Groupbox") or name:find("Group") then
+                            obj.BackgroundColor3 = ZRYX_COLORS.White
+                            pcall(function()
+                                obj.BorderSizePixel = 1
+                                obj.BorderColor3 = ZRYX_COLORS.BorderBlue
+                            end)
+                        end
+                    end
+
+                    if obj:IsA("TextLabel") then
+                        local text = obj.Text or ""
+                        local parentName = obj.Parent and obj.Parent.Name or ""
+                        if text:find("Zryx") or text:find("Auto Farm") or text:find("AUTO FARM") then
+                            obj.TextColor3 = ZRYX_COLORS.Magenta
+                            pcall(function()
+                                obj.Font = Enum.Font.GothamBold
+                                obj.TextSize = 20
+                            end)
+                        elseif parentName:find("Header") or parentName:find("Title") then
+                            obj.TextColor3 = ZRYX_COLORS.Magenta
+                        else
+                            obj.TextColor3 = ZRYX_COLORS.DarkBlueGray
+                        end
+                    end
+
+                    if obj:IsA("TextButton") then
+                        local text = obj.Text or ""
+                        if text:find("ACTIVATE") or text:find("ENABLE") or text:find("START") then
+                            obj.BackgroundColor3 = ZRYX_COLORS.DarkBlue
+                            obj.BorderSizePixel = 0
+                            for _, child in ipairs(obj:GetChildren()) do
+                                if child:IsA("TextLabel") or child:IsA("TextButton") then
+                                    child.TextColor3 = ZRYX_COLORS.White
+                                end
+                            end
+                        else
+                            obj.BackgroundColor3 = ZRYX_COLORS.White
+                            obj.BorderSizePixel = 2
+                            obj.BorderColor3 = ZRYX_COLORS.SkyBlue
+                            for _, child in ipairs(obj:GetChildren()) do
+                                if child:IsA("TextLabel") then
+                                    child.TextColor3 = ZRYX_COLORS.DarkBlueGray
+                                end
+                                if child:IsA("ImageLabel") or child:IsA("ImageButton") then
+                                    child.ImageColor3 = ZRYX_COLORS.DarkBlue
+                                end
+                            end
+                        end
+                        pcall(function()
+                            local corner = obj:FindFirstChildOfClass("UICorner")
+                            if corner then
+                                corner.CornerRadius = UDim.new(0, 10)
+                            else
+                                local newCorner = Instance.new("UICorner")
+                                newCorner.CornerRadius = UDim.new(0, 10)
+                                newCorner.Parent = obj
+                            end
+                        end)
+                    end
+
+                    if obj:IsA("UICorner") then
+                        pcall(function()
+                            if obj.CornerRadius.Offset < 10 then
+                                obj.CornerRadius = UDim.new(0, 12)
+                            end
+                        end)
+                    end
+                end)
+                applyColorsRecursive(obj)
+            end
+        end
+        applyColorsRecursive(targetGui)
+
+        -- Cari main frame untuk logo besar
+        local mainFrame = nil
+        for _, obj in ipairs(targetGui:GetDescendants()) do
+            if obj:IsA("Frame") and (obj.Name == "Main" or obj.Name == "Content" or obj.Name == "Container") then
+                mainFrame = obj
+                break
+            end
+        end
+        if not mainFrame then
+            local maxSize = 0
+            for _, obj in ipairs(targetGui:GetDescendants()) do
+                if obj:IsA("Frame") then
+                    local s = obj.AbsoluteSize
+                    if s and (s.X * s.Y) > maxSize then
+                        maxSize = s.X * s.Y
+                        mainFrame = obj
+                    end
+                end
+            end
+        end
+
+        -- Pasang logo besar di panel
+        if mainFrame then
+            pcall(function()
+                local old = mainFrame:FindFirstChild("ZryxLogoContainer")
+                if old then old:Destroy() end
+            end)
+            pcall(function()
+                mainFrame.BackgroundColor3 = ZRYX_COLORS.White
+            end)
+
+            local logoFrame = Instance.new("Frame")
+            logoFrame.Name = "ZryxLogoContainer"
+            logoFrame.Size = UDim2.new(1, 0, 0, 200)
+            logoFrame.Position = UDim2.new(0, 0, 0, 0)
+            logoFrame.BackgroundTransparency = 1
+            logoFrame.ZIndex = 100
+            logoFrame.Parent = mainFrame
+
+            -- Background logo (watermark)
+            local bgLogo = Instance.new("ImageLabel")
+            bgLogo.Name = "ZryxLogoBackground"
+            bgLogo.Size = UDim2.new(0, 500, 0, 160)
+            bgLogo.Position = UDim2.new(0.5, -250, 0, 15)
+            bgLogo.Image = LOGO_ID
+            bgLogo.BackgroundTransparency = 1
+            bgLogo.ImageTransparency = 0.85
+            bgLogo.ScaleType = Enum.ScaleType.Fit
+            bgLogo.ZIndex = 101
+            bgLogo.Parent = logoFrame
+            local bgLogoCorner = Instance.new("UICorner")
+            bgLogoCorner.CornerRadius = UDim.new(0, 25)
+            bgLogoCorner.Parent = bgLogo
+
+            -- Logo utama
+            local mainLogo = Instance.new("ImageLabel")
+            mainLogo.Name = "ZryxMainLogo"
+            mainLogo.Size = UDim2.new(0, 420, 0, 135)
+            mainLogo.Position = UDim2.new(0.5, -210, 0.5, -67)
+            mainLogo.Image = LOGO_ID
+            mainLogo.BackgroundTransparency = 1
+            mainLogo.ImageTransparency = 0
+            mainLogo.ScaleType = Enum.ScaleType.Fit
+            mainLogo.ZIndex = 102
+            mainLogo.Parent = logoFrame
+            local mainLogoCorner = Instance.new("UICorner")
+            mainLogoCorner.CornerRadius = UDim.new(0, 22)
+            mainLogoCorner.Parent = mainLogo
+
+            -- Teks AUTO FARM MENU
+            local titleText = Instance.new("TextLabel")
+            titleText.Name = "ZryxTitle"
+            titleText.Size = UDim2.new(1, 0, 0, 30)
+            titleText.Position = UDim2.new(0, 0, 0, 170)
+            titleText.BackgroundTransparency = 1
+            titleText.Text = "AUTO FARM MENU"
+            titleText.TextColor3 = ZRYX_COLORS.Magenta
+            titleText.TextSize = 20
+            titleText.Font = Enum.Font.GothamBold
+            titleText.ZIndex = 101
+            titleText.Parent = logoFrame
+        end
+    end)
+end
+
+task.spawn(ApplyZryxTheme)
+pcall(function()
+    task.spawn(function()
+        while not Library.Unloaded do
+            task.wait(5)
+            pcall(ApplyZryxTheme)
+        end
+    end)
+end)
+
+--==================================================
+-- TABS & UI GROUPS
+--==================================================
+Window:SetSidebarWidth(40)
+local Tabs = {
+    AutoFarm = Window:AddTab("", "zap"),
+    Settings = Window:AddTab("", "settings"),
+}
+local AutoFarmGroup = Tabs.AutoFarm:AddLeftGroupbox("Auto Farm", "zap")
+local WebhookGroup = Tabs.AutoFarm:AddRightGroupbox("Webhook", "webhook")
+
+--==================================================
+-- STATE VARIABLES
+--==================================================
+local BeatState = {
+    LastFinishPos = nil,
+    BeatSurvivorDone = false,
+}
+local HopAfterBeatTriggered = false
+
+--==================================================
+-- HELPER FUNCTIONS
+--==================================================
+local function GetRole()
+    local player = game:GetService("Players").LocalPlayer
+    if not player.Team then return "Unknown" end
+    local name = player.Team.Name
+    if name == "Killer" then return "Killer" end
+    if name == "Survivors" then return "Survivor" end
+    if name == "Spectator" or name == "Spectators" then return "Spectator" end
+    return "Lobby"
+end
+
+local function GetCharacterRoot()
+    local player = game:GetService("Players").LocalPlayer
+    local character = player.Character
+    return character and character:FindFirstChild("HumanoidRootPart")
+end
+
+local function safeRequest(options)
+    local req = (syn and syn.request)
+             or (http and http.request)
+             or http_request
+             or request
+             or (fluxus and fluxus.request)
+             or (krnl and krnl.request)
+    if req then return req(options) end
+    return nil
+end
+
+local function GetExecutorName()
+    return (identifyexecutor and identifyexecutor())
+        or (getexecutorname and getexecutorname())
+        or "Unknown Executor"
+end
+
+--==================================================
+-- 🔔 SMART NOTIFY (HORMATI TOGGLE NOTIFIKASI)
+--==================================================
+local function ZryxNotify(config)
+    -- Cek toggle notifikasi (default ON kalau belum dibuat)
+    if Toggles.EnableNotifications and Toggles.EnableNotifications.Value == false then
+        return
+    end
+    Library:Notify(config)
+end
+
+--==================================================
+-- WEBHOOK ASSET URLs (LOGO & AVATAR)
+--==================================================
+local function GetZryxLogoUrl()
+    local success, response = pcall(function()
+        return game:HttpGet(
+            "https://thumbnails.roblox.com/v1/assets?assetIds="
+            .. ZRYX_LOGO_ID
+            .. "&size=512x512&format=Png&isCircular=false"
+        )
+    end)
+    if success and response then
+        local HttpService = game:GetService("HttpService")
+        local ok, data = pcall(function()
+            return HttpService:JSONDecode(response)
+        end)
+        if ok and data and data.data and data.data[1] and data.data[1].imageUrl then
+            return data.data[1].imageUrl 
+                .. "?t=" .. tostring(os.time()) 
+                .. "&r=" .. tostring(math.random(1000, 9999))
+        end
+    end
+    return ZRYX_LOGO_FALLBACK 
+        .. "?t=" .. tostring(os.time()) 
+        .. "&r=" .. tostring(math.random(1000, 9999))
+end
+
+local cachedLogoUrl = nil
+local function GetCachedLogoUrl()
+    if not cachedLogoUrl then
+        cachedLogoUrl = GetZryxLogoUrl()
+    end
+    return cachedLogoUrl
+end
+
+local function GetPlayerHeadshotUrl(userId)
+    local HttpService = game:GetService("HttpService")
+    local cacheBuster = "?t=" .. tostring(os.time()) 
+        .. "&r=" .. tostring(math.random(10000, 99999))
+    
+    -- Endpoint 1: avatar-headshot (paling reliable)
+    local ok1, res1 = pcall(function()
+        return game:HttpGet(
+            "https://thumbnails.roblox.com/v1/users/avatar-headshot"
+            .. "?userIds=" .. userId
+            .. "&size=100x100&format=Png&isCircular=false"
+        )
+    end)
+    if ok1 and res1 then
+        local ok, data = pcall(function()
+            return HttpService:JSONDecode(res1)
+        end)
+        if ok and data and data.data and data.data[1] 
+            and data.data[1].state == "Completed" 
+            and data.data[1].imageUrl then
+            return data.data[1].imageUrl .. cacheBuster
+        end
+    end
+    
+    -- Endpoint 2: alternate path
+    local ok2, res2 = pcall(function()
+        return game:HttpGet(
+            "https://thumbnails.roblox.com/v1/avatar-headshot"
+            .. "?userIds=" .. userId
+            .. "&size=100x100&format=Png&isCircular=false"
+        )
+    end)
+    if ok2 and res2 then
+        local ok, data = pcall(function()
+            return HttpService:JSONDecode(res2)
+        end)
+        if ok and data and data.data and data.data[1] and data.data[1].imageUrl then
+            return data.data[1].imageUrl .. cacheBuster
+        end
+    end
+    
+    -- Fallback: URL langsung
+    return "https://www.roblox.com/headshot-thumbnail/image?userId="
+        .. userId
+        .. "&width=150&height=150&format=png"
+        .. cacheBuster
+end
+
+local cachedAvatarUrls = {}
+local function GetCachedAvatarUrl(userId)
+    if not cachedAvatarUrls[userId] then
+        cachedAvatarUrls[userId] = GetPlayerHeadshotUrl(userId)
+    end
+    return cachedAvatarUrls[userId]
+end
+
+--==================================================
+-- WEBHOOK ATTRIBUTE PERSISTENCE
+--==================================================
+local ATTRIBUTE_FILE = "VD_AutoFarm_Attributes.json"
+local PreviousAttributes = nil
+
+local function LoadPreviousAttributes()
+    if type(isfile) ~= "function" or type(readfile) ~= "function" then
+        return nil
+    end
+    if not isfile(ATTRIBUTE_FILE) then
+        return nil
+    end
+    local HttpService = game:GetService("HttpService")
+    local success, data = pcall(function()
+        return HttpService:JSONDecode(readfile(ATTRIBUTE_FILE))
+    end)
+    if not success or type(data) ~= "table" then
+        return nil
+    end
+    local LocalPlayer = game:GetService("Players").LocalPlayer
+    if tonumber(data.UserId) ~= LocalPlayer.UserId then
+        return nil
+    end
+    return {
+        KillerChance = tonumber(data.KillerChance),
+        EXP = tonumber(data.EXP),
+        Screws = tonumber(data.Screws),
+        Gears = tonumber(data.Gears)
+    }
+end
+
+local function SavePreviousAttributes(attributes)
+    if type(writefile) ~= "function" then
+        return false
+    end
+    local HttpService = game:GetService("HttpService")
+    local LocalPlayer = game:GetService("Players").LocalPlayer
+    local data = {
+        UserId = LocalPlayer.UserId,
+        KillerChance = attributes.KillerChance,
+        EXP = attributes.EXP,
+        Screws = attributes.Screws,
+        Gears = attributes.Gears,
+        UpdatedAt = os.time()
+    }
+    return pcall(function()
+        writefile(ATTRIBUTE_FILE, HttpService:JSONEncode(data))
+    end)
+end
+
+PreviousAttributes = LoadPreviousAttributes()
+
+local function GetAttributeDelta(currentValue, previousValue)
+    currentValue = tonumber(currentValue) or 0
+    if previousValue == nil then return 0 end
+    return currentValue - (tonumber(previousValue) or 0)
+end
+
+--==================================================
+-- WEBHOOK SYSTEM (DENGAN LOGO & AVATAR HEADSHOT)
+--==================================================
+local function SendDiscordWebhook(customTitle, customDesc, forceSend)
+    if not forceSend and (not Toggles.EnableWebhook or not Toggles.EnableWebhook.Value) then
+        return false, "Webhook Disabled"
+    end
+    
+    local webhookUrl = Options.WebhookLink and Options.WebhookLink.Value or ""
+    if not webhookUrl or webhookUrl == "" 
+        or not string.find(webhookUrl, "discord.com/api/webhooks") then
+        return false, "Invalid Webhook URL"
+    end
+    
+    local HttpService = game:GetService("HttpService")
+    local LocalPlayer = game:GetService("Players").LocalPlayer
+    local displayName = LocalPlayer.DisplayName
+    local userId = LocalPlayer.UserId
+    local serverId = game.JobId ~= "" and game.JobId or "Singleplayer"
+    local profileUrl = "https://www.roblox.com/users/" .. userId .. "/profile"
+    
+    local attrs = LocalPlayer:GetAttributes()
+    local KillerChance = tonumber(attrs.KillerChance) or 0
+    local EXP = tonumber(attrs.EXP) or 0
+    local Screws = tonumber(attrs.Screws) or 0
+    local Gears = tonumber(attrs.Gears) or 0
+    local Level = tonumber(attrs.Level) or 0
+    
+    if not PreviousAttributes then
+        PreviousAttributes = {
+            KillerChance = KillerChance,
+            EXP = EXP,
+            Screws = Screws,
+            Gears = Gears
+        }
+    end
+    
+    local logoUrl = GetCachedLogoUrl()
+    local avatarUrl = GetCachedAvatarUrl(userId)
+    
+    local payload = {
+        ["username"] = "Zryx Auto Farm",
+        ["avatar_url"] = logoUrl,
+        ["embeds"] = {{
+            ["author"] = {
+                ["name"] = string.format("%s · Level %d", displayName, Level),
+                ["url"] = profileUrl,
+                ["icon_url"] = avatarUrl
+            },
+            ["title"] = customTitle or "Zryx Auto Farm",
+            ["description"] = customDesc or "Auto Farm Session",
+            ["url"] = profileUrl,
+            ["color"] = 2733558,
+            ["fields"] = {
+                {
+                    ["name"] = "💀 SIN",
+                    ["value"] = string.format(
+                        "%s (**%+d**)",
+                        tostring(KillerChance),
+                        GetAttributeDelta(KillerChance, PreviousAttributes.KillerChance)
+                    ),
+                    ["inline"] = false
+                },
+                {
+                    ["name"] = "🧪 EXP",
+                    ["value"] = string.format(
+                        "%s (**%+d**)",
+                        tostring(EXP),
+                        GetAttributeDelta(EXP, PreviousAttributes.EXP)
+                    ),
+                    ["inline"] = false
+                },
+                {
+                    ["name"] = "🔩 Screws",
+                    ["value"] = string.format(
+                        "%s (**%+d**)",
+                        tostring(Screws),
+                        GetAttributeDelta(Screws, PreviousAttributes.Screws)
+                    ),
+                    ["inline"] = false
+                },
+                {
+                    ["name"] = "⚙️ Gears",
+                    ["value"] = string.format(
+                        "%s (**%+d**)",
+                        tostring(Gears),
+                        GetAttributeDelta(Gears, PreviousAttributes.Gears)
+                    ),
+                    ["inline"] = false
+                },
+                {
+                    ["name"] = "🆔 Server ID",
+                    ["value"] = string.format("```\n%s\n```", serverId),
+                    ["inline"] = false
+                }
+            },
+            ["thumbnail"] = {["url"] = logoUrl},
+            ["footer"] = {
+                ["text"] = string.format("Zryx Auto Farm · %s", GetExecutorName()),
+                ["icon_url"] = logoUrl
+            },
+            ["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%S.000Z")
+        }}
+    }
+    
+    local response = safeRequest({
+        Url = webhookUrl,
+        Method = "POST",
+        Headers = {["Content-Type"] = "application/json"},
+        Body = HttpService:JSONEncode(payload)
+    })
+    
+    if response and (response.StatusCode == 200 or response.StatusCode == 204) then
+        local newSnapshot = {
+            KillerChance = KillerChance,
+            EXP = EXP,
+            Screws = Screws,
+            Gears = Gears
+        }
+        PreviousAttributes = newSnapshot
+        SavePreviousAttributes(newSnapshot)
+        return true, "Webhook successfully sent!"
+    end
+    
+    return false, "Failed Status: " .. tostring(response and response.StatusCode or "No Response")
+end
+
+--==================================================
+-- BEAT GAME SURVIVOR (AUTO FARM)
+--==================================================
+local function BeatGameSurvivor()
+    if not Toggles.EnableAutoFarm.Value then
+        BeatState.BeatSurvivorDone = false
+        BeatState.LastFinishPos = nil
+        return
+    end
+    if GetRole() ~= "Survivor" then return end
+    
+    local root = GetCharacterRoot()
+    if not root then return end
+    
+    local map = game:GetService("Workspace"):FindFirstChild("Map")
+    if not map then return end
+    
+    local exitPos = nil
+    pcall(function()
+        if map:FindFirstChild("RooftopHitbox") or map:FindFirstChild("Rooftop") then
+            exitPos = Vector3.new(3098.16, 454.04, -4918.74)
+            return
+        end
+        if map:FindFirstChild("HooksMeat") then
+            exitPos = Vector3.new(1546.12, 152.21, -796.72)
+            return
+        end
+        if map:FindFirstChild("churchbell") then
+            exitPos = Vector3.new(760.98, -20.14, -78.48)
+            return
+        end
+        
+        local finish = map:FindFirstChild("Finishline")
+            or map:FindFirstChild("FinishLine")
+            or map:FindFirstChild("Fininshline")
+        if finish then
+            if finish:IsA("BasePart") then
+                exitPos = finish.Position
+            elseif finish:IsA("Model") then
+                local part = finish:FindFirstChildWhichIsA("BasePart")
+                if part then exitPos = part.Position end
+            end
+            return
+        end
+        
+        for _, obj in ipairs(map:GetDescendants()) do
+            if obj.Name:lower():find("finish") then
+                if obj:IsA("BasePart") then
+                    exitPos = obj.Position
+                    break
+                elseif obj:IsA("Model") then
+                    local part = obj:FindFirstChildWhichIsA("BasePart")
+                    if part then
+                        exitPos = part.Position
+                        break
+                    end
+                end
+            end
+        end
+        
+        if not exitPos then
+            for _, obj in ipairs(map:GetDescendants()) do
+                if obj:IsA("MeshPart") and obj.Material == Enum.Material.Limestone then
+                    exitPos = Vector3.new(-947.90, 152.12, -7579.52)
+                    break
+                end
+            end
+        end
+        
+        if not exitPos then
+            for _, obj in ipairs(map:GetDescendants()) do
+                if obj:IsA("MeshPart") and obj.Material == Enum.Material.Leather then
+                    exitPos = Vector3.new(1546.12, 152.21, -796.72)
+                    break
+                end
+            end
+        end
+    end)
+    
+    if not exitPos then return end
+    
+    if BeatState.LastFinishPos then
+        local dist = (exitPos - BeatState.LastFinishPos).Magnitude
+        if dist > 50 then
+            BeatState.BeatSurvivorDone = false
+        end
+    end
+    
+    if BeatState.BeatSurvivorDone then return end
+    
+    task.wait(6)
+    local currentRoot = GetCharacterRoot()
+    if not currentRoot then return end
+    
+    currentRoot.CFrame = CFrame.new(exitPos + Vector3.new(0, 3, 0))
+    BeatState.BeatSurvivorDone = true
+    BeatState.LastFinishPos = exitPos
+    
+    task.wait(5)
+    SendDiscordWebhook()
+    
+    -- Trigger hop setelah escape
+    if Toggles.ServerHop and Toggles.ServerHop.Value then
+        HopAfterBeatTriggered = true
+    end
+end
+
+--==================================================
+-- SERVER HOP SYSTEM
+--==================================================
+local IGNORE_FILE = "ServerHop.txt"
+local HOUR = 3600
+local HttpService = game:GetService("HttpService")
+local TeleportService = game:GetService("TeleportService")
+local Players = game:GetService("Players")
+local IgnoredServers = {}
+
+local RATE_LIMIT_WAIT = 8
+local GENERAL_ERROR_WAIT = 3
+
+local function GetIgnoredServers()
+    if not isfile(IGNORE_FILE) then return {} end
+    local list = {}
+    local now = os.time()
+    for _, line in ipairs(readfile(IGNORE_FILE):split("\n")) do
+        local serverId, timestamp = line:match("([^|]+)|?(%d*)")
+        timestamp = tonumber(timestamp) or 0
+        if serverId and serverId ~= "" and now - timestamp < HOUR then
+            list[serverId] = timestamp
+        end
+    end
+    return list
+end
+
+local function UpdateIgnoredServers(list)
+    local lines = {}
+    for serverId, timestamp in pairs(list) do
+        table.insert(lines, serverId .. "|" .. timestamp)
+    end
+    writefile(IGNORE_FILE, table.concat(lines, "\n"))
+end
+
+IgnoredServers = GetIgnoredServers()
+
+-- Round detection
+local IsRound = false
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Remotes = ReplicatedStorage:WaitForChild("Remotes")
+local StatusUpdateEvent = Remotes:WaitForChild("StatusUpdateEvent")
+local TimeUpdateEvent = Remotes:WaitForChild("TimeUpdateEvent")
+
+StatusUpdateEvent.OnClientEvent:Connect(function(Status)
+    if Status == "WaitingForPlayers" 
+        or Status == "IntermissionStarting" 
+        or Status == "Intermission" then
+        IsRound = false
+        BeatState.BeatSurvivorDone = false
+    end
+end)
+
+TimeUpdateEvent.OnClientEvent:Connect(function(Status)
+    if Status == "Round" then
+        IsRound = true
+    end
+end)
+
+-- Persistent hop (tidak menyerah sampai berhasil)
+local function PersistentServerHop()
+    local totalAttempts = 0
+    local cursor = ""
+
+    while Toggles.ServerHop.Value and not Library.Unloaded do
+        totalAttempts = totalAttempts + 1
+        
+        local success, result = pcall(function()
+            return HttpService:JSONDecode(game:HttpGet(
+                "https://games.roblox.com/v1/games/"
+                .. game.PlaceId
+                .. "/servers/Public?limit=100"
+                .. "&sortOrder=Asc"
+                .. "&excludeFullGames=true"
+                .. "&cursor=" .. cursor
+            ))
+        end)
+
+        if not success or not result or not result.data then
+            task.wait(5)
+            cursor = ""
+            continue
+        end
+
+        local foundTarget = false
+        for _, server in ipairs(result.data) do
+            if not Toggles.ServerHop.Value or Library.Unloaded then return end
+            
+            if server.id
+                and server.id ~= game.JobId
+                and server.playing
+                and server.playing >= 1
+                and server.playing <= 3
+                and not IgnoredServers[server.id]
+            then
+                foundTarget = true
+                local teleportSuccess = false
+                local attemptOnThisServer = 0
+
+                while not teleportSuccess 
+                    and Toggles.ServerHop.Value 
+                    and not Library.Unloaded 
+                do
+                    attemptOnThisServer = attemptOnThisServer + 1
+                    
+                    local teleportOk, teleportErr = pcall(function()
+                        TeleportService:TeleportToPlaceInstance(
+                            game.PlaceId,
+                            server.id,
+                            Players.LocalPlayer
+                        )
+                    end)
+
+                    if teleportOk then
+                        ZryxNotify({
+                            Title = "✅ HOP SUCCESS!",
+                            Description = string.format(
+                                "Teleported after %d attempts",
+                                totalAttempts
+                            ),
+                            Time = 3
+                        })
+                        return true
+                    else
+                        local errMsg = tostring(teleportErr)
+                        
+                        if string.find(errMsg, "771") 
+                            or string.find(errMsg, "Server is no longer available") then
+                            IgnoredServers[server.id] = os.time() + 300
+                            UpdateIgnoredServers(IgnoredServers)
+                            break
+                        elseif string.find(errMsg, "772") 
+                            or string.find(errMsg, "TooManyRequests") then
+                            task.wait(RATE_LIMIT_WAIT)
+                        elseif string.find(errMsg:lower(), "full") 
+                            or string.find(errMsg, "751") then
+                            IgnoredServers[server.id] = os.time() + 600
+                            UpdateIgnoredServers(IgnoredServers)
+                            break
+                        else
+                            task.wait(GENERAL_ERROR_WAIT)
+                        end
+                    end
+                end
+                task.wait(1)
+            end
+        end
+
+        if not foundTarget then
+            cursor = result.nextPageCursor or ""
+            if cursor == "" then
+                task.wait(5)
+                cursor = ""
+                local now = os.time()
+                for id, ts in pairs(IgnoredServers) do
+                    if now - ts > HOUR then
+                        IgnoredServers[id] = nil
+                    end
+                end
+                UpdateIgnoredServers(IgnoredServers)
+            else
+                task.wait(0.5)
+            end
+        else
+            cursor = ""
+        end
+        task.wait(1)
+    end
+end
+
+--==================================================
+-- 🎯 SMART SERVER HOP (MAIN LOGIC)
+-- 
+-- 1. Habis Escape       → HOP + NOTIF (jika aktif)
+-- 2. Sendirian          → HOP + NOTIF (jika aktif)
+-- 3. Round + Survivor   → DIAM (auto farm)
+-- 4. Round + Killer     → HOP + NOTIF (jika aktif)
+-- 5. Round + Spectator  → HOP TANPA NOTIF (silent)
+-- 6. Tidak ada round    → DIAM
+--==================================================
+local function ServerHop()
+    while Toggles.ServerHop.Value and not Library.Unloaded do
+        local playerCount = #Players:GetPlayers()
+        local role = GetRole()
+
+        -- 1. Habis Escape → HOP + NOTIF
+        if HopAfterBeatTriggered then
+            HopAfterBeatTriggered = false
+            ZryxNotify({
+                Title = "🏁 Escape Done!",
+                Description = "Hopping to new server NOW...",
+                Time = 2
+            })
+            PersistentServerHop()
+            task.wait(3)
+            continue
+        end
+
+        -- 2. Sendirian → HOP + NOTIF
+        if playerCount <= 1 then
+            ZryxNotify({
+                Title = "👤 Alone!",
+                Description = "Hopping immediately...",
+                Time = 2
+            })
+            PersistentServerHop()
+            task.wait(3)
+            continue
+        end
+
+        -- 3. Round + Survivor → DIAM
+        if IsRound and role == "Survivor" then
+            task.wait(1)
+            continue
+        end
+
+        -- 4. Round + Killer → HOP + NOTIF
+        if IsRound and role == "Killer" then
+            ZryxNotify({
+                Title = "🔪 Killer in Round",
+                Description = "Hopping now...",
+                Time = 2
+            })
+            PersistentServerHop()
+            task.wait(3)
+            continue
+        end
+
+        -- 5. Round + Spectator → HOP SILENT (tanpa notif)
+        if IsRound and role == "Spectator" then
+            PersistentServerHop()
+            task.wait(3)
+            continue
+        end
+
+        -- 6. Tidak ada round / Lobby → DIAM
+        task.wait(1)
+    end
+end
+
+--==================================================
+-- UI CONTROLS - AUTO FARM TAB
+--==================================================
+AutoFarmGroup:AddToggle("EnableAutoFarm", {
+    Text = "Enable Auto Farm",
+    Tooltip = "Teleport Survivor to the detected finish location",
+    Default = false,
+})
+
+AutoFarmGroup:AddToggle("ServerHop", {
+    Text = "Server Hop (Smart)",
+    Tooltip = "Alone/Killer/Spec=Hop | Survivor=Auto Farm | No Round=Wait",
+    Default = false,
+    Callback = function(Value)
+        if Value then
+            task.spawn(function()
+                ServerHop()
+            end)
+        end
+    end,
+})
+
+--==================================================
+-- AUTO EXECUTE
+--==================================================
+local LOADER_URL = "https://raw.githubusercontent.com/zaerrruwww/zaerytta/refs/heads/main/zaer.lua"
+local AutoExecuteQueued = false
+
+local function QueueAutoExecute()
+    if AutoExecuteQueued then return end
+    if not Toggles.AutoExecute.Value then return end
+    
+    if type(queue_on_teleport) ~= "function" then
+        ZryxNotify({
+            Title = "Auto Execute",
+            Description = "queue_on_teleport is not available.",
+            Time = 5,
+        })
+        return
+    end
+    
+    local queued = string.format([[loadstring(game:HttpGet(%q))()]], LOADER_URL)
+    local success, err = pcall(function()
+        queue_on_teleport(queued)
+    end)
+    
+    if success then
+        AutoExecuteQueued = true
+        ZryxNotify({
+            Title = "Auto Execute",
+            Description = "Script queued for next teleport.",
+            Time = 3,
+        })
+    else
+        ZryxNotify({
+            Title = "Auto Execute",
+            Description = "Failed: " .. tostring(err),
+            Time = 5,
+        })
+    end
+end
+
+AutoFarmGroup:AddToggle("AutoExecute", {
+    Text = "Auto Execute",
+    Tooltip = "Execute zaer.lua after server hop",
+    Default = false,
+    Callback = function(Value)
+        if Value then
+            QueueAutoExecute()
+        else
+            AutoExecuteQueued = false
+        end
+    end,
+})
+
+--==================================================
+-- WEBHOOK UI
+--==================================================
+WebhookGroup:AddToggle("EnableWebhook", {
+    Text = "Enable Webhook",
+    Tooltip = "Enable webhook notifications with Zryx branding",
+    Default = false,
+})
+
+WebhookGroup:AddInput("WebhookLink", {
+    Text = "Webhook Link",
+    Default = "",
+    Placeholder = "Enter webhook URL...",
+    Numeric = false,
+    Finished = false,
+    ClearTextOnFocus = false,
+})
+
+WebhookGroup:AddButton("Test Webhook", function()
+    -- Clear cache agar test fresh
+    cachedAvatarUrls = {}
+    cachedLogoUrl = nil
+    
+    local ok, msg = SendDiscordWebhook(
+        "🔔 Webhook Test",
+        "Configuration test from **Zryx Auto Farm**!",
+        true
+    )
+    
+    if ok then
+        ZryxNotify({
+            Title = "Webhook Success",
+            Description = "Test message sent!",
+            Icon = "check",
+            Time = 3
+        })
+    else
+        ZryxNotify({
+            Title = "Webhook Failed",
+            Description = msg,
+            Icon = "x",
+            Time = 4
+        })
+    end
+end)
+
+--==================================================
+-- SETTINGS TAB
+--==================================================
+local MenuGroup = Tabs.Settings:AddLeftGroupbox("Menu", "wrench")
+
+MenuGroup:AddToggle("KeybindMenuOpen", {
+    Default = Library.KeybindFrame.Visible,
+    Text = "Open Keybind Menu",
+    Callback = function(Value)
+        Library.KeybindFrame.Visible = Value
+    end,
+})
+
+MenuGroup:AddToggle("ShowCustomCursor", {
+    Text = "Custom Cursor",
+    Default = Library.ShowCustomCursor,
+    Callback = function(Value)
+        Library.ShowCustomCursor = Value
+    end,
+})
+
+-- 🔔 TOGGLE NOTIFIKASI (BARU!)
+MenuGroup:AddToggle("EnableNotifications", {
+    Text = "Enable Notifications",
+    Tooltip = "Toggle on/off semua notifikasi script",
+    Default = true,
+})
+
+MenuGroup:AddDropdown("NotificationSide", {
+    Values = {"Left", "Right"},
+    Default = "Right",
+    Text = "Notification Side",
+    Callback = function(Value)
+        Library:SetNotifySide(Value)
+    end,
+})
+
+MenuGroup:AddDropdown("DPIDropdown", {
+    Values = {"50%", "75%", "100%", "125%", "150%", "175%", "200%"},
+    Default = "100%",
+    Text = "DPI Scale",
+    Callback = function(Value)
+        local DPI = tonumber(Value:gsub("%%", ""))
+        Library:SetDPIScale(DPI)
+    end,
+})
+
+MenuGroup:AddSlider("UICornerSlider", {
+    Text = "Corner Radius",
+    Default = 14,
+    Min = 0,
+    Max = 25,
+    Rounding = 0,
+    Callback = function(Value)
+        Window:SetCornerRadius(Value)
+    end,
+})
+
+MenuGroup:AddDivider()
+
+MenuGroup:AddLabel("Menu bind")
+    :AddKeyPicker("MenuKeybind", {
+        Default = "RightShift",
+        NoUI = true,
+        Text = "Menu keybind",
+    })
+
+MenuGroup:AddButton("Unload", function()
+    Library:Unload()
+end)
+
+Library.ToggleKeybind = Options.MenuKeybind
+
+--==================================================
+-- SAVE / THEME MANAGER
+--==================================================
+ThemeManager:SetLibrary(Library)
+SaveManager:SetLibrary(Library)
+ThemeManager:SetFolder("AutoFarm")
+SaveManager:SetFolder("AutoFarm")
+SaveManager:SetSubFolder("Settings")
+SaveManager:IgnoreThemeSettings()
+SaveManager:SetIgnoreIndexes({"MenuKeybind"})
+SaveManager:BuildConfigSection(Tabs.Settings)
+ThemeManager:ApplyToTab(Tabs.Settings)
+SaveManager:LoadAutoloadConfig()
+
+--==================================================
+-- INITIALIZATION
+--==================================================
+QueueAutoExecute()
+
+-- Notif pembuka (selalu muncul, tidak peduli toggle)
+Library:Notify({
+    Title = "Zryx Auto Farm",
+    Description = "Script Loaded Successfully!",
+    Icon = "rbxassetid://" .. ZRYX_LOGO_ID,
+    Time = 4
+})
+
+--==================================================
+-- MAIN LOOP
+--==================================================
+task.spawn(function()
+    while not Library.Unloaded do
+        pcall(function()
+            BeatGameSurvivor()
+        end)
+        task.wait(1)
+    end
+end)
