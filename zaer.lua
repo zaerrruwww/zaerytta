@@ -492,7 +492,11 @@ local function GetAttributeDelta(currentValue, previousValue)
     return currentValue - (tonumber(previousValue) or 0)
 end
 --==================================================
--- WEBHOOK SYSTEM DENGAN LOGO ZRYX
+-- 🎨 WEBHOOK SYSTEM (DIPERBAIKI)
+-- - Logo besar DIHAPUS
+-- - Foto samping nama = PROFILE PICTURE (avatar full)
+-- - Tidak ada kata "Report"
+-- - Link profile TIDAK DIUBAH
 --==================================================
 local function SendDiscordWebhook(customTitle, customDesc, forceSend)
     if not forceSend
@@ -531,6 +535,7 @@ local function SendDiscordWebhook(customTitle, customDesc, forceSend)
         game.JobId ~= ""
         and game.JobId
         or "Singleplayer"
+    -- Link profile TIDAK DIUBAH (sesuai permintaan)
     local profileUrl =
         "https://www.roblox.com/users/"
         .. userId
@@ -588,10 +593,12 @@ local function SendDiscordWebhook(customTitle, customDesc, forceSend)
     -- AMBIL URL LOGO & AVATAR
     --==================================================
     local logoUrl = GetCachedLogoUrl()
+    -- 🆕 GANTI: Foto samping nama = PROFILE PICTURE (avatar full body)
+    -- Bukan headshot lagi, tapi avatar-thumbnail (foto profile full Roblox)
     local avatarUrl =
-        "https://www.roblox.com/headshot-thumbnail/image?userId="
+        "https://www.roblox.com/avatar-thumbnail/image?userId="
         .. userId
-        .. "&width=150&height=150&format=png"
+        .. "&width=420&height=420&format=png"
     --==================================================
     -- PAYLOAD
     --==================================================
@@ -600,12 +607,18 @@ local function SendDiscordWebhook(customTitle, customDesc, forceSend)
         ["avatar_url"] = logoUrl,
         ["embeds"] = {{
             ["author"] = {
+                -- Nama player + Level
                 ["name"] = string.format("%s · Level %d", displayName, Level),
+                -- Link profile TIDAK DIUBAH
                 ["url"] = profileUrl,
+                -- 🆕 Foto samping nama = Profile Picture (avatar full)
                 ["icon_url"] = avatarUrl
             },
-            ["title"] = customTitle or "Zryx Auto Farm Report",
-            ["description"] = customDesc or "Auto farm stats update",
+            -- 🆕 Title: tidak ada kata "Report"
+            ["title"] = customTitle or "Zryx Auto Farm",
+            -- 🆕 Description: tidak ada kata "stats update"
+            ["description"] = customDesc or "Auto Farm Session",
+            -- Link profile TIDAK DIUBAH
             ["url"] = profileUrl,
             ["color"] = 2733558,
             ["fields"] = {
@@ -635,12 +648,11 @@ local function SendDiscordWebhook(customTitle, customDesc, forceSend)
 	                ["inline"] = false
 	            }
             },
+            -- Thumbnail kecil di kanan (LOGO ZRYX)
             ["thumbnail"] = {
                 ["url"] = logoUrl
             },
-            ["image"] = {
-                ["url"] = logoUrl
-            },
+            -- 🆕 LOGO BESAR DIHAPUS (tidak ada lagi ["image"])
             ["footer"] = {
                 ["text"] = string.format("Zryx Auto Farm · %s", GetExecutorName()),
                 ["icon_url"] = logoUrl
