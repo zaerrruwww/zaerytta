@@ -15,6 +15,15 @@ Library.ForceCheckbox = false
 Library.ShowToggleFrameInKeybinds = true
 
 --==================================================
+-- ZRYX CONFIGURATION
+--==================================================
+local ZRYX_LOGO_ID = 94272208451726
+-- Roblox Thumbnail API - Konversi asset ID ke URL publik untuk Discord
+local ZRYX_LOGO_URL = "https://www.roblox.com/asset-thumbnail/image?assetId=" 
+    .. ZRYX_LOGO_ID 
+    .. "&width=256&height=256&format=png"
+
+--==================================================
 -- ZRYX COLOR SCHEME
 --==================================================
 local ZRYX_COLORS = {
@@ -33,7 +42,7 @@ local ZRYX_COLORS = {
 local Window = Library:CreateWindow({
     Title = "Zryx Auto Farm",
     Footer = "version: 1.0.0",
-    Icon = 94272208451726,
+    Icon = ZRYX_LOGO_ID,
     NotifySide = "Right",
     ShowCustomCursor = true,
 })
@@ -69,7 +78,7 @@ local function ApplyZryxTheme()
         end
         if not targetGui then return end
 
-        local LOGO_ID = "rbxassetid://94272208451726"
+        local LOGO_ID = "rbxassetid://" .. ZRYX_LOGO_ID
 
         for _, obj in ipairs(targetGui:GetDescendants()) do
             if (obj:IsA("ImageLabel") or obj:IsA("ImageButton")) then
@@ -327,6 +336,35 @@ local function GetExecutorName()
         or (getexecutorname and getexecutorname())
         or "Unknown Executor"
 end
+
+--==================================================
+-- FUNGSI UNTUK MENDAPATKAN URL LOGO YANG VALID
+--==================================================
+local function GetZryxLogoUrl()
+    local success, result = pcall(function()
+        local url = "https://thumbnails.roblox.com/v1/assets?assetIds=" 
+            .. ZRYX_LOGO_ID 
+            .. "&size=256x256&format=Png&isCircular=false"
+        local response = game:HttpGet(url)
+        local HttpService = game:GetService("HttpService")
+        local data = HttpService:JSONDecode(response)
+        if data and data.data and data.data[1] and data.data[1].imageUrl then
+            return data.data[1].imageUrl
+        end
+        return nil
+    end)
+    if success and result then return result end
+    return ZRYX_LOGO_URL
+end
+
+local cachedLogoUrl = nil
+local function GetCachedLogoUrl()
+    if not cachedLogoUrl then
+        cachedLogoUrl = GetZryxLogoUrl()
+    end
+    return cachedLogoUrl
+end
+
 --==================================================
 -- WEBHOOK ATTRIBUTE STATE
 --==================================================
@@ -372,8 +410,9 @@ local function GetAttributeDelta(currentValue, previousValue)
     if previousValue == nil then return 0 end
     return currentValue - (tonumber(previousValue) or 0)
 end
+
 --==================================================
--- WEBHOOK SYSTEM
+-- WEBHOOK SYSTEM DENGAN LOGO ZRYX
 --==================================================
 local function SendDiscordWebhook(customTitle, customDesc, forceSend)
     if not forceSend and (not Toggles.EnableWebhook or not Toggles.EnableWebhook.Value) then
@@ -403,19 +442,36 @@ local function SendDiscordWebhook(customTitle, customDesc, forceSend)
     local EXPDelta = GetAttributeDelta(EXP, PreviousAttributes.EXP)
     local ScrewsDelta = GetAttributeDelta(Screws, PreviousAttributes.Screws)
     local GearsDelta = GetAttributeDelta(Gears, PreviousAttributes.Gears)
+    
+    local logoUrl = GetCachedLogoUrl()
+    local avatarUrl = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. userId .. "&width=150&height=150&format=png"
+    
     local payload = {
+        ["username"] = "Zryx Auto Farm",
+        ["avatar_url"] = logoUrl,
         ["embeds"] = {{
-            ["title"] = string.format("%s · Level %d", displayName, Level),
+            ["author"] = {
+                ["name"] = tostring(displayName) .. " · Level " .. Level,
+                ["url"] = profileUrl,
+                ["icon_url"] = avatarUrl
+            },
+            ["title"] = customTitle or "Zryx Auto Farm Report",
+            ["description"] = customDesc or "Auto farm stats update",
             ["url"] = profileUrl,
-            ["color"] = 3638942,
+            ["color"] = 2733558,
             ["fields"] = {
-                {["name"] = "💀 SIN", ["value"] = string.format("%s (**%+d**)", tostring(KillerChance), KillerChanceDelta), ["inline"] = false},
-                {["name"] = "🧪 EXP", ["value"] = string.format("%s (**%+d**)", tostring(EXP), EXPDelta), ["inline"] = false},
-                {["name"] = "🔩 Screws", ["value"] = string.format("%s (**%+d**)", tostring(Screws), ScrewsDelta), ["inline"] = false},
-                {["name"] = "⚙️ Gears", ["value"] = string.format("%s (**%+d**)", tostring(Gears), GearsDelta), ["inline"] = false},
+                {["name"] = "💀 SIN", ["value"] = string.format("%s (**%+d**)", tostring(KillerChance), KillerChanceDelta), ["inline"] = true},
+                {["name"] = "🧪 EXP", ["value"] = string.format("%s (**%+d**)", tostring(EXP), EXPDelta), ["inline"] = true},
+                {["name"] = "🔩 Screws", ["value"] = string.format("%s (**%+d**)", tostring(Screws), ScrewsDelta), ["inline"] = true},
+                {["name"] = "⚙️ Gears", ["value"] = string.format("%s (**%+d**)", tostring(Gears), GearsDelta), ["inline"] = true},
                 {["name"] = "🆔 Server ID", ["value"] = string.format("```\n%s\n```", serverId), ["inline"] = false}
             },
-            ["footer"] = {["text"] = string.format("Zryx Auto Farm · %s", GetExecutorName())},
+            ["thumbnail"] = {["url"] = logoUrl},
+            ["image"] = {["url"] = logoUrl},
+            ["footer"] = {
+                ["text"] = "Zryx Auto Farm · " .. GetExecutorName(),
+                ["icon_url"] = logoUrl
+            },
             ["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%S.000Z")
         }}
     }
@@ -434,6 +490,7 @@ local function SendDiscordWebhook(customTitle, customDesc, forceSend)
     local status = response and response.StatusCode or "No Response / Failed Request"
     return false, "Failed Status: " .. tostring(status)
 end
+
 --==================================================
 -- BEAT GAME SURVIVOR
 --==================================================
@@ -508,8 +565,9 @@ local function BeatGameSurvivor()
     task.wait(5)
     SendDiscordWebhook()
 end
+
 --==================================================
--- SERVER HOP (PERSISTENT RETRY - SAMPAI BERHASIL!)
+-- SERVER HOP (PERSISTENT RETRY)
 --==================================================
 local IGNORE_FILE = "ServerHop.txt"
 local HOUR = 3600
@@ -565,211 +623,87 @@ local function CanServerHop()
     return true
 end
 
--- =====================================================
--- PERSISTENT HOP - TIDAK AKAN BERHENTI SAMPAI BERHASIL!
--- =====================================================
 local function PersistentServerHop()
     local totalAttempts = 0
     local cursor = ""
-    local lastFailedServerId = nil
 
     while Toggles.ServerHop.Value and not Library.Unloaded do
         totalAttempts = totalAttempts + 1
-
-        -- =====================================================
-        -- AMBIL LIST SERVER DARI API
-        -- =====================================================
         local success, result = pcall(function()
-            local url = "https://games.roblox.com/v1/games/" 
-                .. game.PlaceId 
-                .. "/servers/Public?limit=100&sortOrder=Asc&excludeFullGames=true&cursor=" 
-                .. cursor
+            local url = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?limit=100&sortOrder=Asc&excludeFullGames=true&cursor=" .. cursor
             return HttpService:JSONDecode(game:HttpGet(url))
         end)
 
         if not success or not result or not result.data then
-            Library:Notify({
-                Title = "⚠️ API Error",
-                Description = "Failed to fetch server list. Retrying in 5s...",
-                Time = 3
-            })
             task.wait(5)
-            cursor = ""  -- Reset cursor, coba dari awal
+            cursor = ""
             continue
         end
 
         local serversList = result.data
         local foundTarget = false
 
-        -- =====================================================
-        -- CARI SERVER VALID
-        -- =====================================================
         for _, server in ipairs(serversList) do
             if not Toggles.ServerHop.Value or Library.Unloaded then return end
-
-            -- Filter server yang valid
-            if server.id
-                and server.id ~= game.JobId
-                and server.playing
-                and server.playing >= 1
-                and server.playing <= 3
-                and not IgnoredServers[server.id]
-            then
+            if server.id and server.id ~= game.JobId and server.playing and server.playing >= 1 and server.playing <= 3 and not IgnoredServers[server.id] then
                 foundTarget = true
-                lastFailedServerId = server.id
-
-                Library:Notify({
-                    Title = "🎯 Target Found",
-                    Description = string.format("Server #%d (%d players) - Attempt #%d", 
-                        totalAttempts, server.playing, totalAttempts),
-                    Time = 2
-                })
-
-                -- =====================================================
-                -- COBA TELEPORT DENGAN RETRY AGRESIF
-                -- =====================================================
                 local teleportSuccess = false
                 local attemptOnThisServer = 0
 
                 while not teleportSuccess and Toggles.ServerHop.Value and not Library.Unloaded do
                     attemptOnThisServer = attemptOnThisServer + 1
-
-                    Library:Notify({
-                        Title = "📡 Teleporting",
-                        Description = string.format("Server %s | Try %d", 
-                            tostring(server.id):sub(1, 8), attemptOnThisServer),
-                        Time = 2
-                    })
-
                     local teleportOk, teleportErr = pcall(function()
-                        TeleportService:TeleportToPlaceInstance(
-                            game.PlaceId,
-                            server.id,
-                            Players.LocalPlayer
-                        )
+                        TeleportService:TeleportToPlaceInstance(game.PlaceId, server.id, Players.LocalPlayer)
                     end)
 
                     if teleportOk then
-                        -- ✅ BERHASIL!
-                        Library:Notify({
-                            Title = "✅ HOP SUCCESS!",
-                            Description = string.format("Teleported after %d total attempts", totalAttempts),
-                            Time = 3
-                        })
+                        Library:Notify({ Title = "✅ HOP SUCCESS!", Description = string.format("Teleported after %d attempts", totalAttempts), Time = 3 })
                         return true
                     else
-                        -- ❌ GAGAL - ANALISIS ERROR
                         local errMsg = tostring(teleportErr)
-                        warn(string.format("[ServerHop] Attempt #%d failed: %s", totalAttempts, errMsg))
-
-                        -- 🔴 ERROR 771 - Server tidak tersedia
                         if string.find(errMsg, "771") or string.find(errMsg, "Server is no longer available") then
-                            Library:Notify({
-                                Title = "❌ Server Unavailable",
-                                Description = "Server died. Trying next server...",
-                                Time = 2
-                            })
                             IgnoredServers[server.id] = os.time() + 300
                             UpdateIgnoredServers(IgnoredServers)
-                            break  -- Keluar dari retry loop, cari server lain
-                        end
-
-                        -- 🔴 ERROR 772 - Rate Limit
-                        if string.find(errMsg, "772") or string.find(errMsg, "TooManyRequests") then
-                            Library:Notify({
-                                Title = "⏳ Rate Limited",
-                                Description = string.format("Cooldown %ds. Retrying same server...", RATE_LIMIT_WAIT),
-                                Time = 3
-                            })
+                            break
+                        elseif string.find(errMsg, "772") or string.find(errMsg, "TooManyRequests") then
                             task.wait(RATE_LIMIT_WAIT)
-                            -- Tetap retry server yang sama
-                        end
-
-                        -- 🔴 Server Full
-                        if string.find(errMsg:lower(), "full") or string.find(errMsg, "751") then
-                            Library:Notify({
-                                Title = "🚫 Server Full",
-                                Description = "Server is full. Trying next server...",
-                                Time = 2
-                            })
+                        elseif string.find(errMsg:lower(), "full") or string.find(errMsg, "751") then
                             IgnoredServers[server.id] = os.time() + 600
                             UpdateIgnoredServers(IgnoredServers)
-                            break  -- Cari server lain
-                        end
-
-                        -- 🔴 Teleport Failed (generic)
-                        if string.find(errMsg, "Teleport failed") or string.find(errMsg, "failed") then
-                            Library:Notify({
-                                Title = "⚠️ Teleport Failed",
-                                Description = string.format("Error. Retrying in %ds...", GENERAL_ERROR_WAIT),
-                                Time = 2
-                            })
-                            task.wait(GENERAL_ERROR_WAIT)
-                            -- Tetap retry server yang sama
-                        end
-
-                        -- 🔴 Unknown error - tetap retry
-                        if not (string.find(errMsg, "771") or string.find(errMsg, "772") 
-                                or string.find(errMsg:lower(), "full")) then
-                            Library:Notify({
-                                Title = "🔄 Unknown Error",
-                                Description = string.format("Retrying in %ds...", GENERAL_ERROR_WAIT),
-                                Time = 2
-                            })
+                            break
+                        else
                             task.wait(GENERAL_ERROR_WAIT)
                         end
                     end
                 end
-
-                -- Kalau keluar dari retry loop karena break (server unavailable/full),
-                -- lanjut ke server berikutnya di list
                 task.wait(1)
             end
         end
 
-        -- =====================================================
-        -- TIDAK ADA SERVER VALID DI PAGE INI
-        -- =====================================================
         if not foundTarget then
             cursor = result.nextPageCursor or ""
             if cursor == "" then
-                -- Sudah habis semua page, reset dan coba lagi
-                Library:Notify({
-                    Title = "🔄 No Servers Found",
-                    Description = string.format("All servers tried. Resetting in 5s... (Attempt #%d)", totalAttempts),
-                    Time = 3
-                })
                 task.wait(5)
                 cursor = ""
-                -- Clear ignore list yang expired
                 local now = os.time()
                 for id, ts in pairs(IgnoredServers) do
-                    if now - ts > HOUR then
-                        IgnoredServers[id] = nil
-                    end
+                    if now - ts > HOUR then IgnoredServers[id] = nil end
                 end
                 UpdateIgnoredServers(IgnoredServers)
             else
-                -- Lanjut ke page berikutnya
                 task.wait(0.5)
             end
         else
-            cursor = ""  -- Reset cursor setelah menemukan server
+            cursor = ""
         end
-
-        -- Cooldown singkat sebelum iterasi berikutnya
         task.wait(1)
     end
 end
 
--- =====================================================
--- SERVER HOP UTAMA DENGAN SOLO DETECTION
--- =====================================================
 local function ServerHop()
     local soloStartTime = nil
     local soloNotified = false
-
-    Library:Notify({ Title = "🚀 ServerHop   \n", Description = "Persistent hop mode activated!", Time = 2 })
+    Library:Notify({ Title = "🚀 ServerHop", Description = "Persistent hop mode activated!", Time = 2 })
 
     while Toggles.ServerHop.Value and not Library.Unloaded do
         if not CanServerHop() then
@@ -779,46 +713,23 @@ local function ServerHop()
             continue
         end
 
-        -- =====================================================
-        -- DETEKSI SENDIRIAN (SOLO DETECTION)
-        -- =====================================================
         local playerCount = #Players:GetPlayers()
-
         if playerCount <= 1 then
             if not soloStartTime then
                 soloStartTime = os.time()
                 soloNotified = false
-                Library:Notify({
-                    Title = "👤 Alone Detected",
-                    Description = "You're alone. Auto-hop in 15s...",
-                    Time = 3
-                })
+                Library:Notify({ Title = "👤 Alone Detected", Description = "Auto-hop in 15s...", Time = 3 })
             end
-
             local elapsed = os.time() - soloStartTime
-
             if not soloNotified and elapsed >= 5 then
-                Library:Notify({
-                    Title = "⏱️ Solo Timer",
-                    Description = string.format("Hopping in %ds...", SOLO_HOP_DELAY - elapsed),
-                    Time = 2
-                })
+                Library:Notify({ Title = "⏱️ Solo Timer", Description = string.format("Hopping in %ds...", SOLO_HOP_DELAY - elapsed), Time = 2 })
                 soloNotified = true
             end
-
             if elapsed >= SOLO_HOP_DELAY then
-                Library:Notify({
-                    Title = "🔄 Auto Solo Hop",
-                    Description = "Alone for 15s. Starting persistent hop...",
-                    Time = 3
-                })
-
+                Library:Notify({ Title = "🔄 Auto Solo Hop", Description = "Starting persistent hop...", Time = 3 })
                 soloStartTime = nil
                 soloNotified = false
-
-                -- PANGGIL PERSISTENT HOP - TIDAK AKAN BERHENTI SAMPAI BERHASIL
                 PersistentServerHop()
-
                 task.wait(3)
                 continue
             end
@@ -829,121 +740,56 @@ local function ServerHop()
             end
         end
 
-        -- =====================================================
-        -- LOGIKA SERVER HOP ASLI (untuk Spectator/Killer)
-        -- =====================================================
         local success, result = pcall(function()
             local url = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?limit=100&sortOrder=Asc&excludeFullGames=true"
             return HttpService:JSONDecode(game:HttpGet(url))
         end)
-
-        if not success or not result or not result.data then
-            task.wait(3)
-            continue
-        end
+        if not success or not result or not result.data then task.wait(3); continue end
 
         local serversList = result.data
         local foundValidServer = false
-
         for _, server in ipairs(serversList) do
             if not CanServerHop() then break end
-
-            if server.id
-                and server.id ~= game.JobId
-                and server.playing
-                and server.playing >= 1
-                and server.playing <= 3
-                and not IgnoredServers[server.id]
-            then
-                Library:Notify({
-                    Title = "🎯 Target Found   \n",
-                    Description = string.format("%d players", server.playing),
-                    Time = 2
-                })
-
+            if server.id and server.id ~= game.JobId and server.playing and server.playing >= 1 and server.playing <= 3 and not IgnoredServers[server.id] then
                 foundValidServer = true
                 IgnoredServers[server.id] = os.time()
                 UpdateIgnoredServers(IgnoredServers)
-
                 task.wait(3)
 
-                -- =====================================================
-                -- PERSISTENT RETRY PER SERVER
-                -- =====================================================
                 local teleportSuccess = false
                 local attempt = 0
-
                 while not teleportSuccess and Toggles.ServerHop.Value and not Library.Unloaded do
                     attempt = attempt + 1
-
-                    Library:Notify({
-                        Title = "📡 Teleporting",
-                        Description = string.format("Attempt %d", attempt),
-                        Time = 1.5
-                    })
-
                     local teleportOk, teleportErr = pcall(function()
-                        TeleportService:TeleportToPlaceInstance(
-                            game.PlaceId,
-                            server.id,
-                            Players.LocalPlayer
-                        )
+                        TeleportService:TeleportToPlaceInstance(game.PlaceId, server.id, Players.LocalPlayer)
                     end)
-
                     if teleportOk then
-                        Library:Notify({ Title = "✅ Hop Success!   \n", Description = "See you in new server.", Time = 1 })
+                        Library:Notify({ Title = "✅ Hop Success!", Description = "See you in new server.", Time = 1 })
                         return
                     else
                         local errMsg = tostring(teleportErr)
-                        warn(string.format("[ServerHop] Attempt #%d failed: %s", attempt, errMsg))
-
-                        -- 🔴 771 - Server unavailable, pindah server
                         if string.find(errMsg, "771") or string.find(errMsg, "Server is no longer available") then
-                            warn("[ServerHop] Server unavailable, trying next...")
                             IgnoredServers[server.id] = os.time() + 300
                             UpdateIgnoredServers(IgnoredServers)
                             break
-                        end
-
-                        -- 🔴 772 - Rate limit, tunggu lalu retry
-                        if string.find(errMsg, "772") or string.find(errMsg, "TooManyRequests") then
-                            Library:Notify({
-                                Title = "⏳ Rate Limited",
-                                Description = string.format("Cooldown %ds...", RATE_LIMIT_WAIT),
-                                Time = 3
-                            })
+                        elseif string.find(errMsg, "772") or string.find(errMsg, "TooManyRequests") then
                             task.wait(RATE_LIMIT_WAIT)
-                        -- 🔴 Server full
                         elseif string.find(errMsg:lower(), "full") or string.find(errMsg, "751") then
-                            Library:Notify({
-                                Title = "🚫 Server Full",
-                                Description = "Trying next server...",
-                                Time = 2
-                            })
                             IgnoredServers[server.id] = os.time() + 600
                             UpdateIgnoredServers(IgnoredServers)
                             break
                         else
-                            -- Generic error - retry
                             task.wait(GENERAL_ERROR_WAIT)
                         end
                     end
                 end
             end
         end
-
-        if not foundValidServer then
-            Library:Notify({
-                Title = "🔄 No Valid Server",
-                Description = "Retrying in 3s...",
-                Time = 2
-            })
-            task.wait(3)
-        end
-
+        if not foundValidServer then task.wait(3) end
         task.wait(1)
     end
 end
+
 --==================================================
 -- AUTO FARM TOGGLE
 --==================================================
@@ -954,14 +800,15 @@ AutoFarmGroup:AddToggle("EnableAutoFarm", {
 })
 AutoFarmGroup:AddToggle("ServerHop", {
     Text = "Server Hop (Persistent)",
-    Tooltip = "Hop until success. Auto-hop if alone for 15s. Never gives up!",
+    Tooltip = "Hop until success. Auto-hop if alone for 15s.",
     Default = false,
     Callback = function(Value)
         if Value then task.spawn(function() ServerHop() end) end
     end,
 })
+
 --==================================================
--- AUTO EXECUTE
+-- 🆕 AUTO EXECUTE (UPDATED URL)
 --==================================================
 local LOADER_URL = "https://raw.githubusercontent.com/zaerrruwww/zaerytta/refs/heads/main/zaer.lua"
 local AutoExecuteQueued = false
@@ -969,32 +816,33 @@ local function QueueAutoExecute()
     if AutoExecuteQueued then return end
     if not Toggles.AutoExecute.Value then return end
     if type(queue_on_teleport) ~= "function" then
-        Library:Notify({ Title = "Auto Execute   \n", Description = "queue_on_teleport is not available.", Time = 5 })
+        Library:Notify({ Title = "Auto Execute", Description = "queue_on_teleport is not available.", Time = 5 })
         return
     end
     local queued = string.format([[loadstring(game:HttpGet(%q))()]], LOADER_URL)
     local success, err = pcall(function() queue_on_teleport(queued) end)
     if success then
         AutoExecuteQueued = true
-        Library:Notify({ Title = "Auto Execute   \n", Description = "Script queued for the next teleport.", Time = 3 })
+        Library:Notify({ Title = "Auto Execute", Description = "Script queued for the next teleport.", Time = 3 })
     else
-        Library:Notify({ Title = "Auto Execute   \n", Description = "Failed to queue script: " .. tostring(err), Time = 5 })
+        Library:Notify({ Title = "Auto Execute", Description = "Failed to queue script: " .. tostring(err), Time = 5 })
     end
 end
 AutoFarmGroup:AddToggle("AutoExecute", {
     Text = "Auto Execute",
-    Tooltip = "Automatically execute the script after server hop",
+    Tooltip = "Automatically execute zaer.lua after server hop",
     Default = false,
     Callback = function(Value)
         if Value then QueueAutoExecute() else AutoExecuteQueued = false end
     end,
 })
+
 --==================================================
 -- WEBHOOK GROUPBOX SETUP
 --==================================================
 WebhookGroup:AddToggle("EnableWebhook", {
     Text = "Enable Webhook",
-    Tooltip = "Enable webhook notifications",
+    Tooltip = "Enable webhook notifications with Zryx logo",
     Default = false,
 })
 WebhookGroup:AddInput("WebhookLink", {
@@ -1006,13 +854,14 @@ WebhookGroup:AddInput("WebhookLink", {
     ClearTextOnFocus = false,
 })
 WebhookGroup:AddButton("Test Webhook", function()
-    local ok, msg = SendDiscordWebhook("🔔 Webhook Test", "Webhook configuration test from **Zryx Auto Farm** UI!", true)
+    local ok, msg = SendDiscordWebhook("🔔 Webhook Test", "Webhook configuration test from **Zryx Auto Farm** UI!\n\nLogo should appear in embed.", true)
     if ok then
-        Library:Notify({ Title = "Webhook Success   \n", Description = "Test message sent to Discord!", Icon = "check", Time = 4 })
+        Library:Notify({ Title = "Webhook Success", Description = "Test message sent with logo!", Icon = "check", Time = 4 })
     else
-        Library:Notify({ Title = "Webhook Failed   \n", Description = msg, Icon = "x", Time = 5 })
+        Library:Notify({ Title = "Webhook Failed", Description = msg, Icon = "x", Time = 5 })
     end
 end)
+
 --==================================================
 -- SETTINGS
 --==================================================
@@ -1059,6 +908,7 @@ MenuGroup:AddLabel("Menu bind"):AddKeyPicker("MenuKeybind", {
 })
 MenuGroup:AddButton("Unload", function() Library:Unload() end)
 Library.ToggleKeybind = Options.MenuKeybind
+
 --==================================================
 -- SAVE / THEME MANAGER
 --==================================================
@@ -1072,6 +922,7 @@ SaveManager:SetIgnoreIndexes({"MenuKeybind"})
 SaveManager:BuildConfigSection(Tabs.Settings)
 ThemeManager:ApplyToTab(Tabs.Settings)
 SaveManager:LoadAutoloadConfig()
+
 --==================================================
 -- INITIALIZE AUTO EXECUTE & EXECUTION NOTIFY
 --==================================================
@@ -1080,13 +931,12 @@ QueueAutoExecute()
 Library:Notify({
     Title = "Zryx Auto Farm",
     Description = "Script Loaded Successfully!",
-    Icon = "rbxassetid://94272208451726",
+    Icon = "rbxassetid://" .. ZRYX_LOGO_ID,
     Time = 5
 })
 
-task.spawn(function()
-    task.wait(3)
-end)
+task.spawn(function() task.wait(3) end)
+
 --==================================================
 -- MAIN LOOP
 --==================================================
