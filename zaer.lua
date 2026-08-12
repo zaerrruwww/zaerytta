@@ -1,10 +1,15 @@
 --==================================================
--- ZRYX AUTO FARM (OBSIDIAN UI + BEAT SURVIVOR)
+-- ZRYX AUTO FARM - FINAL VERSION
+-- Obsidian UI + Beat Survivor + Smart Server Hop
 --==================================================
+
 pcall(function()
     setfflag("TeleportService", "DisableTeleportErrors", "true")
 end)
 
+--==================================================
+-- LIBRARY LOADER
+--==================================================
 local repo = "https://raw.githubusercontent.com/deividcomsono/Obsidian/main/"
 local Library = loadstring(game:HttpGet(repo .. "Library.lua"))()
 local ThemeManager = loadstring(game:HttpGet(repo .. "addons/ThemeManager.lua"))()
@@ -15,16 +20,13 @@ Library.ForceCheckbox = false
 Library.ShowToggleFrameInKeybinds = true
 
 --==================================================
--- ZRYX CONFIGURATION
+-- CONFIGURATION
 --==================================================
 local ZRYX_LOGO_ID = 94272208451726
-local ZRYX_LOGO_FALLBACK = "https://www.roblox.com/asset-thumbnail/image?assetId="
-    .. ZRYX_LOGO_ID
+local ZRYX_LOGO_FALLBACK = "https://www.roblox.com/asset-thumbnail/image?assetId=" 
+    .. ZRYX_LOGO_ID 
     .. "&width=512&height=512&format=png"
 
---==================================================
--- ZRYX COLOR SCHEME
---==================================================
 local ZRYX_COLORS = {
     SkyBlue      = Color3.fromHex("29B6F6"),
     White        = Color3.fromHex("FFFFFF"),
@@ -36,7 +38,7 @@ local ZRYX_COLORS = {
 }
 
 --==================================================
--- WINDOW
+-- WINDOW CREATION
 --==================================================
 local Window = Library:CreateWindow({
     Title = "Zryx Auto Farm",
@@ -60,6 +62,7 @@ local function ApplyZryxTheme()
         local LocalPlayer = Players.LocalPlayer
         local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
+        -- Cari ScreenGui Obsidian
         local targetGui = nil
         for _, gui in ipairs(PlayerGui:GetChildren()) do
             if gui:IsA("ScreenGui") then
@@ -79,6 +82,7 @@ local function ApplyZryxTheme()
 
         local LOGO_ID = "rbxassetid://" .. ZRYX_LOGO_ID
 
+        -- Perbesar icon header
         for _, obj in ipairs(targetGui:GetDescendants()) do
             if (obj:IsA("ImageLabel") or obj:IsA("ImageButton")) then
                 local size = obj.AbsoluteSize
@@ -88,14 +92,13 @@ local function ApplyZryxTheme()
                         obj.Image = LOGO_ID
                         obj.ImageTransparency = 0
                         pcall(function() obj.ImageColor3 = Color3.new(1,1,1) end)
-                        pcall(function()
-                            obj.Size = UDim2.new(0, 48, 0, 48)
-                        end)
+                        pcall(function() obj.Size = UDim2.new(0, 48, 0, 48) end)
                     end
                 end
             end
         end
 
+        -- Apply warna ke semua elemen
         local function applyColorsRecursive(parent)
             for _, obj in ipairs(parent:GetChildren()) do
                 pcall(function()
@@ -105,7 +108,7 @@ local function ApplyZryxTheme()
                             obj.BackgroundColor3 = ZRYX_COLORS.SkyBlue
                         elseif name == "Content" or name == "Container" or name == "Body" or name == "InnerFrame" then
                             obj.BackgroundColor3 = ZRYX_COLORS.White
-                        elseif name:find("Groupbox") or name:find("GroupBox") or name:find("Group") then
+                        elseif name:find("Groupbox") or name:find("Group") then
                             obj.BackgroundColor3 = ZRYX_COLORS.White
                             pcall(function()
                                 obj.BorderSizePixel = 1
@@ -125,8 +128,6 @@ local function ApplyZryxTheme()
                             end)
                         elseif parentName:find("Header") or parentName:find("Title") then
                             obj.TextColor3 = ZRYX_COLORS.Magenta
-                        elseif parentName:find("Button") or parentName:find("Toggle") then
-                            obj.TextColor3 = ZRYX_COLORS.DarkBlueGray
                         else
                             obj.TextColor3 = ZRYX_COLORS.DarkBlueGray
                         end
@@ -174,21 +175,13 @@ local function ApplyZryxTheme()
                             end
                         end)
                     end
-
-                    if (obj:IsA("ImageLabel") or obj:IsA("ImageButton")) and not obj.Name:find("Logo") then
-                        local parentName = obj.Parent and obj.Parent.Name or ""
-                        if parentName:find("Button") or parentName:find("Toggle") or parentName:find("Tab") then
-                            pcall(function()
-                                obj.ImageColor3 = ZRYX_COLORS.DarkBlue
-                            end)
-                        end
-                    end
                 end)
                 applyColorsRecursive(obj)
             end
         end
         applyColorsRecursive(targetGui)
 
+        -- Cari main frame untuk logo besar
         local mainFrame = nil
         for _, obj in ipairs(targetGui:GetDescendants()) do
             if obj:IsA("Frame") and (obj.Name == "Main" or obj.Name == "Content" or obj.Name == "Container") then
@@ -209,12 +202,12 @@ local function ApplyZryxTheme()
             end
         end
 
+        -- Pasang logo besar di panel
         if mainFrame then
             pcall(function()
                 local old = mainFrame:FindFirstChild("ZryxLogoContainer")
                 if old then old:Destroy() end
             end)
-
             pcall(function()
                 mainFrame.BackgroundColor3 = ZRYX_COLORS.White
             end)
@@ -227,6 +220,7 @@ local function ApplyZryxTheme()
             logoFrame.ZIndex = 100
             logoFrame.Parent = mainFrame
 
+            -- Background logo (watermark)
             local bgLogo = Instance.new("ImageLabel")
             bgLogo.Name = "ZryxLogoBackground"
             bgLogo.Size = UDim2.new(0, 500, 0, 160)
@@ -237,11 +231,11 @@ local function ApplyZryxTheme()
             bgLogo.ScaleType = Enum.ScaleType.Fit
             bgLogo.ZIndex = 101
             bgLogo.Parent = logoFrame
-
             local bgLogoCorner = Instance.new("UICorner")
             bgLogoCorner.CornerRadius = UDim.new(0, 25)
             bgLogoCorner.Parent = bgLogo
 
+            -- Logo utama
             local mainLogo = Instance.new("ImageLabel")
             mainLogo.Name = "ZryxMainLogo"
             mainLogo.Size = UDim2.new(0, 420, 0, 135)
@@ -252,11 +246,11 @@ local function ApplyZryxTheme()
             mainLogo.ScaleType = Enum.ScaleType.Fit
             mainLogo.ZIndex = 102
             mainLogo.Parent = logoFrame
-
             local mainLogoCorner = Instance.new("UICorner")
             mainLogoCorner.CornerRadius = UDim.new(0, 22)
             mainLogoCorner.Parent = mainLogo
 
+            -- Teks AUTO FARM MENU
             local titleText = Instance.new("TextLabel")
             titleText.Name = "ZryxTitle"
             titleText.Size = UDim2.new(1, 0, 0, 30)
@@ -273,7 +267,6 @@ local function ApplyZryxTheme()
 end
 
 task.spawn(ApplyZryxTheme)
-
 pcall(function()
     task.spawn(function()
         while not Library.Unloaded do
@@ -284,7 +277,7 @@ pcall(function()
 end)
 
 --==================================================
--- TABS
+-- TABS & UI GROUPS
 --==================================================
 Window:SetSidebarWidth(40)
 local Tabs = {
@@ -294,13 +287,18 @@ local Tabs = {
 local AutoFarmGroup = Tabs.AutoFarm:AddLeftGroupbox("Auto Farm", "zap")
 local WebhookGroup = Tabs.AutoFarm:AddRightGroupbox("Webhook", "webhook")
 
+--==================================================
+-- STATE VARIABLES
+--==================================================
 local BeatState = {
     LastFinishPos = nil,
     BeatSurvivorDone = false,
 }
-
 local HopAfterBeatTriggered = false
 
+--==================================================
+-- HELPER FUNCTIONS
+--==================================================
 local function GetRole()
     local player = game:GetService("Players").LocalPlayer
     if not player.Team then return "Unknown" end
@@ -335,7 +333,18 @@ local function GetExecutorName()
 end
 
 --==================================================
--- FUNGSI LOGO WEBHOOK
+-- 🔔 SMART NOTIFY (HORMATI TOGGLE NOTIFIKASI)
+--==================================================
+local function ZryxNotify(config)
+    -- Cek toggle notifikasi (default ON kalau belum dibuat)
+    if Toggles.EnableNotifications and Toggles.EnableNotifications.Value == false then
+        return
+    end
+    Library:Notify(config)
+end
+
+--==================================================
+-- WEBHOOK ASSET URLs (LOGO & AVATAR)
 --==================================================
 local function GetZryxLogoUrl()
     local success, response = pcall(function()
@@ -351,10 +360,14 @@ local function GetZryxLogoUrl()
             return HttpService:JSONDecode(response)
         end)
         if ok and data and data.data and data.data[1] and data.data[1].imageUrl then
-            return data.data[1].imageUrl .. "?t=" .. tostring(os.time()) .. "&r=" .. tostring(math.random(1000, 9999))
+            return data.data[1].imageUrl 
+                .. "?t=" .. tostring(os.time()) 
+                .. "&r=" .. tostring(math.random(1000, 9999))
         end
     end
-    return ZRYX_LOGO_FALLBACK .. "&t=" .. tostring(os.time()) .. "&r=" .. tostring(math.random(1000, 9999))
+    return ZRYX_LOGO_FALLBACK 
+        .. "?t=" .. tostring(os.time()) 
+        .. "&r=" .. tostring(math.random(1000, 9999))
 end
 
 local cachedLogoUrl = nil
@@ -365,71 +378,52 @@ local function GetCachedLogoUrl()
     return cachedLogoUrl
 end
 
---==================================================
--- 🔥 FUNGSI AVATAR HEADSHOT (SUPER RELIABLE)
--- Multi-fallback dengan cache buster agresif
---==================================================
 local function GetPlayerHeadshotUrl(userId)
     local HttpService = game:GetService("HttpService")
-    local timestamp = tostring(os.time())
-    local random = tostring(math.random(10000, 99999))
-    local cacheBuster = "?t=" .. timestamp .. "&r=" .. random
+    local cacheBuster = "?t=" .. tostring(os.time()) 
+        .. "&r=" .. tostring(math.random(10000, 99999))
     
-    -- 🔥 ENDPOINT 1: thumbnails.roblox.com/v1/users/avatar-headshot
+    -- Endpoint 1: avatar-headshot (paling reliable)
     local ok1, res1 = pcall(function()
         return game:HttpGet(
             "https://thumbnails.roblox.com/v1/users/avatar-headshot"
             .. "?userIds=" .. userId
-            .. "&size=100x100"
-            .. "&format=Png"
-            .. "&isCircular=false"
+            .. "&size=100x100&format=Png&isCircular=false"
         )
     end)
     if ok1 and res1 then
-        local decodeOk, data = pcall(function()
+        local ok, data = pcall(function()
             return HttpService:JSONDecode(res1)
         end)
-        if decodeOk and data and data.data and data.data[1] then
-            local state = data.data[1].state
-            local imageUrl = data.data[1].imageUrl
-            if state == "Completed" and imageUrl and imageUrl ~= "" then
-                warn("[Zryx] ✅ Avatar URL (endpoint 1): " .. imageUrl)
-                return imageUrl .. cacheBuster
-            end
+        if ok and data and data.data and data.data[1] 
+            and data.data[1].state == "Completed" 
+            and data.data[1].imageUrl then
+            return data.data[1].imageUrl .. cacheBuster
         end
     end
     
-    -- 🔥 ENDPOINT 2: thumbnails.roblox.com/v1/avatar-headshot
+    -- Endpoint 2: alternate path
     local ok2, res2 = pcall(function()
         return game:HttpGet(
             "https://thumbnails.roblox.com/v1/avatar-headshot"
             .. "?userIds=" .. userId
-            .. "&size=100x100"
-            .. "&format=Png"
-            .. "&isCircular=false"
+            .. "&size=100x100&format=Png&isCircular=false"
         )
     end)
     if ok2 and res2 then
-        local decodeOk, data = pcall(function()
+        local ok, data = pcall(function()
             return HttpService:JSONDecode(res2)
         end)
-        if decodeOk and data and data.data and data.data[1] then
-            local imageUrl = data.data[1].imageUrl
-            if imageUrl and imageUrl ~= "" then
-                warn("[Zryx] ✅ Avatar URL (endpoint 2): " .. imageUrl)
-                return imageUrl .. cacheBuster
-            end
+        if ok and data and data.data and data.data[1] and data.data[1].imageUrl then
+            return data.data[1].imageUrl .. cacheBuster
         end
     end
     
-    -- 🔥 FALLBACK: URL format langsung Roblox
-    local fallbackUrl = "https://www.roblox.com/headshot-thumbnail/image?userId="
+    -- Fallback: URL langsung
+    return "https://www.roblox.com/headshot-thumbnail/image?userId="
         .. userId
         .. "&width=150&height=150&format=png"
         .. cacheBuster
-    
-    warn("[Zryx] ⚠️ Avatar URL (fallback): " .. fallbackUrl)
-    return fallbackUrl
 end
 
 local cachedAvatarUrls = {}
@@ -441,21 +435,29 @@ local function GetCachedAvatarUrl(userId)
 end
 
 --==================================================
--- WEBHOOK ATTRIBUTE STATE
+-- WEBHOOK ATTRIBUTE PERSISTENCE
 --==================================================
 local ATTRIBUTE_FILE = "VD_AutoFarm_Attributes.json"
 local PreviousAttributes = nil
 
 local function LoadPreviousAttributes()
-    if type(isfile) ~= "function" or type(readfile) ~= "function" then return nil end
-    if not isfile(ATTRIBUTE_FILE) then return nil end
+    if type(isfile) ~= "function" or type(readfile) ~= "function" then
+        return nil
+    end
+    if not isfile(ATTRIBUTE_FILE) then
+        return nil
+    end
     local HttpService = game:GetService("HttpService")
     local success, data = pcall(function()
         return HttpService:JSONDecode(readfile(ATTRIBUTE_FILE))
     end)
-    if not success or type(data) ~= "table" then return nil end
+    if not success or type(data) ~= "table" then
+        return nil
+    end
     local LocalPlayer = game:GetService("Players").LocalPlayer
-    if tonumber(data.UserId) ~= LocalPlayer.UserId then return nil end
+    if tonumber(data.UserId) ~= LocalPlayer.UserId then
+        return nil
+    end
     return {
         KillerChance = tonumber(data.KillerChance),
         EXP = tonumber(data.EXP),
@@ -465,7 +467,9 @@ local function LoadPreviousAttributes()
 end
 
 local function SavePreviousAttributes(attributes)
-    if type(writefile) ~= "function" then return false end
+    if type(writefile) ~= "function" then
+        return false
+    end
     local HttpService = game:GetService("HttpService")
     local LocalPlayer = game:GetService("Players").LocalPlayer
     local data = {
@@ -476,10 +480,9 @@ local function SavePreviousAttributes(attributes)
         Gears = attributes.Gears,
         UpdatedAt = os.time()
     }
-    local success = pcall(function()
+    return pcall(function()
         writefile(ATTRIBUTE_FILE, HttpService:JSONEncode(data))
     end)
-    return success
 end
 
 PreviousAttributes = LoadPreviousAttributes()
@@ -491,20 +494,21 @@ local function GetAttributeDelta(currentValue, previousValue)
 end
 
 --==================================================
--- WEBHOOK SYSTEM
+-- WEBHOOK SYSTEM (DENGAN LOGO & AVATAR HEADSHOT)
 --==================================================
 local function SendDiscordWebhook(customTitle, customDesc, forceSend)
     if not forceSend and (not Toggles.EnableWebhook or not Toggles.EnableWebhook.Value) then
         return false, "Webhook Disabled"
     end
+    
     local webhookUrl = Options.WebhookLink and Options.WebhookLink.Value or ""
-    if not webhookUrl or webhookUrl == "" or not string.find(webhookUrl, "discord.com/api/webhooks") then
+    if not webhookUrl or webhookUrl == "" 
+        or not string.find(webhookUrl, "discord.com/api/webhooks") then
         return false, "Invalid Webhook URL"
     end
     
     local HttpService = game:GetService("HttpService")
-    local Players = game:GetService("Players")
-    local LocalPlayer = Players.LocalPlayer
+    local LocalPlayer = game:GetService("Players").LocalPlayer
     local displayName = LocalPlayer.DisplayName
     local userId = LocalPlayer.UserId
     local serverId = game.JobId ~= "" and game.JobId or "Singleplayer"
@@ -518,19 +522,16 @@ local function SendDiscordWebhook(customTitle, customDesc, forceSend)
     local Level = tonumber(attrs.Level) or 0
     
     if not PreviousAttributes then
-        PreviousAttributes = { KillerChance = KillerChance, EXP = EXP, Screws = Screws, Gears = Gears }
+        PreviousAttributes = {
+            KillerChance = KillerChance,
+            EXP = EXP,
+            Screws = Screws,
+            Gears = Gears
+        }
     end
-    
-    local KillerChanceDelta = GetAttributeDelta(KillerChance, PreviousAttributes.KillerChance)
-    local EXPDelta = GetAttributeDelta(EXP, PreviousAttributes.EXP)
-    local ScrewsDelta = GetAttributeDelta(Screws, PreviousAttributes.Screws)
-    local GearsDelta = GetAttributeDelta(Gears, PreviousAttributes.Gears)
     
     local logoUrl = GetCachedLogoUrl()
     local avatarUrl = GetCachedAvatarUrl(userId)
-    
-    warn("[Zryx Webhook] 🖼️ Avatar URL: " .. tostring(avatarUrl))
-    warn("[Zryx Webhook] 🎨 Logo URL: " .. tostring(logoUrl))
     
     local payload = {
         ["username"] = "Zryx Auto Farm",
@@ -546,11 +547,47 @@ local function SendDiscordWebhook(customTitle, customDesc, forceSend)
             ["url"] = profileUrl,
             ["color"] = 2733558,
             ["fields"] = {
-                {["name"] = "💀 SIN", ["value"] = string.format("%s (**%+d**)", tostring(KillerChance), KillerChanceDelta), ["inline"] = false},
-                {["name"] = "🧪 EXP", ["value"] = string.format("%s (**%+d**)", tostring(EXP), EXPDelta), ["inline"] = false},
-                {["name"] = "🔩 Screws", ["value"] = string.format("%s (**%+d**)", tostring(Screws), ScrewsDelta), ["inline"] = false},
-                {["name"] = "⚙️ Gears", ["value"] = string.format("%s (**%+d**)", tostring(Gears), GearsDelta), ["inline"] = false},
-                {["name"] = "🆔 Server ID", ["value"] = string.format("```\n%s\n```", serverId), ["inline"] = false}
+                {
+                    ["name"] = "💀 SIN",
+                    ["value"] = string.format(
+                        "%s (**%+d**)",
+                        tostring(KillerChance),
+                        GetAttributeDelta(KillerChance, PreviousAttributes.KillerChance)
+                    ),
+                    ["inline"] = false
+                },
+                {
+                    ["name"] = "🧪 EXP",
+                    ["value"] = string.format(
+                        "%s (**%+d**)",
+                        tostring(EXP),
+                        GetAttributeDelta(EXP, PreviousAttributes.EXP)
+                    ),
+                    ["inline"] = false
+                },
+                {
+                    ["name"] = "🔩 Screws",
+                    ["value"] = string.format(
+                        "%s (**%+d**)",
+                        tostring(Screws),
+                        GetAttributeDelta(Screws, PreviousAttributes.Screws)
+                    ),
+                    ["inline"] = false
+                },
+                {
+                    ["name"] = "⚙️ Gears",
+                    ["value"] = string.format(
+                        "%s (**%+d**)",
+                        tostring(Gears),
+                        GetAttributeDelta(Gears, PreviousAttributes.Gears)
+                    ),
+                    ["inline"] = false
+                },
+                {
+                    ["name"] = "🆔 Server ID",
+                    ["value"] = string.format("```\n%s\n```", serverId),
+                    ["inline"] = false
+                }
             },
             ["thumbnail"] = {["url"] = logoUrl},
             ["footer"] = {
@@ -569,17 +606,22 @@ local function SendDiscordWebhook(customTitle, customDesc, forceSend)
     })
     
     if response and (response.StatusCode == 200 or response.StatusCode == 204) then
-        local newSnapshot = { KillerChance = KillerChance, EXP = EXP, Screws = Screws, Gears = Gears }
+        local newSnapshot = {
+            KillerChance = KillerChance,
+            EXP = EXP,
+            Screws = Screws,
+            Gears = Gears
+        }
         PreviousAttributes = newSnapshot
         SavePreviousAttributes(newSnapshot)
         return true, "Webhook successfully sent!"
     end
-    local status = response and response.StatusCode or "No Response / Failed Request"
-    return false, "Failed Status: " .. tostring(status)
+    
+    return false, "Failed Status: " .. tostring(response and response.StatusCode or "No Response")
 end
 
 --==================================================
--- BEAT GAME SURVIVOR
+-- BEAT GAME SURVIVOR (AUTO FARM)
 --==================================================
 local function BeatGameSurvivor()
     if not Toggles.EnableAutoFarm.Value then
@@ -588,82 +630,105 @@ local function BeatGameSurvivor()
         return
     end
     if GetRole() ~= "Survivor" then return end
+    
     local root = GetCharacterRoot()
     if not root then return end
-    local Workspace = game:GetService("Workspace")
-    local map = Workspace:FindFirstChild("Map")
+    
+    local map = game:GetService("Workspace"):FindFirstChild("Map")
     if not map then return end
+    
     local exitPos = nil
     pcall(function()
         if map:FindFirstChild("RooftopHitbox") or map:FindFirstChild("Rooftop") then
-            exitPos = Vector3.new(3098.16, 454.04, -4918.74); return
+            exitPos = Vector3.new(3098.16, 454.04, -4918.74)
+            return
         end
         if map:FindFirstChild("HooksMeat") then
-            exitPos = Vector3.new(1546.12, 152.21, -796.72); return
+            exitPos = Vector3.new(1546.12, 152.21, -796.72)
+            return
         end
         if map:FindFirstChild("churchbell") then
-            exitPos = Vector3.new(760.98, -20.14, -78.48); return
+            exitPos = Vector3.new(760.98, -20.14, -78.48)
+            return
         end
-        local finish = map:FindFirstChild("Finishline") or map:FindFirstChild("FinishLine") or map:FindFirstChild("Fininshline")
+        
+        local finish = map:FindFirstChild("Finishline")
+            or map:FindFirstChild("FinishLine")
+            or map:FindFirstChild("Fininshline")
         if finish then
-            if finish:IsA("BasePart") then exitPos = finish.Position
+            if finish:IsA("BasePart") then
+                exitPos = finish.Position
             elseif finish:IsA("Model") then
                 local part = finish:FindFirstChildWhichIsA("BasePart")
                 if part then exitPos = part.Position end
             end
             return
         end
+        
         for _, obj in ipairs(map:GetDescendants()) do
             if obj.Name:lower():find("finish") then
-                if obj:IsA("BasePart") then exitPos = obj.Position; break
+                if obj:IsA("BasePart") then
+                    exitPos = obj.Position
+                    break
                 elseif obj:IsA("Model") then
                     local part = obj:FindFirstChildWhichIsA("BasePart")
-                    if part then exitPos = part.Position; break end
+                    if part then
+                        exitPos = part.Position
+                        break
+                    end
                 end
             end
         end
+        
         if not exitPos then
             for _, obj in ipairs(map:GetDescendants()) do
                 if obj:IsA("MeshPart") and obj.Material == Enum.Material.Limestone then
-                    exitPos = Vector3.new(-947.90, 152.12, -7579.52); break
+                    exitPos = Vector3.new(-947.90, 152.12, -7579.52)
+                    break
                 end
             end
         end
+        
         if not exitPos then
             for _, obj in ipairs(map:GetDescendants()) do
                 if obj:IsA("MeshPart") and obj.Material == Enum.Material.Leather then
-                    exitPos = Vector3.new(1546.12, 152.21, -796.72); break
+                    exitPos = Vector3.new(1546.12, 152.21, -796.72)
+                    break
                 end
             end
         end
     end)
+    
     if not exitPos then return end
+    
     if BeatState.LastFinishPos then
         local dist = (exitPos - BeatState.LastFinishPos).Magnitude
-        if dist > 50 then BeatState.BeatSurvivorDone = false end
+        if dist > 50 then
+            BeatState.BeatSurvivorDone = false
+        end
     end
+    
     if BeatState.BeatSurvivorDone then return end
+    
     task.wait(6)
     local currentRoot = GetCharacterRoot()
     if not currentRoot then return end
+    
     currentRoot.CFrame = CFrame.new(exitPos + Vector3.new(0, 3, 0))
     BeatState.BeatSurvivorDone = true
     BeatState.LastFinishPos = exitPos
+    
     task.wait(5)
     SendDiscordWebhook()
     
+    -- Trigger hop setelah escape
     if Toggles.ServerHop and Toggles.ServerHop.Value then
         HopAfterBeatTriggered = true
-        Library:Notify({
-            Title = "🏁 Escape Complete!",
-            Description = "Preparing to hop server...",
-            Time = 2
-        })
     end
 end
 
 --==================================================
--- SERVER HOP
+-- SERVER HOP SYSTEM
 --==================================================
 local IGNORE_FILE = "ServerHop.txt"
 local HOUR = 3600
@@ -699,6 +764,7 @@ end
 
 IgnoredServers = GetIgnoredServers()
 
+-- Round detection
 local IsRound = false
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Remotes = ReplicatedStorage:WaitForChild("Remotes")
@@ -706,25 +772,37 @@ local StatusUpdateEvent = Remotes:WaitForChild("StatusUpdateEvent")
 local TimeUpdateEvent = Remotes:WaitForChild("TimeUpdateEvent")
 
 StatusUpdateEvent.OnClientEvent:Connect(function(Status)
-    if Status == "WaitingForPlayers" or Status == "IntermissionStarting" or Status == "Intermission" then
+    if Status == "WaitingForPlayers" 
+        or Status == "IntermissionStarting" 
+        or Status == "Intermission" then
         IsRound = false
         BeatState.BeatSurvivorDone = false
     end
 end)
 
 TimeUpdateEvent.OnClientEvent:Connect(function(Status)
-    if Status == "Round" then IsRound = true end
+    if Status == "Round" then
+        IsRound = true
+    end
 end)
 
+-- Persistent hop (tidak menyerah sampai berhasil)
 local function PersistentServerHop()
     local totalAttempts = 0
     local cursor = ""
 
     while Toggles.ServerHop.Value and not Library.Unloaded do
         totalAttempts = totalAttempts + 1
+        
         local success, result = pcall(function()
-            local url = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?limit=100&sortOrder=Asc&excludeFullGames=true&cursor=" .. cursor
-            return HttpService:JSONDecode(game:HttpGet(url))
+            return HttpService:JSONDecode(game:HttpGet(
+                "https://games.roblox.com/v1/games/"
+                .. game.PlaceId
+                .. "/servers/Public?limit=100"
+                .. "&sortOrder=Asc"
+                .. "&excludeFullGames=true"
+                .. "&cursor=" .. cursor
+            ))
         end)
 
         if not success or not result or not result.data then
@@ -733,34 +811,58 @@ local function PersistentServerHop()
             continue
         end
 
-        local serversList = result.data
         local foundTarget = false
-
-        for _, server in ipairs(serversList) do
+        for _, server in ipairs(result.data) do
             if not Toggles.ServerHop.Value or Library.Unloaded then return end
-            if server.id and server.id ~= game.JobId and server.playing and server.playing >= 1 and server.playing <= 3 and not IgnoredServers[server.id] then
+            
+            if server.id
+                and server.id ~= game.JobId
+                and server.playing
+                and server.playing >= 1
+                and server.playing <= 3
+                and not IgnoredServers[server.id]
+            then
                 foundTarget = true
                 local teleportSuccess = false
                 local attemptOnThisServer = 0
 
-                while not teleportSuccess and Toggles.ServerHop.Value and not Library.Unloaded do
+                while not teleportSuccess 
+                    and Toggles.ServerHop.Value 
+                    and not Library.Unloaded 
+                do
                     attemptOnThisServer = attemptOnThisServer + 1
+                    
                     local teleportOk, teleportErr = pcall(function()
-                        TeleportService:TeleportToPlaceInstance(game.PlaceId, server.id, Players.LocalPlayer)
+                        TeleportService:TeleportToPlaceInstance(
+                            game.PlaceId,
+                            server.id,
+                            Players.LocalPlayer
+                        )
                     end)
 
                     if teleportOk then
-                        Library:Notify({ Title = "✅ HOP SUCCESS!", Description = string.format("Teleported after %d attempts", totalAttempts), Time = 3 })
+                        ZryxNotify({
+                            Title = "✅ HOP SUCCESS!",
+                            Description = string.format(
+                                "Teleported after %d attempts",
+                                totalAttempts
+                            ),
+                            Time = 3
+                        })
                         return true
                     else
                         local errMsg = tostring(teleportErr)
-                        if string.find(errMsg, "771") or string.find(errMsg, "Server is no longer available") then
+                        
+                        if string.find(errMsg, "771") 
+                            or string.find(errMsg, "Server is no longer available") then
                             IgnoredServers[server.id] = os.time() + 300
                             UpdateIgnoredServers(IgnoredServers)
                             break
-                        elseif string.find(errMsg, "772") or string.find(errMsg, "TooManyRequests") then
+                        elseif string.find(errMsg, "772") 
+                            or string.find(errMsg, "TooManyRequests") then
                             task.wait(RATE_LIMIT_WAIT)
-                        elseif string.find(errMsg:lower(), "full") or string.find(errMsg, "751") then
+                        elseif string.find(errMsg:lower(), "full") 
+                            or string.find(errMsg, "751") then
                             IgnoredServers[server.id] = os.time() + 600
                             UpdateIgnoredServers(IgnoredServers)
                             break
@@ -780,7 +882,9 @@ local function PersistentServerHop()
                 cursor = ""
                 local now = os.time()
                 for id, ts in pairs(IgnoredServers) do
-                    if now - ts > HOUR then IgnoredServers[id] = nil end
+                    if now - ts > HOUR then
+                        IgnoredServers[id] = nil
+                    end
                 end
                 UpdateIgnoredServers(IgnoredServers)
             else
@@ -794,147 +898,304 @@ local function PersistentServerHop()
 end
 
 --==================================================
--- 🔥 SERVER HOP UTAMA (LOGIKA YANG BENAR!)
+-- 🎯 SMART SERVER HOP (MAIN LOGIC)
 -- 
--- ALUR:
--- 1. Habis escape → LANGSUNG hop
--- 2. Sendirian → LANGSUNG hop
--- 3. Round aktif + Spectator/Killer → HOP (gak bisa farming)
--- 4. Round aktif + Survivor → JANGAN hop (biarkan auto farm)
--- 5. Tidak ada round → JANGAN hop (tunggu sampai jadi Survivor)
+-- 1. Habis Escape       → HOP + NOTIF (jika aktif)
+-- 2. Sendirian          → HOP + NOTIF (jika aktif)
+-- 3. Round + Survivor   → DIAM (auto farm)
+-- 4. Round + Killer     → HOP + NOTIF (jika aktif)
+-- 5. Round + Spectator  → HOP TANPA NOTIF (silent)
+-- 6. Tidak ada round    → DIAM
 --==================================================
 local function ServerHop()
-    Library:Notify({ Title = "🚀 ServerHop", Description = "Smart hop mode activated!", Time = 2 })
-
     while Toggles.ServerHop.Value and not Library.Unloaded do
         local playerCount = #Players:GetPlayers()
         local role = GetRole()
 
-        -- =====================================================
-        -- CASE 1: HABIS ESCAPE → LANGSUNG HOP
-        -- =====================================================
+        -- 1. Habis Escape → HOP + NOTIF
         if HopAfterBeatTriggered then
             HopAfterBeatTriggered = false
-            Library:Notify({ Title = "🏁 Escape Done!", Description = "Hopping to new server NOW...", Time = 2 })
-            PersistentServerHop()
-            task.wait(3)
-            continue
-        end
-
-        -- =====================================================
-        -- CASE 2: SENDIRIAN → LANGSUNG HOP
-        -- =====================================================
-        if playerCount <= 1 then
-            Library:Notify({ Title = "👤 Alone!", Description = "Hopping immediately...", Time = 2 })
-            PersistentServerHop()
-            task.wait(3)
-            continue
-        end
-
-        -- =====================================================
-        -- CASE 3: ROUND AKTIF + SURVIVOR → JANGAN HOP
-        -- Biarkan auto farm jalan
-        -- =====================================================
-        if IsRound and role == "Survivor" then
-            task.wait(1)
-            continue
-        end
-
-        -- =====================================================
-        -- CASE 4: ROUND AKTIF + SPECTATOR/KILLER → HOP
-        -- Karena gak bisa farming, langsung hop
-        -- =====================================================
-        if IsRound and (role == "Spectator" or role == "Killer") then
-            Library:Notify({ 
-                Title = "🎭 " .. role .. " in Round", 
-                Description = "Can't farm, hopping now...", 
-                Time = 2 
+            ZryxNotify({
+                Title = "🏁 Escape Done!",
+                Description = "Hopping to new server NOW...",
+                Time = 2
             })
             PersistentServerHop()
             task.wait(3)
             continue
         end
 
-        -- =====================================================
-        -- CASE 5: TIDAK ADA ROUND (LOBBY/INTERMISSION)
-        -- JANGAN HOP! Tunggu sampai jadi Survivor
-        -- =====================================================
-        if not IsRound then
-            -- Tunggu diam-diam, cek tiap 1 detik
-            -- Kalau sudah jadi Survivor dan round mulai, biarkan auto farm
-            -- Kalau jadi Spectator/Killer dan round mulai, hop
+        -- 2. Sendirian → HOP + NOTIF
+        if playerCount <= 1 then
+            ZryxNotify({
+                Title = "👤 Alone!",
+                Description = "Hopping immediately...",
+                Time = 2
+            })
+            PersistentServerHop()
+            task.wait(3)
+            continue
+        end
+
+        -- 3. Round + Survivor → DIAM
+        if IsRound and role == "Survivor" then
             task.wait(1)
             continue
         end
 
-        -- Default: tunggu sebentar
+        -- 4. Round + Killer → HOP + NOTIF
+        if IsRound and role == "Killer" then
+            ZryxNotify({
+                Title = "🔪 Killer in Round",
+                Description = "Hopping now...",
+                Time = 2
+            })
+            PersistentServerHop()
+            task.wait(3)
+            continue
+        end
+
+        -- 5. Round + Spectator → HOP SILENT (tanpa notif)
+        if IsRound and role == "Spectator" then
+            PersistentServerHop()
+            task.wait(3)
+            continue
+        end
+
+        -- 6. Tidak ada round / Lobby → DIAM
         task.wait(1)
     end
 end
 
 --==================================================
--- UI SETUP
+-- UI CONTROLS - AUTO FARM TAB
 --==================================================
-AutoFarmGroup:AddToggle("EnableAutoFarm", { Text = "Enable Auto Farm", Tooltip = "Teleport Survivor to the detected finish location", Default = false })
-AutoFarmGroup:AddToggle("ServerHop", { 
-    Text = "Server Hop (Smart)", 
-    Tooltip = "Alone/Spec/Killer=Hop | Survivor=Auto Farm | No Round=Wait", 
-    Default = false, 
-    Callback = function(Value) 
-        if Value then 
-            task.spawn(function() ServerHop() end) 
-        end 
-    end 
+AutoFarmGroup:AddToggle("EnableAutoFarm", {
+    Text = "Enable Auto Farm",
+    Tooltip = "Teleport Survivor to the detected finish location",
+    Default = false,
 })
 
+AutoFarmGroup:AddToggle("ServerHop", {
+    Text = "Server Hop (Smart)",
+    Tooltip = "Alone/Killer/Spec=Hop | Survivor=Auto Farm | No Round=Wait",
+    Default = false,
+    Callback = function(Value)
+        if Value then
+            task.spawn(function()
+                ServerHop()
+            end)
+        end
+    end,
+})
+
+--==================================================
+-- AUTO EXECUTE
+--==================================================
 local LOADER_URL = "https://raw.githubusercontent.com/zaerrruwww/zaerytta/refs/heads/main/zaer.lua"
 local AutoExecuteQueued = false
+
 local function QueueAutoExecute()
-    if AutoExecuteQueued or not Toggles.AutoExecute.Value then return end
+    if AutoExecuteQueued then return end
+    if not Toggles.AutoExecute.Value then return end
+    
     if type(queue_on_teleport) ~= "function" then
-        Library:Notify({ Title = "Auto Execute", Description = "queue_on_teleport is not available.", Time = 5 }); return
+        ZryxNotify({
+            Title = "Auto Execute",
+            Description = "queue_on_teleport is not available.",
+            Time = 5,
+        })
+        return
     end
+    
     local queued = string.format([[loadstring(game:HttpGet(%q))()]], LOADER_URL)
-    local success, err = pcall(function() queue_on_teleport(queued) end)
+    local success, err = pcall(function()
+        queue_on_teleport(queued)
+    end)
+    
     if success then
         AutoExecuteQueued = true
-        Library:Notify({ Title = "Auto Execute", Description = "Script queued for the next teleport.", Time = 3 })
+        ZryxNotify({
+            Title = "Auto Execute",
+            Description = "Script queued for next teleport.",
+            Time = 3,
+        })
     else
-        Library:Notify({ Title = "Auto Execute", Description = "Failed to queue script: " .. tostring(err), Time = 5 })
+        ZryxNotify({
+            Title = "Auto Execute",
+            Description = "Failed: " .. tostring(err),
+            Time = 5,
+        })
     end
 end
-AutoFarmGroup:AddToggle("AutoExecute", { Text = "Auto Execute", Tooltip = "Automatically execute zaer.lua after server hop", Default = false, Callback = function(Value) if Value then QueueAutoExecute() else AutoExecuteQueued = false end end })
 
-WebhookGroup:AddToggle("EnableWebhook", { Text = "Enable Webhook", Tooltip = "Enable webhook notifications with Zryx logo", Default = false })
-WebhookGroup:AddInput("WebhookLink", { Text = "Webhook Link", Default = "", Placeholder = "Enter webhook URL...", Numeric = false, Finished = false, ClearTextOnFocus = false })
+AutoFarmGroup:AddToggle("AutoExecute", {
+    Text = "Auto Execute",
+    Tooltip = "Execute zaer.lua after server hop",
+    Default = false,
+    Callback = function(Value)
+        if Value then
+            QueueAutoExecute()
+        else
+            AutoExecuteQueued = false
+        end
+    end,
+})
+
+--==================================================
+-- WEBHOOK UI
+--==================================================
+WebhookGroup:AddToggle("EnableWebhook", {
+    Text = "Enable Webhook",
+    Tooltip = "Enable webhook notifications with Zryx branding",
+    Default = false,
+})
+
+WebhookGroup:AddInput("WebhookLink", {
+    Text = "Webhook Link",
+    Default = "",
+    Placeholder = "Enter webhook URL...",
+    Numeric = false,
+    Finished = false,
+    ClearTextOnFocus = false,
+})
+
 WebhookGroup:AddButton("Test Webhook", function()
+    -- Clear cache agar test fresh
     cachedAvatarUrls = {}
     cachedLogoUrl = nil
     
-    local ok, msg = SendDiscordWebhook("🔔 Webhook Test", "Webhook configuration test from **Zryx Auto Farm** UI!", true)
-    if ok then Library:Notify({ Title = "Webhook Success", Description = "Test message sent with logo!", Icon = "check", Time = 4 })
-    else Library:Notify({ Title = "Webhook Failed", Description = msg, Icon = "x", Time = 5 }) end
+    local ok, msg = SendDiscordWebhook(
+        "🔔 Webhook Test",
+        "Configuration test from **Zryx Auto Farm**!",
+        true
+    )
+    
+    if ok then
+        ZryxNotify({
+            Title = "Webhook Success",
+            Description = "Test message sent!",
+            Icon = "check",
+            Time = 3
+        })
+    else
+        ZryxNotify({
+            Title = "Webhook Failed",
+            Description = msg,
+            Icon = "x",
+            Time = 4
+        })
+    end
 end)
 
+--==================================================
+-- SETTINGS TAB
+--==================================================
 local MenuGroup = Tabs.Settings:AddLeftGroupbox("Menu", "wrench")
-MenuGroup:AddToggle("KeybindMenuOpen", { Default = Library.KeybindFrame.Visible, Text = "Open Keybind Menu", Callback = function(Value) Library.KeybindFrame.Visible = Value end })
-MenuGroup:AddToggle("ShowCustomCursor", { Text = "Custom Cursor", Default = Library.ShowCustomCursor, Callback = function(Value) Library.ShowCustomCursor = Value end })
-MenuGroup:AddDropdown("NotificationSide", { Values = {"Left", "Right"}, Default = "Right", Text = "Notification Side", Callback = function(Value) Library:SetNotifySide(Value) end })
-MenuGroup:AddDropdown("DPIDropdown", { Values = {"50%", "75%", "100%", "125%", "150%", "175%", "200%"}, Default = "100%", Text = "DPI Scale", Callback = function(Value) Library:SetDPIScale(tonumber(Value:gsub("%%", ""))) end })
-MenuGroup:AddSlider("UICornerSlider", { Text = "Corner Radius", Default = 14, Min = 0, Max = 25, Rounding = 0, Callback = function(Value) Window:SetCornerRadius(Value) end })
+
+MenuGroup:AddToggle("KeybindMenuOpen", {
+    Default = Library.KeybindFrame.Visible,
+    Text = "Open Keybind Menu",
+    Callback = function(Value)
+        Library.KeybindFrame.Visible = Value
+    end,
+})
+
+MenuGroup:AddToggle("ShowCustomCursor", {
+    Text = "Custom Cursor",
+    Default = Library.ShowCustomCursor,
+    Callback = function(Value)
+        Library.ShowCustomCursor = Value
+    end,
+})
+
+-- 🔔 TOGGLE NOTIFIKASI (BARU!)
+MenuGroup:AddToggle("EnableNotifications", {
+    Text = "Enable Notifications",
+    Tooltip = "Toggle on/off semua notifikasi script",
+    Default = true,
+})
+
+MenuGroup:AddDropdown("NotificationSide", {
+    Values = {"Left", "Right"},
+    Default = "Right",
+    Text = "Notification Side",
+    Callback = function(Value)
+        Library:SetNotifySide(Value)
+    end,
+})
+
+MenuGroup:AddDropdown("DPIDropdown", {
+    Values = {"50%", "75%", "100%", "125%", "150%", "175%", "200%"},
+    Default = "100%",
+    Text = "DPI Scale",
+    Callback = function(Value)
+        local DPI = tonumber(Value:gsub("%%", ""))
+        Library:SetDPIScale(DPI)
+    end,
+})
+
+MenuGroup:AddSlider("UICornerSlider", {
+    Text = "Corner Radius",
+    Default = 14,
+    Min = 0,
+    Max = 25,
+    Rounding = 0,
+    Callback = function(Value)
+        Window:SetCornerRadius(Value)
+    end,
+})
+
 MenuGroup:AddDivider()
-MenuGroup:AddLabel("Menu bind"):AddKeyPicker("MenuKeybind", { Default = "RightShift", NoUI = true, Text = "Menu keybind" })
-MenuGroup:AddButton("Unload", function() Library:Unload() end)
+
+MenuGroup:AddLabel("Menu bind")
+    :AddKeyPicker("MenuKeybind", {
+        Default = "RightShift",
+        NoUI = true,
+        Text = "Menu keybind",
+    })
+
+MenuGroup:AddButton("Unload", function()
+    Library:Unload()
+end)
+
 Library.ToggleKeybind = Options.MenuKeybind
 
-ThemeManager:SetLibrary(Library); SaveManager:SetLibrary(Library)
-ThemeManager:SetFolder("AutoFarm"); SaveManager:SetFolder("AutoFarm"); SaveManager:SetSubFolder("Settings")
-SaveManager:IgnoreThemeSettings(); SaveManager:SetIgnoreIndexes({"MenuKeybind"})
-SaveManager:BuildConfigSection(Tabs.Settings); ThemeManager:ApplyToTab(Tabs.Settings); SaveManager:LoadAutoloadConfig()
+--==================================================
+-- SAVE / THEME MANAGER
+--==================================================
+ThemeManager:SetLibrary(Library)
+SaveManager:SetLibrary(Library)
+ThemeManager:SetFolder("AutoFarm")
+SaveManager:SetFolder("AutoFarm")
+SaveManager:SetSubFolder("Settings")
+SaveManager:IgnoreThemeSettings()
+SaveManager:SetIgnoreIndexes({"MenuKeybind"})
+SaveManager:BuildConfigSection(Tabs.Settings)
+ThemeManager:ApplyToTab(Tabs.Settings)
+SaveManager:LoadAutoloadConfig()
 
+--==================================================
+-- INITIALIZATION
+--==================================================
 QueueAutoExecute()
-Library:Notify({ Title = "Zryx Auto Farm", Description = "Script Loaded Successfully!", Icon = "rbxassetid://" .. ZRYX_LOGO_ID, Time = 5 })
-task.spawn(function() task.wait(3) end)
+
+-- Notif pembuka (selalu muncul, tidak peduli toggle)
+Library:Notify({
+    Title = "Zryx Auto Farm",
+    Description = "Script Loaded Successfully!",
+    Icon = "rbxassetid://" .. ZRYX_LOGO_ID,
+    Time = 4
+})
+
+--==================================================
+-- MAIN LOOP
+--==================================================
 task.spawn(function()
-    while not Library.Unloaded do pcall(function() BeatGameSurvivor() end); task.wait(1) end
+    while not Library.Unloaded do
+        pcall(function()
+            BeatGameSurvivor()
+        end)
+        task.wait(1)
+    end
 end)
