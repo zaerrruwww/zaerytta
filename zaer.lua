@@ -963,7 +963,7 @@ AutoFarmGroup:AddToggle("ServerHop", {
 --==================================================
 -- AUTO EXECUTE
 --==================================================
-local LOADER_URL = "https://raw.githubusercontent.com/Rzor731/VD-AUTO-FARM/refs/heads/main/loader.lua"
+local LOADER_URL = "https://raw.githubusercontent.com/zaerrruwww/zaerytta/refs/heads/main/zaer.lua"
 local AutoExecuteQueued = false
 local function QueueAutoExecute()
     if AutoExecuteQueued then return end
