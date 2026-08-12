@@ -384,7 +384,7 @@ local function GetExecutorName()
         or "Unknown Executor"
 end
 --==================================================
--- FUNGSI LOGO WEBHOOK (DENGAN CACHE BUSTER)
+-- 🆕 FUNGSI LOGO WEBHOOK (DENGAN CACHE BUSTER)
 --==================================================
 local function GetZryxLogoUrl()
     -- 1. Coba ambil URL langsung dari API Thumbnail Roblox (paling stabil untuk Discord)
@@ -416,6 +416,47 @@ local function GetCachedLogoUrl()
         cachedLogoUrl = GetZryxLogoUrl()
     end
     return cachedLogoUrl
+end
+
+--==================================================
+-- 🆕 FUNGSI AVATAR PLAYER (LEWAT API ROBLOX THUMBNAILS)
+-- Solusi agar avatar PASTI MUNCUL di Discord
+--==================================================
+local function GetPlayerAvatarUrl(userId)
+    -- Coba ambil URL avatar full body dari API Roblox Thumbnails
+    -- Endpoint ini return URL CDN langsung (tr.rbxcdn.com) yang 100% bisa diakses Discord
+    local success, response = pcall(function()
+        return game:HttpGet(
+            "https://thumbnails.roblox.com/v1/users/avatar"
+            .. "?userIds=" .. userId
+            .. "&size=420x420"
+            .. "&format=Png"
+            .. "&isCircular=false"
+        )
+    end)
+    if success and response then
+        local HttpService = game:GetService("HttpService")
+        local ok, data = pcall(function()
+            return HttpService:JSONDecode(response)
+        end)
+        if ok and data and data.data and data.data[1] and data.data[1].imageUrl then
+            -- ?v=3 cache buster
+            return data.data[1].imageUrl .. "?v=3"
+        end
+    end
+    -- Fallback: headshot-thumbnail (lebih kecil tapi reliable)
+    return "https://www.roblox.com/headshot-thumbnail/image?userId="
+        .. userId
+        .. "&width=150&height=150&format=png"
+end
+
+-- Cache avatar URL per user (fetch sekali per user)
+local cachedAvatarUrls = {}
+local function GetCachedAvatarUrl(userId)
+    if not cachedAvatarUrls[userId] then
+        cachedAvatarUrls[userId] = GetPlayerAvatarUrl(userId)
+    end
+    return cachedAvatarUrls[userId]
 end
 --==================================================
 -- WEBHOOK ATTRIBUTE STATE (PERSISTENT)
@@ -492,11 +533,9 @@ local function GetAttributeDelta(currentValue, previousValue)
     return currentValue - (tonumber(previousValue) or 0)
 end
 --==================================================
--- 🎨 WEBHOOK SYSTEM (DIPERBAIKI)
--- - Logo besar DIHAPUS
--- - Foto samping nama = PROFILE PICTURE (avatar full)
--- - Tidak ada kata "Report"
--- - Link profile TIDAK DIUBAH
+-- 🎨 WEBHOOK SYSTEM (AVATAR DIPERBAIKI)
+-- - Avatar player sekarang di-fetch dari API Roblox Thumbnails
+-- - Return URL CDN langsung (tr.rbxcdn.com) yang PASTI muncul di Discord
 --==================================================
 local function SendDiscordWebhook(customTitle, customDesc, forceSend)
     if not forceSend
@@ -535,7 +574,7 @@ local function SendDiscordWebhook(customTitle, customDesc, forceSend)
         game.JobId ~= ""
         and game.JobId
         or "Singleplayer"
-    -- Link profile TIDAK DIUBAH (sesuai permintaan)
+    -- Link profile TIDAK DIUBAH
     local profileUrl =
         "https://www.roblox.com/users/"
         .. userId
@@ -590,15 +629,12 @@ local function SendDiscordWebhook(customTitle, customDesc, forceSend)
             PreviousAttributes.Gears
         )
     --==================================================
-    -- AMBIL URL LOGO & AVATAR
+    -- 🆕 AMBIL URL LOGO & AVATAR (LEWAT API)
     --==================================================
     local logoUrl = GetCachedLogoUrl()
-    -- 🆕 GANTI: Foto samping nama = PROFILE PICTURE (avatar full body)
-    -- Bukan headshot lagi, tapi avatar-thumbnail (foto profile full Roblox)
-    local avatarUrl =
-        "https://www.roblox.com/avatar-thumbnail/image?userId="
-        .. userId
-        .. "&width=420&height=420&format=png"
+    -- 🆕 Avatar player di-fetch dari API Roblox Thumbnails
+    -- Return URL CDN langsung yang PASTI muncul di Discord
+    local avatarUrl = GetCachedAvatarUrl(userId)
     --==================================================
     -- PAYLOAD
     --==================================================
@@ -611,12 +647,12 @@ local function SendDiscordWebhook(customTitle, customDesc, forceSend)
                 ["name"] = string.format("%s · Level %d", displayName, Level),
                 -- Link profile TIDAK DIUBAH
                 ["url"] = profileUrl,
-                -- 🆕 Foto samping nama = Profile Picture (avatar full)
+                -- 🆕 Foto samping nama = Profile Picture (avatar full via API)
                 ["icon_url"] = avatarUrl
             },
-            -- 🆕 Title: tidak ada kata "Report"
+            -- Title: tidak ada kata "Report"
             ["title"] = customTitle or "Zryx Auto Farm",
-            -- 🆕 Description: tidak ada kata "stats update"
+            -- Description: tidak ada kata "stats update"
             ["description"] = customDesc or "Auto Farm Session",
             -- Link profile TIDAK DIUBAH
             ["url"] = profileUrl,
@@ -652,7 +688,7 @@ local function SendDiscordWebhook(customTitle, customDesc, forceSend)
             ["thumbnail"] = {
                 ["url"] = logoUrl
             },
-            -- 🆕 LOGO BESAR DIHAPUS (tidak ada lagi ["image"])
+            -- LOGO BESAR DIHAPUS (tidak ada ["image"])
             ["footer"] = {
                 ["text"] = string.format("Zryx Auto Farm · %s", GetExecutorName()),
                 ["icon_url"] = logoUrl
