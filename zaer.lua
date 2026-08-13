@@ -1,6 +1,7 @@
 --==================================================
--- ZRYX AUTO FARM - FINAL VERSION
+-- ZRYX AUTO FARM - ULTIMATE VERSION
 -- Obsidian UI + Beat Survivor + Smart Server Hop
+-- + Safe TP + Auto Respawn + Auto Lobby Hop
 --==================================================
 
 pcall(function()
@@ -42,7 +43,7 @@ local ZRYX_COLORS = {
 --==================================================
 local Window = Library:CreateWindow({
     Title = "Zryx Auto Farm",
-    Footer = "version: 1.0.0",
+    Footer = "version: 2.0.0",
     Icon = ZRYX_LOGO_ID,
     NotifySide = "Right",
     ShowCustomCursor = true,
@@ -62,7 +63,6 @@ local function ApplyZryxTheme()
         local LocalPlayer = Players.LocalPlayer
         local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
-        -- Cari ScreenGui Obsidian
         local targetGui = nil
         for _, gui in ipairs(PlayerGui:GetChildren()) do
             if gui:IsA("ScreenGui") then
@@ -82,7 +82,6 @@ local function ApplyZryxTheme()
 
         local LOGO_ID = "rbxassetid://" .. ZRYX_LOGO_ID
 
-        -- Perbesar icon header
         for _, obj in ipairs(targetGui:GetDescendants()) do
             if (obj:IsA("ImageLabel") or obj:IsA("ImageButton")) then
                 local size = obj.AbsoluteSize
@@ -98,7 +97,6 @@ local function ApplyZryxTheme()
             end
         end
 
-        -- Apply warna ke semua elemen
         local function applyColorsRecursive(parent)
             for _, obj in ipairs(parent:GetChildren()) do
                 pcall(function()
@@ -181,7 +179,6 @@ local function ApplyZryxTheme()
         end
         applyColorsRecursive(targetGui)
 
-        -- Cari main frame untuk logo besar
         local mainFrame = nil
         for _, obj in ipairs(targetGui:GetDescendants()) do
             if obj:IsA("Frame") and (obj.Name == "Main" or obj.Name == "Content" or obj.Name == "Container") then
@@ -202,7 +199,6 @@ local function ApplyZryxTheme()
             end
         end
 
-        -- Pasang logo besar di panel
         if mainFrame then
             pcall(function()
                 local old = mainFrame:FindFirstChild("ZryxLogoContainer")
@@ -220,7 +216,6 @@ local function ApplyZryxTheme()
             logoFrame.ZIndex = 100
             logoFrame.Parent = mainFrame
 
-            -- Background logo (watermark)
             local bgLogo = Instance.new("ImageLabel")
             bgLogo.Name = "ZryxLogoBackground"
             bgLogo.Size = UDim2.new(0, 500, 0, 160)
@@ -235,7 +230,6 @@ local function ApplyZryxTheme()
             bgLogoCorner.CornerRadius = UDim.new(0, 25)
             bgLogoCorner.Parent = bgLogo
 
-            -- Logo utama
             local mainLogo = Instance.new("ImageLabel")
             mainLogo.Name = "ZryxMainLogo"
             mainLogo.Size = UDim2.new(0, 420, 0, 135)
@@ -250,7 +244,6 @@ local function ApplyZryxTheme()
             mainLogoCorner.CornerRadius = UDim.new(0, 22)
             mainLogoCorner.Parent = mainLogo
 
-            -- Teks AUTO FARM MENU
             local titleText = Instance.new("TextLabel")
             titleText.Name = "ZryxTitle"
             titleText.Size = UDim2.new(1, 0, 0, 30)
@@ -336,12 +329,115 @@ end
 -- 🔔 SMART NOTIFY (HORMATI TOGGLE NOTIFIKASI)
 --==================================================
 local function ZryxNotify(config)
-    -- Cek toggle notifikasi (default ON kalau belum dibuat)
     if Toggles.EnableNotifications and Toggles.EnableNotifications.Value == false then
         return
     end
     Library:Notify(config)
 end
+
+--==================================================
+-- 🛡️ SAFE TP SYSTEM (GROUND DETECTION + STUCK RETRY)
+-- Fitur #1 & #2: Biar gak mati/stuck pas TP
+--==================================================
+local function GetGroundHeight(position)
+    local rayOrigin = position + Vector3.new(0, 100, 0)
+    local rayDirection = Vector3.new(0, -200, 0)
+    local raycastParams = RaycastParams.new()
+    local char = game:GetService("Players").LocalPlayer.Character
+    if char then
+        raycastParams.FilterDescendantsInstances = {char}
+    end
+    raycastParams.FilterType = Enum.RaycastFilterType.Exclude
+    
+    local success, result = pcall(function()
+        return workspace:Raycast(rayOrigin, rayDirection, raycastParams)
+    end)
+    
+    if success and result then
+        return result.Position.Y
+    end
+    return position.Y - 10
+end
+
+local function SafeTeleport(targetPos)
+    local char = game:GetService("Players").LocalPlayer.Character
+    local root = char and char:FindFirstChild("HumanoidRootPart")
+    if not root then return false end
+    
+    -- Scan ground level di posisi target
+    local groundY = GetGroundHeight(targetPos)
+    
+    -- Coba beberapa offset ketinggian (dari rendah ke tinggi)
+    local offsets = {8, 12, 16, 20, 25}
+    
+    for attempt, offset in ipairs(offsets) do
+        local tpPos = Vector3.new(targetPos.X, groundY + offset, targetPos.Z)
+        
+        -- TP ke posisi
+        root.CFrame = CFrame.new(tpPos)
+        
+        -- Tunggu 2 detik, cek apakah stuck
+        task.wait(2)
+        
+        local currentRoot = GetCharacterRoot()
+        if not currentRoot then return false end
+        
+        local currentPos = currentRoot.Position
+        local distance = (currentPos - tpPos).Magnitude
+        
+        -- Kalau posisi deket sama target (< 5 studs) = berhasil
+        if distance < 5 then
+            return true
+        end
+    end
+    
+    -- Semua offset gagal
+    return false
+end
+
+--==================================================
+-- ⚡ INSTANT RESPAWN SYSTEM
+-- Fitur #4: Auto respawn pas mati
+--==================================================
+local function SetupInstantRespawn()
+    local LocalPlayer = game:GetService("Players").LocalPlayer
+    
+    local function hookCharacter(character)
+        local humanoid = character:WaitForChild("Humanoid", 10)
+        if not humanoid then return end
+        
+        humanoid.Died:Connect(function()
+            task.wait(1.5)
+            
+            -- Method 1: LoadCharacter (paling reliable)
+            pcall(function()
+                LocalPlayer:LoadCharacter()
+            end)
+            
+            task.wait(0.5)
+            
+            -- Method 2: Trigger reset button
+            pcall(function()
+                local StarterGui = game:GetService("StarterGui")
+                local resetCallback = StarterGui:GetCore("ResetButtonCallback")
+                if resetCallback and type(resetCallback) == "boolean" then
+                    StarterGui:SetCore("ResetButtonCallback", true)
+                end
+            end)
+        end)
+    end
+    
+    -- Hook character yang sekarang
+    if LocalPlayer.Character then
+        task.spawn(function() hookCharacter(LocalPlayer.Character) end)
+    end
+    
+    -- Hook character yang baru spawn
+    LocalPlayer.CharacterAdded:Connect(hookCharacter)
+end
+
+-- Setup instant respawn saat script load
+task.spawn(SetupInstantRespawn)
 
 --==================================================
 -- WEBHOOK ASSET URLs (LOGO & AVATAR)
@@ -383,7 +479,6 @@ local function GetPlayerHeadshotUrl(userId)
     local cacheBuster = "?t=" .. tostring(os.time()) 
         .. "&r=" .. tostring(math.random(10000, 99999))
     
-    -- Endpoint 1: avatar-headshot (paling reliable)
     local ok1, res1 = pcall(function()
         return game:HttpGet(
             "https://thumbnails.roblox.com/v1/users/avatar-headshot"
@@ -402,7 +497,6 @@ local function GetPlayerHeadshotUrl(userId)
         end
     end
     
-    -- Endpoint 2: alternate path
     local ok2, res2 = pcall(function()
         return game:HttpGet(
             "https://thumbnails.roblox.com/v1/avatar-headshot"
@@ -419,7 +513,6 @@ local function GetPlayerHeadshotUrl(userId)
         end
     end
     
-    -- Fallback: URL langsung
     return "https://www.roblox.com/headshot-thumbnail/image?userId="
         .. userId
         .. "&width=150&height=150&format=png"
@@ -494,7 +587,7 @@ local function GetAttributeDelta(currentValue, previousValue)
 end
 
 --==================================================
--- WEBHOOK SYSTEM (DENGAN LOGO & AVATAR HEADSHOT)
+-- WEBHOOK SYSTEM
 --==================================================
 local function SendDiscordWebhook(customTitle, customDesc, forceSend)
     if not forceSend and (not Toggles.EnableWebhook or not Toggles.EnableWebhook.Value) then
@@ -621,7 +714,8 @@ local function SendDiscordWebhook(customTitle, customDesc, forceSend)
 end
 
 --==================================================
--- BEAT GAME SURVIVOR (AUTO FARM)
+-- 🎯 BEAT GAME SURVIVOR (DENGAN SAFE TP)
+-- Pakai Safe Teleport biar gak mati/stuck
 --==================================================
 local function BeatGameSurvivor()
     if not Toggles.EnableAutoFarm.Value then
@@ -714,16 +808,21 @@ local function BeatGameSurvivor()
     local currentRoot = GetCharacterRoot()
     if not currentRoot then return end
     
-    currentRoot.CFrame = CFrame.new(exitPos + Vector3.new(0, 3, 0))
-    BeatState.BeatSurvivorDone = true
-    BeatState.LastFinishPos = exitPos
+    -- 🛡️ PAKAI SAFE TELEPORT (BUKAN CFRAME LANGSUNG)
+    local tpSuccess = SafeTeleport(exitPos)
     
-    task.wait(5)
-    SendDiscordWebhook()
-    
-    -- Trigger hop setelah escape
-    if Toggles.ServerHop and Toggles.ServerHop.Value then
-        HopAfterBeatTriggered = true
+    if tpSuccess then
+        BeatState.BeatSurvivorDone = true
+        BeatState.LastFinishPos = exitPos
+        task.wait(5)
+        SendDiscordWebhook()
+        
+        if Toggles.ServerHop and Toggles.ServerHop.Value then
+            HopAfterBeatTriggered = true
+        end
+    else
+        -- TP gagal (stuck), reset state biar coba lagi
+        BeatState.BeatSurvivorDone = false
     end
 end
 
@@ -898,14 +997,23 @@ local function PersistentServerHop()
 end
 
 --==================================================
+-- 🏨 AUTO LOBBY HOP CONFIG
+-- Fitur #5: Skip server sepi yang bikin nunggu lama
+--==================================================
+local LOBBY_TIMEOUT = 30           -- Detik nunggu di lobby sebelum hop
+local MIN_PLAYERS_TO_STAY = 3      -- Minimal player biar stay di server
+local lobbyWaitStart = nil         -- Timer nunggu lobby
+
+--==================================================
 -- 🎯 SMART SERVER HOP (MAIN LOGIC)
 -- 
--- 1. Habis Escape       → HOP + NOTIF (jika aktif)
--- 2. Sendirian          → HOP + NOTIF (jika aktif)
+-- 1. Habis Escape       → HOP + NOTIF
+-- 2. Sendirian          → HOP + NOTIF
 -- 3. Round + Survivor   → DIAM (auto farm)
--- 4. Round + Killer     → HOP + NOTIF (jika aktif)
--- 5. Round + Spectator  → HOP TANPA NOTIF (silent)
--- 6. Tidak ada round    → DIAM
+-- 4. Round + Killer     → HOP + NOTIF
+-- 5. Round + Spectator  → HOP SILENT
+-- 6. Lobby + sepi       → SILENT HOP (Auto Lobby Hop)
+-- 7. Lobby + rame       → DIAM (nunggu jadi Survivor)
 --==================================================
 local function ServerHop()
     while Toggles.ServerHop.Value and not Library.Unloaded do
@@ -915,6 +1023,7 @@ local function ServerHop()
         -- 1. Habis Escape → HOP + NOTIF
         if HopAfterBeatTriggered then
             HopAfterBeatTriggered = false
+            lobbyWaitStart = nil
             ZryxNotify({
                 Title = "🏁 Escape Done!",
                 Description = "Hopping to new server NOW...",
@@ -927,6 +1036,7 @@ local function ServerHop()
 
         -- 2. Sendirian → HOP + NOTIF
         if playerCount <= 1 then
+            lobbyWaitStart = nil
             ZryxNotify({
                 Title = "👤 Alone!",
                 Description = "Hopping immediately...",
@@ -937,14 +1047,16 @@ local function ServerHop()
             continue
         end
 
-        -- 3. Round + Survivor → DIAM
+        -- 3. Round + Survivor → DIAM (auto farm)
         if IsRound and role == "Survivor" then
+            lobbyWaitStart = nil
             task.wait(1)
             continue
         end
 
         -- 4. Round + Killer → HOP + NOTIF
         if IsRound and role == "Killer" then
+            lobbyWaitStart = nil
             ZryxNotify({
                 Title = "🔪 Killer in Round",
                 Description = "Hopping now...",
@@ -955,14 +1067,43 @@ local function ServerHop()
             continue
         end
 
-        -- 5. Round + Spectator → HOP SILENT (tanpa notif)
+        -- 5. Round + Spectator → HOP SILENT
         if IsRound and role == "Spectator" then
+            lobbyWaitStart = nil
             PersistentServerHop()
             task.wait(3)
             continue
         end
 
-        -- 6. Tidak ada round / Lobby → DIAM
+        -- 6. LOBBY LOGIC (Auto Lobby Hop)
+        if not IsRound then
+            -- Mulai timer kalau belum ada
+            if not lobbyWaitStart then
+                lobbyWaitStart = os.time()
+            end
+            
+            local waited = os.time() - lobbyWaitStart
+            
+            -- Reset timer kalau player count cukup (server rame)
+            if playerCount >= MIN_PLAYERS_TO_STAY then
+                lobbyWaitStart = nil
+                task.wait(1)
+                continue
+            end
+            
+            -- Kalau nunggu terlalu lama dan server sepi → silent hop
+            if waited >= LOBBY_TIMEOUT then
+                lobbyWaitStart = nil
+                PersistentServerHop()
+                task.wait(3)
+                continue
+            end
+            
+            task.wait(1)
+            continue
+        end
+
+        -- Default: tunggu sebentar
         task.wait(1)
     end
 end
@@ -972,19 +1113,21 @@ end
 --==================================================
 AutoFarmGroup:AddToggle("EnableAutoFarm", {
     Text = "Enable Auto Farm",
-    Tooltip = "Teleport Survivor to the detected finish location",
+    Tooltip = "Teleport Survivor to the detected finish location (Safe TP)",
     Default = false,
 })
 
 AutoFarmGroup:AddToggle("ServerHop", {
     Text = "Server Hop (Smart)",
-    Tooltip = "Alone/Killer/Spec=Hop | Survivor=Auto Farm | No Round=Wait",
+    Tooltip = "Auto hop: Alone/Killer/Spec/Lobby sepi. Survivor=Auto Farm",
     Default = false,
     Callback = function(Value)
         if Value then
             task.spawn(function()
                 ServerHop()
             end)
+        else
+            lobbyWaitStart = nil
         end
     end,
 })
@@ -1061,7 +1204,6 @@ WebhookGroup:AddInput("WebhookLink", {
 })
 
 WebhookGroup:AddButton("Test Webhook", function()
-    -- Clear cache agar test fresh
     cachedAvatarUrls = {}
     cachedLogoUrl = nil
     
@@ -1109,7 +1251,6 @@ MenuGroup:AddToggle("ShowCustomCursor", {
     end,
 })
 
--- 🔔 TOGGLE NOTIFIKASI (BARU!)
 MenuGroup:AddToggle("EnableNotifications", {
     Text = "Enable Notifications",
     Tooltip = "Toggle on/off semua notifikasi script",
@@ -1180,10 +1321,9 @@ SaveManager:LoadAutoloadConfig()
 --==================================================
 QueueAutoExecute()
 
--- Notif pembuka (selalu muncul, tidak peduli toggle)
 Library:Notify({
     Title = "Zryx Auto Farm",
-    Description = "Script Loaded Successfully!",
+    Description = "Ultimate Version Loaded!",
     Icon = "rbxassetid://" .. ZRYX_LOGO_ID,
     Time = 4
 })
