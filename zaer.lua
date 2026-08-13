@@ -62,7 +62,6 @@ local function ApplyZryxTheme()
         local LocalPlayer = Players.LocalPlayer
         local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
-        -- Cari ScreenGui Obsidian
         local targetGui = nil
         for _, gui in ipairs(PlayerGui:GetChildren()) do
             if gui:IsA("ScreenGui") then
@@ -181,7 +180,7 @@ local function ApplyZryxTheme()
         end
         applyColorsRecursive(targetGui)
 
-        -- Cari main frame untuk logo besar
+        -- Logo besar di panel
         local mainFrame = nil
         for _, obj in ipairs(targetGui:GetDescendants()) do
             if obj:IsA("Frame") and (obj.Name == "Main" or obj.Name == "Content" or obj.Name == "Container") then
@@ -202,7 +201,6 @@ local function ApplyZryxTheme()
             end
         end
 
-        -- Pasang logo besar di panel
         if mainFrame then
             pcall(function()
                 local old = mainFrame:FindFirstChild("ZryxLogoContainer")
@@ -220,7 +218,6 @@ local function ApplyZryxTheme()
             logoFrame.ZIndex = 100
             logoFrame.Parent = mainFrame
 
-            -- Background logo (watermark)
             local bgLogo = Instance.new("ImageLabel")
             bgLogo.Name = "ZryxLogoBackground"
             bgLogo.Size = UDim2.new(0, 500, 0, 160)
@@ -235,7 +232,6 @@ local function ApplyZryxTheme()
             bgLogoCorner.CornerRadius = UDim.new(0, 25)
             bgLogoCorner.Parent = bgLogo
 
-            -- Logo utama
             local mainLogo = Instance.new("ImageLabel")
             mainLogo.Name = "ZryxMainLogo"
             mainLogo.Size = UDim2.new(0, 420, 0, 135)
@@ -250,7 +246,6 @@ local function ApplyZryxTheme()
             mainLogoCorner.CornerRadius = UDim.new(0, 22)
             mainLogoCorner.Parent = mainLogo
 
-            -- Teks AUTO FARM MENU
             local titleText = Instance.new("TextLabel")
             titleText.Name = "ZryxTitle"
             titleText.Size = UDim2.new(1, 0, 0, 30)
@@ -336,7 +331,6 @@ end
 -- 🔔 SMART NOTIFY (HORMATI TOGGLE NOTIFIKASI)
 --==================================================
 local function ZryxNotify(config)
-    -- Cek toggle notifikasi (default ON kalau belum dibuat)
     if Toggles.EnableNotifications and Toggles.EnableNotifications.Value == false then
         return
     end
@@ -383,7 +377,6 @@ local function GetPlayerHeadshotUrl(userId)
     local cacheBuster = "?t=" .. tostring(os.time()) 
         .. "&r=" .. tostring(math.random(10000, 99999))
     
-    -- Endpoint 1: avatar-headshot (paling reliable)
     local ok1, res1 = pcall(function()
         return game:HttpGet(
             "https://thumbnails.roblox.com/v1/users/avatar-headshot"
@@ -402,7 +395,6 @@ local function GetPlayerHeadshotUrl(userId)
         end
     end
     
-    -- Endpoint 2: alternate path
     local ok2, res2 = pcall(function()
         return game:HttpGet(
             "https://thumbnails.roblox.com/v1/avatar-headshot"
@@ -419,7 +411,6 @@ local function GetPlayerHeadshotUrl(userId)
         end
     end
     
-    -- Fallback: URL langsung
     return "https://www.roblox.com/headshot-thumbnail/image?userId="
         .. userId
         .. "&width=150&height=150&format=png"
@@ -494,7 +485,7 @@ local function GetAttributeDelta(currentValue, previousValue)
 end
 
 --==================================================
--- WEBHOOK SYSTEM (DENGAN LOGO & AVATAR HEADSHOT)
+-- WEBHOOK SYSTEM
 --==================================================
 local function SendDiscordWebhook(customTitle, customDesc, forceSend)
     if not forceSend and (not Toggles.EnableWebhook or not Toggles.EnableWebhook.Value) then
@@ -721,7 +712,6 @@ local function BeatGameSurvivor()
     task.wait(5)
     SendDiscordWebhook()
     
-    -- Trigger hop setelah escape
     if Toggles.ServerHop and Toggles.ServerHop.Value then
         HopAfterBeatTriggered = true
     end
@@ -739,6 +729,7 @@ local IgnoredServers = {}
 
 local RATE_LIMIT_WAIT = 8
 local GENERAL_ERROR_WAIT = 3
+local TWO_PLAYER_WAIT = 90  -- 🔥 TUNGGU 90 DETIK KALAU ADA 2 PLAYER
 
 local function GetIgnoredServers()
     if not isfile(IGNORE_FILE) then return {} end
@@ -900,14 +891,19 @@ end
 --==================================================
 -- 🎯 SMART SERVER HOP (MAIN LOGIC)
 -- 
--- 1. Habis Escape       → HOP + NOTIF (jika aktif)
--- 2. Sendirian          → HOP + NOTIF (jika aktif)
--- 3. Round + Survivor   → DIAM (auto farm)
--- 4. Round + Killer     → HOP + NOTIF (jika aktif)
--- 5. Round + Spectator  → HOP TANPA NOTIF (silent)
--- 6. Tidak ada round    → DIAM
+-- 1. Habis Escape       → HOP + NOTIF
+-- 2. Sendirian (≤1)     → HOP + NOTIF
+-- 3. 2 Player           → TUNGGU 90 DETIK → HOP + NOTIF
+-- 4. Round + Survivor   → DIAM (auto farm)
+-- 5. Round + Killer     → HOP + NOTIF
+-- 6. Round + Spectator  → HOP SILENT (tanpa notif)
+-- 7. Tidak ada round    → DIAM
 --==================================================
 local function ServerHop()
+    -- 🔥 Variabel tracking untuk 2 player
+    local twoPlayerStartTime = nil
+    local twoPlayerNotified = false
+
     while Toggles.ServerHop.Value and not Library.Unloaded do
         local playerCount = #Players:GetPlayers()
         local role = GetRole()
@@ -915,6 +911,8 @@ local function ServerHop()
         -- 1. Habis Escape → HOP + NOTIF
         if HopAfterBeatTriggered then
             HopAfterBeatTriggered = false
+            twoPlayerStartTime = nil  -- Reset timer 2 player
+            twoPlayerNotified = false
             ZryxNotify({
                 Title = "🏁 Escape Done!",
                 Description = "Hopping to new server NOW...",
@@ -927,6 +925,8 @@ local function ServerHop()
 
         -- 2. Sendirian → HOP + NOTIF
         if playerCount <= 1 then
+            twoPlayerStartTime = nil  -- Reset timer 2 player
+            twoPlayerNotified = false
             ZryxNotify({
                 Title = "👤 Alone!",
                 Description = "Hopping immediately...",
@@ -937,14 +937,72 @@ local function ServerHop()
             continue
         end
 
-        -- 3. Round + Survivor → DIAM
+        -- 3. 🔥 2 PLAYER → TUNGGU 90 DETIK → HOP
+        if playerCount == 2 then
+            -- Mulai timer kalau belum ada
+            if not twoPlayerStartTime then
+                twoPlayerStartTime = os.time()
+                twoPlayerNotified = false
+                ZryxNotify({
+                    Title = "👥 2 Players Detected",
+                    Description = string.format(
+                        "Waiting %ds before hopping...",
+                        TWO_PLAYER_WAIT
+                    ),
+                    Time = 3
+                })
+            end
+
+            local elapsed = os.time() - twoPlayerStartTime
+
+            -- Notif countdown tiap 30 detik
+            if not twoPlayerNotified and elapsed >= 30 then
+                ZryxNotify({
+                    Title = "⏱️ Still 2 Players",
+                    Description = string.format(
+                        "Hopping in %ds...",
+                        TWO_PLAYER_WAIT - elapsed
+                    ),
+                    Time = 2
+                })
+                twoPlayerNotified = true
+            end
+
+            -- Setelah 90 detik → HOP
+            if elapsed >= TWO_PLAYER_WAIT then
+                ZryxNotify({
+                    Title = "🔄 2 Players Timeout",
+                    Description = "90s passed, hopping now...",
+                    Time = 2
+                })
+                twoPlayerStartTime = nil
+                twoPlayerNotified = false
+                PersistentServerHop()
+                task.wait(3)
+                continue
+            end
+
+            -- Tunggu 1 detik sambil tetap di loop (biar bisa cek kondisi lain)
+            task.wait(1)
+            continue
+        else
+            -- Player count berubah (bukan 2), reset timer
+            if twoPlayerStartTime then
+                twoPlayerStartTime = nil
+                twoPlayerNotified = false
+            end
+        end
+
+        -- 4. Round + Survivor → DIAM
         if IsRound and role == "Survivor" then
             task.wait(1)
             continue
         end
 
-        -- 4. Round + Killer → HOP + NOTIF
+        -- 5. Round + Killer → HOP + NOTIF
         if IsRound and role == "Killer" then
+            twoPlayerStartTime = nil
+            twoPlayerNotified = false
             ZryxNotify({
                 Title = "🔪 Killer in Round",
                 Description = "Hopping now...",
@@ -955,14 +1013,16 @@ local function ServerHop()
             continue
         end
 
-        -- 5. Round + Spectator → HOP SILENT (tanpa notif)
+        -- 6. Round + Spectator → HOP SILENT
         if IsRound and role == "Spectator" then
+            twoPlayerStartTime = nil
+            twoPlayerNotified = false
             PersistentServerHop()
             task.wait(3)
             continue
         end
 
-        -- 6. Tidak ada round / Lobby → DIAM
+        -- 7. Tidak ada round / Lobby → DIAM
         task.wait(1)
     end
 end
@@ -978,7 +1038,7 @@ AutoFarmGroup:AddToggle("EnableAutoFarm", {
 
 AutoFarmGroup:AddToggle("ServerHop", {
     Text = "Server Hop (Smart)",
-    Tooltip = "Alone/Killer/Spec=Hop | Survivor=Auto Farm | No Round=Wait",
+    Tooltip = "Alone/2p/Killer/Spec=Hop | Survivor=Farm | NoRound=Wait",
     Default = false,
     Callback = function(Value)
         if Value then
@@ -1061,7 +1121,6 @@ WebhookGroup:AddInput("WebhookLink", {
 })
 
 WebhookGroup:AddButton("Test Webhook", function()
-    -- Clear cache agar test fresh
     cachedAvatarUrls = {}
     cachedLogoUrl = nil
     
@@ -1109,7 +1168,6 @@ MenuGroup:AddToggle("ShowCustomCursor", {
     end,
 })
 
--- 🔔 TOGGLE NOTIFIKASI (BARU!)
 MenuGroup:AddToggle("EnableNotifications", {
     Text = "Enable Notifications",
     Tooltip = "Toggle on/off semua notifikasi script",
@@ -1180,7 +1238,6 @@ SaveManager:LoadAutoloadConfig()
 --==================================================
 QueueAutoExecute()
 
--- Notif pembuka (selalu muncul, tidak peduli toggle)
 Library:Notify({
     Title = "Zryx Auto Farm",
     Description = "Script Loaded Successfully!",
