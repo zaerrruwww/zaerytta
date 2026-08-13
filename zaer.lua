@@ -1,7 +1,6 @@
 --==================================================
--- ZRYX AUTO FARM - ULTIMATE VERSION
--- Obsidian UI + Beat Survivor + Smart Server Hop
--- + Safe TP + Auto Respawn + Auto Lobby Hop
+-- ZRYX AUTO FARM - ULTIMATE VERSION v2.1
+-- Fix: Auto Lobby Hop sekarang cari server RAMAI (4+ player)
 --==================================================
 
 pcall(function()
@@ -43,7 +42,7 @@ local ZRYX_COLORS = {
 --==================================================
 local Window = Library:CreateWindow({
     Title = "Zryx Auto Farm",
-    Footer = "version: 2.0.0",
+    Footer = "version: 2.1.0",
     Icon = ZRYX_LOGO_ID,
     NotifySide = "Right",
     ShowCustomCursor = true,
@@ -326,7 +325,7 @@ local function GetExecutorName()
 end
 
 --==================================================
--- 🔔 SMART NOTIFY (HORMATI TOGGLE NOTIFIKASI)
+-- 🔔 SMART NOTIFY
 --==================================================
 local function ZryxNotify(config)
     if Toggles.EnableNotifications and Toggles.EnableNotifications.Value == false then
@@ -336,8 +335,7 @@ local function ZryxNotify(config)
 end
 
 --==================================================
--- 🛡️ SAFE TP SYSTEM (GROUND DETECTION + STUCK RETRY)
--- Fitur #1 & #2: Biar gak mati/stuck pas TP
+-- 🛡️ SAFE TP SYSTEM
 --==================================================
 local function GetGroundHeight(position)
     local rayOrigin = position + Vector3.new(0, 100, 0)
@@ -364,19 +362,13 @@ local function SafeTeleport(targetPos)
     local root = char and char:FindFirstChild("HumanoidRootPart")
     if not root then return false end
     
-    -- Scan ground level di posisi target
     local groundY = GetGroundHeight(targetPos)
-    
-    -- Coba beberapa offset ketinggian (dari rendah ke tinggi)
     local offsets = {8, 12, 16, 20, 25}
     
     for attempt, offset in ipairs(offsets) do
         local tpPos = Vector3.new(targetPos.X, groundY + offset, targetPos.Z)
         
-        -- TP ke posisi
         root.CFrame = CFrame.new(tpPos)
-        
-        -- Tunggu 2 detik, cek apakah stuck
         task.wait(2)
         
         local currentRoot = GetCharacterRoot()
@@ -385,19 +377,16 @@ local function SafeTeleport(targetPos)
         local currentPos = currentRoot.Position
         local distance = (currentPos - tpPos).Magnitude
         
-        -- Kalau posisi deket sama target (< 5 studs) = berhasil
         if distance < 5 then
             return true
         end
     end
     
-    -- Semua offset gagal
     return false
 end
 
 --==================================================
 -- ⚡ INSTANT RESPAWN SYSTEM
--- Fitur #4: Auto respawn pas mati
 --==================================================
 local function SetupInstantRespawn()
     local LocalPlayer = game:GetService("Players").LocalPlayer
@@ -408,15 +397,10 @@ local function SetupInstantRespawn()
         
         humanoid.Died:Connect(function()
             task.wait(1.5)
-            
-            -- Method 1: LoadCharacter (paling reliable)
             pcall(function()
                 LocalPlayer:LoadCharacter()
             end)
-            
             task.wait(0.5)
-            
-            -- Method 2: Trigger reset button
             pcall(function()
                 local StarterGui = game:GetService("StarterGui")
                 local resetCallback = StarterGui:GetCore("ResetButtonCallback")
@@ -427,20 +411,17 @@ local function SetupInstantRespawn()
         end)
     end
     
-    -- Hook character yang sekarang
     if LocalPlayer.Character then
         task.spawn(function() hookCharacter(LocalPlayer.Character) end)
     end
     
-    -- Hook character yang baru spawn
     LocalPlayer.CharacterAdded:Connect(hookCharacter)
 end
 
--- Setup instant respawn saat script load
 task.spawn(SetupInstantRespawn)
 
 --==================================================
--- WEBHOOK ASSET URLs (LOGO & AVATAR)
+-- WEBHOOK ASSET URLs
 --==================================================
 local function GetZryxLogoUrl()
     local success, response = pcall(function()
@@ -714,8 +695,7 @@ local function SendDiscordWebhook(customTitle, customDesc, forceSend)
 end
 
 --==================================================
--- 🎯 BEAT GAME SURVIVOR (DENGAN SAFE TP)
--- Pakai Safe Teleport biar gak mati/stuck
+-- BEAT GAME SURVIVOR (DENGAN SAFE TP)
 --==================================================
 local function BeatGameSurvivor()
     if not Toggles.EnableAutoFarm.Value then
@@ -808,7 +788,6 @@ local function BeatGameSurvivor()
     local currentRoot = GetCharacterRoot()
     if not currentRoot then return end
     
-    -- 🛡️ PAKAI SAFE TELEPORT (BUKAN CFRAME LANGSUNG)
     local tpSuccess = SafeTeleport(exitPos)
     
     if tpSuccess then
@@ -821,7 +800,6 @@ local function BeatGameSurvivor()
             HopAfterBeatTriggered = true
         end
     else
-        -- TP gagal (stuck), reset state biar coba lagi
         BeatState.BeatSurvivorDone = false
     end
 end
@@ -863,7 +841,6 @@ end
 
 IgnoredServers = GetIgnoredServers()
 
--- Round detection
 local IsRound = false
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Remotes = ReplicatedStorage:WaitForChild("Remotes")
@@ -885,8 +862,18 @@ TimeUpdateEvent.OnClientEvent:Connect(function(Status)
     end
 end)
 
--- Persistent hop (tidak menyerah sampai berhasil)
-local function PersistentServerHop()
+--==================================================
+-- 🎯 PERSISTENT SERVER HOP (DENGAN FILTER PLAYER CUSTOM)
+-- 
+-- Parameter:
+--   minPlayers = minimum player di server (default 1)
+--   maxPlayers = maximum player di server (default 3)
+--==================================================
+local function PersistentServerHop(minPlayers, maxPlayers)
+    -- Default: cari server 1-3 player (buat farming)
+    minPlayers = minPlayers or 1
+    maxPlayers = maxPlayers or 3
+    
     local totalAttempts = 0
     local cursor = ""
 
@@ -914,11 +901,12 @@ local function PersistentServerHop()
         for _, server in ipairs(result.data) do
             if not Toggles.ServerHop.Value or Library.Unloaded then return end
             
+            -- 🔥 FILTER CUSTOM: pake minPlayers & maxPlayers dari parameter
             if server.id
                 and server.id ~= game.JobId
                 and server.playing
-                and server.playing >= 1
-                and server.playing <= 3
+                and server.playing >= minPlayers
+                and server.playing <= maxPlayers
                 and not IgnoredServers[server.id]
             then
                 foundTarget = true
@@ -998,21 +986,20 @@ end
 
 --==================================================
 -- 🏨 AUTO LOBBY HOP CONFIG
--- Fitur #5: Skip server sepi yang bikin nunggu lama
 --==================================================
 local LOBBY_TIMEOUT = 30           -- Detik nunggu di lobby sebelum hop
 local MIN_PLAYERS_TO_STAY = 3      -- Minimal player biar stay di server
-local lobbyWaitStart = nil         -- Timer nunggu lobby
+local lobbyWaitStart = nil
 
 --==================================================
 -- 🎯 SMART SERVER HOP (MAIN LOGIC)
 -- 
--- 1. Habis Escape       → HOP + NOTIF
--- 2. Sendirian          → HOP + NOTIF
+-- 1. Habis Escape       → HOP ke server 1-3 player + NOTIF
+-- 2. Sendirian          → HOP ke server 1-3 player + NOTIF
 -- 3. Round + Survivor   → DIAM (auto farm)
--- 4. Round + Killer     → HOP + NOTIF
--- 5. Round + Spectator  → HOP SILENT
--- 6. Lobby + sepi       → SILENT HOP (Auto Lobby Hop)
+-- 4. Round + Killer     → HOP ke server 1-3 player + NOTIF
+-- 5. Round + Spectator  → HOP ke server 1-3 player SILENT
+-- 6. Lobby + sepi       → HOP ke server 4-10 player SILENT (Auto Lobby Hop)
 -- 7. Lobby + rame       → DIAM (nunggu jadi Survivor)
 --==================================================
 local function ServerHop()
@@ -1020,21 +1007,21 @@ local function ServerHop()
         local playerCount = #Players:GetPlayers()
         local role = GetRole()
 
-        -- 1. Habis Escape → HOP + NOTIF
+        -- 1. Habis Escape → HOP ke server 1-3 player + NOTIF
         if HopAfterBeatTriggered then
             HopAfterBeatTriggered = false
             lobbyWaitStart = nil
             ZryxNotify({
                 Title = "🏁 Escape Done!",
-                Description = "Hopping to new server NOW...",
+                Description = "Hopping to farm server...",
                 Time = 2
             })
-            PersistentServerHop()
+            PersistentServerHop(1, 3)  -- 🔥 Server kecil buat farming
             task.wait(3)
             continue
         end
 
-        -- 2. Sendirian → HOP + NOTIF
+        -- 2. Sendirian → HOP ke server 1-3 player + NOTIF
         if playerCount <= 1 then
             lobbyWaitStart = nil
             ZryxNotify({
@@ -1042,7 +1029,7 @@ local function ServerHop()
                 Description = "Hopping immediately...",
                 Time = 2
             })
-            PersistentServerHop()
+            PersistentServerHop(1, 3)  -- 🔥 Server kecil buat farming
             task.wait(3)
             continue
         end
@@ -1054,7 +1041,7 @@ local function ServerHop()
             continue
         end
 
-        -- 4. Round + Killer → HOP + NOTIF
+        -- 4. Round + Killer → HOP ke server 1-3 player + NOTIF
         if IsRound and role == "Killer" then
             lobbyWaitStart = nil
             ZryxNotify({
@@ -1062,22 +1049,21 @@ local function ServerHop()
                 Description = "Hopping now...",
                 Time = 2
             })
-            PersistentServerHop()
+            PersistentServerHop(1, 3)  -- 🔥 Server kecil buat farming
             task.wait(3)
             continue
         end
 
-        -- 5. Round + Spectator → HOP SILENT
+        -- 5. Round + Spectator → HOP ke server 1-3 player SILENT
         if IsRound and role == "Spectator" then
             lobbyWaitStart = nil
-            PersistentServerHop()
+            PersistentServerHop(1, 3)  -- 🔥 Server kecil buat farming
             task.wait(3)
             continue
         end
 
-        -- 6. LOBBY LOGIC (Auto Lobby Hop)
+        -- 6. LOBBY LOGIC (Auto Lobby Hop - CARI SERVER RAME!)
         if not IsRound then
-            -- Mulai timer kalau belum ada
             if not lobbyWaitStart then
                 lobbyWaitStart = os.time()
             end
@@ -1091,10 +1077,11 @@ local function ServerHop()
                 continue
             end
             
-            -- Kalau nunggu terlalu lama dan server sepi → silent hop
+            -- 🔥 Kalau nunggu terlalu lama dan server sepi
+            -- → HOP KE SERVER RAME (4-10 player)
             if waited >= LOBBY_TIMEOUT then
                 lobbyWaitStart = nil
-                PersistentServerHop()
+                PersistentServerHop(4, 10)  -- 🔥 SERVER RAME BUAT CEPET MULAI ROUND
                 task.wait(3)
                 continue
             end
@@ -1103,7 +1090,6 @@ local function ServerHop()
             continue
         end
 
-        -- Default: tunggu sebentar
         task.wait(1)
     end
 end
@@ -1119,7 +1105,7 @@ AutoFarmGroup:AddToggle("EnableAutoFarm", {
 
 AutoFarmGroup:AddToggle("ServerHop", {
     Text = "Server Hop (Smart)",
-    Tooltip = "Auto hop: Alone/Killer/Spec/Lobby sepi. Survivor=Auto Farm",
+    Tooltip = "Farm=1-3 player | Lobby sepi=4-10 player (rame)",
     Default = false,
     Callback = function(Value)
         if Value then
@@ -1323,7 +1309,7 @@ QueueAutoExecute()
 
 Library:Notify({
     Title = "Zryx Auto Farm",
-    Description = "Ultimate Version Loaded!",
+    Description = "Ultimate v2.1 Loaded!",
     Icon = "rbxassetid://" .. ZRYX_LOGO_ID,
     Time = 4
 })
