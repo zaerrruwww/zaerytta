@@ -42,7 +42,7 @@ local ZRYX_COLORS = {
 --==================================================
 local Window = Library:CreateWindow({
     Title = "Zryx Auto Farm",
-    Footer = "version: 1.0.0",
+    Footer = "version: 1.0.1",
     Icon = ZRYX_LOGO_ID,
     NotifySide = "Right",
     ShowCustomCursor = true,
