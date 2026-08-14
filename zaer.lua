@@ -18,7 +18,7 @@ Library.ShowToggleFrameInKeybinds = true
 local Window = Library:CreateWindow({
 	Title = "Zryx Auto Farm",
 	Footer = "version: 1.0.0",
-	Icon = 94272208451726,
+	Icon = 94272208451726, -- Logo tetap ada di UI
 	NotifySide = "Right",
 	ShowCustomCursor = true,
 })
@@ -127,7 +127,6 @@ local function LoadPreviousAttributes()
 		return nil
 	end
 	local LocalPlayer = game:GetService("Players").LocalPlayer
-    -- Jangan gunakan snapshot milik player lain
 	if tonumber(data.UserId) ~= LocalPlayer.UserId then
 		return nil
 	end
@@ -177,9 +176,8 @@ local function GetAttributeDelta(currentValue, previousValue)
 end
 
 --==================================================
--- WEBHOOK SYSTEM
+-- WEBHOOK SYSTEM (TANPA GAMBAR / ANTI-BUG)
 --==================================================
--- Webhook khusus untuk debug (tidak update snapshot)
 local function SendDebugWebhook(title, description)
 	if not Toggles.EnableWebhook or not Toggles.EnableWebhook.Value then
 		return false
@@ -194,7 +192,7 @@ local function SendDebugWebhook(title, description)
 			{
 				["title"] = title,
 				["description"] = description,
-				["color"] = 16711680, -- merah untuk debug
+				["color"] = 16711680,
 				["footer"] = {
 					["text"] = "ServerHop Debug"
 				},
@@ -225,17 +223,11 @@ local function SendDiscordWebhook(customTitle, customDesc, forceSend)
 	local Players = game:GetService("Players")
 	local LocalPlayer = Players.LocalPlayer
     
-    --==================================================
-    -- PLAYER INFO
-    --==================================================
 	local displayName = LocalPlayer.DisplayName
 	local userId = LocalPlayer.UserId
 	local serverId = game.JobId ~= "" and game.JobId or "Singleplayer"
 	local profileUrl = "https://www.roblox.com/users/" .. userId .. "/profile"
     
-    --==================================================
-    -- READ CURRENT ATTRIBUTES
-    --==================================================
 	local attrs = LocalPlayer:GetAttributes()
 	local KillerChance = tonumber(attrs.KillerChance) or 0
 	local EXP = tonumber(attrs.EXP) or 0
@@ -243,9 +235,6 @@ local function SendDiscordWebhook(customTitle, customDesc, forceSend)
 	local Gears = tonumber(attrs.Gears) or 0
 	local Level = tonumber(attrs.Level) or 0
     
-    --==================================================
-    -- FIRST RUN
-    --==================================================
 	if not PreviousAttributes then
 		PreviousAttributes = {
 			KillerChance = KillerChance,
@@ -255,31 +244,25 @@ local function SendDiscordWebhook(customTitle, customDesc, forceSend)
 		}
 	end
     
-    --==================================================
-    -- CALCULATE DELTA
-    --==================================================
 	local KillerChanceDelta = GetAttributeDelta(KillerChance, PreviousAttributes.KillerChance)
 	local EXPDelta = GetAttributeDelta(EXP, PreviousAttributes.EXP)
 	local ScrewsDelta = GetAttributeDelta(Screws, PreviousAttributes.Screws)
 	local GearsDelta = GetAttributeDelta(Gears, PreviousAttributes.Gears)
     
-    --==================================================
-    -- PAYLOAD (DENGAN LOGO & AVATAR HEADSHOT)
-    --==================================================
+    -- ✅ PAYLOAD BERSIH: TANPA THUMBNAIL, TANPA AVATAR, TANPA ICON (100% ANTI-BUG)
 	local payload = {
         ["username"] = "Zryx Auto Farm",
-        ["avatar_url"] = "https://www.roblox.com/asset-thumbnail/image?assetId=94272208451726&width=512&height=512&format=png",
 		["embeds"] = {
 			{
                 ["author"] = {
                     ["name"] = string.format("%s · Level %d", displayName, Level),
-                    ["url"] = profileUrl,
-                    ["icon_url"] = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. userId .. "&width=150&height=150&format=png"
+                    ["url"] = profileUrl
+                    -- ["icon_url"] DIHAPUS agar tidak broken image
                 },
 				["title"] = customTitle or "Zryx Auto Farm Report",
 				["description"] = customDesc or "Auto farm stats update",
 				["url"] = profileUrl,
-				["color"] = 2733558,
+				["color"] = 2733558, -- Warna Biru Zryx
 				["fields"] = {
 					{
 						["name"] = "💀 SIN",
@@ -307,21 +290,16 @@ local function SendDiscordWebhook(customTitle, customDesc, forceSend)
 						["inline"] = false
 					}
 				},
-				["thumbnail"] = {
-                    ["url"] = "https://www.roblox.com/asset-thumbnail/image?assetId=94272208451726&width=512&height=512&format=png"
-                },
+                -- ["thumbnail"] DIHAPUS agar tidak broken image
 				["footer"] = {
-					["text"] = string.format("Zryx Auto Farm · %s", GetExecutorName()),
-                    ["icon_url"] = "https://www.roblox.com/asset-thumbnail/image?assetId=94272208451726&width=512&height=512&format=png"
+					["text"] = string.format("Zryx Auto Farm · %s", GetExecutorName())
+                    -- ["icon_url"] DIHAPUS agar tidak broken image
 				},
 				["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%S.000Z")
 			}
 		}
 	}
     
-    --==================================================
-    -- SEND WEBHOOK
-    --==================================================
 	local response = safeRequest({
 		Url = webhookUrl,
 		Method = "POST",
@@ -331,13 +309,7 @@ local function SendDiscordWebhook(customTitle, customDesc, forceSend)
 		Body = HttpService:JSONEncode(payload)
 	})
     
-    --==================================================
-    -- SUCCESS
-    --==================================================
 	if response and (response.StatusCode == 200 or response.StatusCode == 204) then
-        --==================================================
-        -- ONLY UPDATE AFTER SUCCESS
-        --==================================================
 		local newSnapshot = {
 			KillerChance = KillerChance,
 			EXP = EXP,
@@ -349,11 +321,7 @@ local function SendDiscordWebhook(customTitle, customDesc, forceSend)
 		return true, "Webhook successfully sent!"
 	end
     
-    --==================================================
-    -- FAILED
-    --==================================================
 	local status = response and response.StatusCode or "No Response / Failed Request"
-    -- Jangan update PreviousAttributes kalau webhook gagal.
 	return false, "Failed Status: " .. tostring(status)
 end
 
@@ -361,14 +329,12 @@ end
 -- BEAT GAME SURVIVOR
 --==================================================
 local function BeatGameSurvivor()
-    -- 1. Cek toggle
     if not Toggles.EnableAutoFarm.Value then
         BeatState.BeatSurvivorDone = false
         BeatState.LastFinishPos = nil
         return
     end
 
-    -- 2. Role check + notifikasi
     local currentRole = GetRole()
     if BeatState.LastRole ~= currentRole then
         if currentRole == "Survivor" then
@@ -380,7 +346,6 @@ local function BeatGameSurvivor()
         return
     end
 
-    -- 3. Karakter & Map
     local root = GetCharacterRoot()
     if not root then
         NotifyAF("⏳ Waiting", "Character not loaded")
@@ -392,7 +357,6 @@ local function BeatGameSurvivor()
         return
     end
 
-    -- 4. Deteksi finish
     local exitPos = nil
     pcall(function()
         if map:FindFirstChild("RooftopHitbox") or map:FindFirstChild("Rooftop") then
@@ -446,31 +410,24 @@ local function BeatGameSurvivor()
         end
     end)
 
-    -- 5. Jika finish tidak ditemukan
     if not exitPos then
         NotifyAF("⚠️ Finish Not Found", "Map unsupported")
         return
     end
 
-    -- 6. Reset state jika map berubah
     if BeatState.LastFinishPos then
         if (exitPos - BeatState.LastFinishPos).Magnitude > 50 then
             BeatState.BeatSurvivorDone = false
         end
     end
 
-    -- 7. Cegah teleport berulang di ronde yang sama
     if BeatState.BeatSurvivorDone then
         return
     end
 
-    -- 8. Notifikasi finish ditemukan
     NotifyAF("📍 Finish Found", "Waiting 6s...")
-
-    -- 9. Jeda 6 detik
     task.wait(6)
 
-    -- 10. Validasi ulang semua kondisi
     if not Toggles.EnableAutoFarm.Value then
         NotifyAF("⛔ Cancelled", "Toggle turned off")
         return
@@ -485,7 +442,6 @@ local function BeatGameSurvivor()
         return
     end
 
-    -- 11. Teleport!
     NotifyAF("🚀 Teleporting", "Moving to finish...")
     currentRoot.CFrame = CFrame.new(exitPos + Vector3.new(0, 0, 0))
     BeatState.BeatSurvivorDone = true
@@ -493,12 +449,8 @@ local function BeatGameSurvivor()
 
     NotifyAF("✅ Teleport Success", "Round completed!")
 
-    --==================================================
-    -- FINISH -> SPECTATOR WATCHDOG
-    --==================================================
     if not FinishWatchActive then
         FinishWatchActive = true
-
         task.spawn(function()
             local watchStart = os.clock()
             local WATCH_TIMEOUT = 10
@@ -510,51 +462,37 @@ local function BeatGameSurvivor()
                 end
 
                 local role = GetRole()
-
                 if role == "Spectator" then
                     FinishWatchActive = false
                     NotifyAF("👁️ Match Completed", "Role changed to Spectator.")
                     return
                 end
-
                 task.wait(0.5)
             end
 
             local finalRole = GetRole()
-
             if finalRole == "Survivor" then
                 NotifyAF("🔴 Match Stuck", "Still Survivor after finish. Server hopping...")
-
                 pcall(function()
                     SendDebugWebhook(
                         "🔴 Match Stuck",
-                        string.format(
-                            "Player finished but role remained `%s` after %d seconds.\nCurrent Server: `%s`",
-                            tostring(finalRole),
-                            WATCH_TIMEOUT,
-                            tostring(game.JobId)
-                        )
+                        string.format("Player finished but role remained `%s` after %d seconds.\nCurrent Server: `%s`", tostring(finalRole), WATCH_TIMEOUT, tostring(game.JobId))
                     )
                 end)
-
                 if Toggles.ServerHop and Toggles.ServerHop.Value then
                     ForceServerHop = true
                 end
             end
-
             FinishWatchActive = false
         end)
     end
 
-    -- 12. Kirim webhook setelah 5 detik
     task.wait(5)
     SendDiscordWebhook()
 end
 
 --==================================================
 -- SERVER HOP
--- EVENT-DRIVEN + JOBID FALLBACK + PERSISTENT IGNORE
--- + MATCH-STUCK RECOVERY
 --==================================================
 local IGNORE_FILE = "ServerHop.txt"
 local TeleportService = game:GetService("TeleportService")
@@ -562,9 +500,6 @@ local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
---==================================================
--- SERVER HOP STATE
---==================================================
 local IgnoredServers = {}
 local TargetServerId = nil
 local OriginalJobId = nil
@@ -574,9 +509,6 @@ local LastTeleportError = ""
 local LastTeleportResult = nil
 local IsHopping = false
 
---==================================================
--- SERVER HOP CONFIG
---==================================================
 local CANDIDATE_IGNORE_TIME = 180
 local FAILED_SERVER_IGNORE_TIME = 600
 local API_RETRY_DELAY = 3
@@ -585,52 +517,38 @@ local NO_SERVER_DELAY = 3
 local TELEPORT_EVENT_WINDOW = 7
 local TELEPORT_FAILURE_DELAY = 2.5
 
---==================================================
--- BLACKLIST FILE MANAGEMENT
---==================================================
 local function GetIgnoredServers()
 	if type(isfile) ~= "function" or type(readfile) ~= "function" or not isfile(IGNORE_FILE) then
 		return {}
 	end
-
 	local success, content = pcall(readfile, IGNORE_FILE)
 	if not success or type(content) ~= "string" then
 		return {}
 	end
-
 	local now = os.time()
 	local list = {}
-
 	for _, line in ipairs(content:split("\n")) do
 		local serverId, expiredAt = line:match("^([^|]+)|(%d+)$")
 		expiredAt = tonumber(expiredAt)
-
 		if serverId and serverId ~= "" and expiredAt and now < expiredAt then
 			list[serverId] = expiredAt
 		end
 	end
-
 	return list
 end
 
 local function UpdateIgnoredServers(list)
-	if type(writefile) ~= "function" then
-		return false
-	end
-
+	if type(writefile) ~= "function" then return false end
 	local now = os.time()
 	local lines = {}
-
 	for serverId, expiredAt in pairs(list) do
 		if serverId and expiredAt and now < expiredAt then
 			table.insert(lines, serverId .. "|" .. expiredAt)
 		end
 	end
-
 	local success = pcall(function()
 		writefile(IGNORE_FILE, table.concat(lines, "\n"))
 	end)
-
 	return success
 end
 
@@ -643,19 +561,14 @@ end
 local function IsServerIgnored(serverId)
 	local expiredAt = IgnoredServers[serverId]
 	if not expiredAt then return false end
-
 	if os.time() >= expiredAt then
 		IgnoredServers[serverId] = nil
 		UpdateIgnoredServers(IgnoredServers)
 		return false
 	end
-
 	return true
 end
 
---==================================================
--- ROUND / SERVER HOP STATE
---==================================================
 local IsRound = false
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Remotes = ReplicatedStorage:WaitForChild("Remotes")
@@ -675,9 +588,6 @@ TimeUpdateEvent.OnClientEvent:Connect(function(Status)
 	end
 end)
 
---==================================================
--- SERVER HOP PERMISSION
---==================================================
 local function CanServerHop()
 	if not IsRound then return false end
 	local role = GetRole()
@@ -685,9 +595,6 @@ local function CanServerHop()
 	return true
 end
 
---==================================================
--- TELEPORT STATE MANAGEMENT
---==================================================
 local function ResetTeleportState()
 	TargetServerId = nil
 	OriginalJobId = nil
@@ -714,9 +621,6 @@ local function RegisterTeleportFailure(teleportResult, errorMessage)
 	return true
 end
 
---==================================================
--- NATIVE TELEPORT FAILURE EVENT
---==================================================
 TeleportService.TeleportInitFailed:Connect(function(player, teleportResult, errorMessage)
 	if player ~= LocalPlayer then return end
 	if not TeleportInProgress then return end
@@ -744,12 +648,8 @@ TeleportService.TeleportInitFailed:Connect(function(player, teleportResult, erro
 	end
 end)
 
---==================================================
--- TELEPORT REQUEST
---==================================================
 local function TryTeleport(serverId)
 	BeginTeleport(serverId)
-
 	local success, err = pcall(function()
 		TeleportService:TeleportToPlaceInstance(game.PlaceId, serverId, LocalPlayer)
 	end)
@@ -758,45 +658,32 @@ local function TryTeleport(serverId)
 		TeleportInProgress = false
 		LastTeleportError = tostring(err)
 		AddIgnoredServer(serverId, FAILED_SERVER_IGNORE_TIME)
-
 		warn(string.format("[ServerHop] Teleport call failed | Server: %s | Error: %s", serverId, tostring(err)))
 		pcall(function()
 			SendDebugWebhook("🐛 Teleport Call Failed", string.format("Server: `%s`\nError: `%s`", serverId, tostring(err)))
 		end)
-
 		ResetTeleportState()
 		return false
 	end
-
 	return true
 end
 
---==================================================
--- WAIT FOR TELEPORT RESULT
---==================================================
 local function WaitForTeleportResult()
 	local startTime = os.clock()
-
 	while TeleportInProgress and not TeleportFailed and os.clock() - startTime < TELEPORT_EVENT_WINDOW do
 		if game.JobId ~= OriginalJobId then
 			return "Success"
 		end
 		task.wait(0.1)
 	end
-
 	if TeleportFailed then return "Failed" end
 	if game.JobId ~= OriginalJobId then return "Success" end
-
 	return "Timeout"
 end
 
---==================================================
--- MAIN SERVER HOP
---==================================================
 ServerHop = function()
 	if IsHopping then return end
 	IsHopping = true
-
 	IgnoredServers = GetIgnoredServers()
 	ResetTeleportState()
 
@@ -814,7 +701,6 @@ ServerHop = function()
 		end
 
 		local url = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?limit=100&sortOrder=Asc&excludeFullGames=true&cursor=" .. HttpService:UrlEncode(cursor)
-
 		local success, result = pcall(function()
 			return HttpService:JSONDecode(game:HttpGet(url))
 		end)
@@ -854,7 +740,6 @@ ServerHop = function()
 			if not forcedThisCycle and not CanServerHop() then break end
 
 			local validServer = server and server.id and server.id ~= currentJobId and server.playing and server.playing >= 1 and server.playing <= 3 and not IsServerIgnored(server.id)
-
 			if not validServer then continue end
 
 			foundServer = true
@@ -963,7 +848,7 @@ AutoFarmGroup:AddToggle("EnableAutoFarm", {
 })
 
 --==================================================
--- AUTO EXECUTE (URL BARU)
+-- AUTO EXECUTE
 --==================================================
 local LOADER_URL = "https://raw.githubusercontent.com/zaerrruwww/zaerytta/refs/heads/main/zaer.lua"
 local AutoExecuteQueued = false
@@ -1123,7 +1008,6 @@ SaveManager:LoadAutoloadConfig()
 --==================================================
 QueueAutoExecute()
 
--- Notifikasi pembuka dengan Logo Zryx
 Library:Notify({
     Title = "Zryx Auto Farm",
     Description = "Script Loaded Successfully!",
