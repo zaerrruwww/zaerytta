@@ -1,15 +1,8 @@
 --==================================================
--- ZRYX AUTO FARM - FINAL VERSION
--- Obsidian UI + Beat Survivor + Smart Server Hop
+-- ZRYX AUTO FARM (OBSIDIAN UI + FARM FULL AFK 7/24)
 --==================================================
+pcall(function() game:GetService("GuiService"):SetErrorPromptEnabled(false) end)
 
-pcall(function()
-    setfflag("TeleportService", "DisableTeleportErrors", "true")
-end)
-
---==================================================
--- LIBRARY LOADER
---==================================================
 local repo = "https://raw.githubusercontent.com/deividcomsono/Obsidian/main/"
 local Library = loadstring(game:HttpGet(repo .. "Library.lua"))()
 local ThemeManager = loadstring(game:HttpGet(repo .. "addons/ThemeManager.lua"))()
@@ -20,614 +13,386 @@ Library.ForceCheckbox = false
 Library.ShowToggleFrameInKeybinds = true
 
 --==================================================
--- CONFIGURATION
---==================================================
-local ZRYX_LOGO_ID = 94272208451726
-local ZRYX_LOGO_FALLBACK = "https://www.roblox.com/asset-thumbnail/image?assetId=" 
-    .. ZRYX_LOGO_ID 
-    .. "&width=512&height=512&format=png"
-
-local ZRYX_COLORS = {
-    SkyBlue      = Color3.fromHex("29B6F6"),
-    White        = Color3.fromHex("FFFFFF"),
-    Magenta      = Color3.fromHex("EC407A"),
-    LightGray    = Color3.fromHex("F5F5F5"),
-    DarkBlueGray = Color3.fromHex("37474F"),
-    DarkBlue     = Color3.fromHex("0277BD"),
-    BorderBlue   = Color3.fromHex("81D4FA"),
-}
-
---==================================================
--- WINDOW CREATION
+-- WINDOW
 --==================================================
 local Window = Library:CreateWindow({
-    Title = "Zryx Auto Farm",
-    Footer = "version: 1.0.1",
-    Icon = ZRYX_LOGO_ID,
-    NotifySide = "Right",
-    ShowCustomCursor = true,
+	Title = "Zryx Auto Farm",
+	Footer = "version: 1.0.0",
+	Icon = 94272208451726,
+	NotifySide = "Right",
+	ShowCustomCursor = true,
 })
 
-pcall(function()
-    Window:SetCornerRadius(14)
-end)
-
 --==================================================
--- ZRYX THEME APPLIER
---==================================================
-local function ApplyZryxTheme()
-    task.wait(2)
-    pcall(function()
-        local Players = game:GetService("Players")
-        local LocalPlayer = Players.LocalPlayer
-        local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
-
-        local targetGui = nil
-        for _, gui in ipairs(PlayerGui:GetChildren()) do
-            if gui:IsA("ScreenGui") then
-                targetGui = gui
-                break
-            end
-        end
-        if not targetGui then
-            for _, gui in ipairs(game:GetService("CoreGui"):GetChildren()) do
-                if gui:IsA("ScreenGui") then
-                    targetGui = gui
-                    break
-                end
-            end
-        end
-        if not targetGui then return end
-
-        local LOGO_ID = "rbxassetid://" .. ZRYX_LOGO_ID
-
-        -- Perbesar icon header
-        for _, obj in ipairs(targetGui:GetDescendants()) do
-            if (obj:IsA("ImageLabel") or obj:IsA("ImageButton")) then
-                local size = obj.AbsoluteSize
-                if size and size.X >= 14 and size.X <= 50 and size.Y >= 14 and size.Y <= 50 then
-                    local pos = obj.AbsolutePosition
-                    if pos and pos.Y < 80 then
-                        obj.Image = LOGO_ID
-                        obj.ImageTransparency = 0
-                        pcall(function() obj.ImageColor3 = Color3.new(1,1,1) end)
-                        pcall(function() obj.Size = UDim2.new(0, 48, 0, 48) end)
-                    end
-                end
-            end
-        end
-
-        -- Apply warna ke semua elemen
-        local function applyColorsRecursive(parent)
-            for _, obj in ipairs(parent:GetChildren()) do
-                pcall(function()
-                    if obj:IsA("Frame") then
-                        local name = obj.Name or ""
-                        if name == "Screen" or name == "Background" or name == "Main" then
-                            obj.BackgroundColor3 = ZRYX_COLORS.SkyBlue
-                        elseif name == "Content" or name == "Container" or name == "Body" or name == "InnerFrame" then
-                            obj.BackgroundColor3 = ZRYX_COLORS.White
-                        elseif name:find("Groupbox") or name:find("Group") then
-                            obj.BackgroundColor3 = ZRYX_COLORS.White
-                            pcall(function()
-                                obj.BorderSizePixel = 1
-                                obj.BorderColor3 = ZRYX_COLORS.BorderBlue
-                            end)
-                        end
-                    end
-
-                    if obj:IsA("TextLabel") then
-                        local text = obj.Text or ""
-                        local parentName = obj.Parent and obj.Parent.Name or ""
-                        if text:find("Zryx") or text:find("Auto Farm") or text:find("AUTO FARM") then
-                            obj.TextColor3 = ZRYX_COLORS.Magenta
-                            pcall(function()
-                                obj.Font = Enum.Font.GothamBold
-                                obj.TextSize = 20
-                            end)
-                        elseif parentName:find("Header") or parentName:find("Title") then
-                            obj.TextColor3 = ZRYX_COLORS.Magenta
-                        else
-                            obj.TextColor3 = ZRYX_COLORS.DarkBlueGray
-                        end
-                    end
-
-                    if obj:IsA("TextButton") then
-                        local text = obj.Text or ""
-                        if text:find("ACTIVATE") or text:find("ENABLE") or text:find("START") then
-                            obj.BackgroundColor3 = ZRYX_COLORS.DarkBlue
-                            obj.BorderSizePixel = 0
-                            for _, child in ipairs(obj:GetChildren()) do
-                                if child:IsA("TextLabel") or child:IsA("TextButton") then
-                                    child.TextColor3 = ZRYX_COLORS.White
-                                end
-                            end
-                        else
-                            obj.BackgroundColor3 = ZRYX_COLORS.White
-                            obj.BorderSizePixel = 2
-                            obj.BorderColor3 = ZRYX_COLORS.SkyBlue
-                            for _, child in ipairs(obj:GetChildren()) do
-                                if child:IsA("TextLabel") then
-                                    child.TextColor3 = ZRYX_COLORS.DarkBlueGray
-                                end
-                                if child:IsA("ImageLabel") or child:IsA("ImageButton") then
-                                    child.ImageColor3 = ZRYX_COLORS.DarkBlue
-                                end
-                            end
-                        end
-                        pcall(function()
-                            local corner = obj:FindFirstChildOfClass("UICorner")
-                            if corner then
-                                corner.CornerRadius = UDim.new(0, 10)
-                            else
-                                local newCorner = Instance.new("UICorner")
-                                newCorner.CornerRadius = UDim.new(0, 10)
-                                newCorner.Parent = obj
-                            end
-                        end)
-                    end
-
-                    if obj:IsA("UICorner") then
-                        pcall(function()
-                            if obj.CornerRadius.Offset < 10 then
-                                obj.CornerRadius = UDim.new(0, 12)
-                            end
-                        end)
-                    end
-                end)
-                applyColorsRecursive(obj)
-            end
-        end
-        applyColorsRecursive(targetGui)
-
-        -- Logo besar di panel
-        local mainFrame = nil
-        for _, obj in ipairs(targetGui:GetDescendants()) do
-            if obj:IsA("Frame") and (obj.Name == "Main" or obj.Name == "Content" or obj.Name == "Container") then
-                mainFrame = obj
-                break
-            end
-        end
-        if not mainFrame then
-            local maxSize = 0
-            for _, obj in ipairs(targetGui:GetDescendants()) do
-                if obj:IsA("Frame") then
-                    local s = obj.AbsoluteSize
-                    if s and (s.X * s.Y) > maxSize then
-                        maxSize = s.X * s.Y
-                        mainFrame = obj
-                    end
-                end
-            end
-        end
-
-        if mainFrame then
-            pcall(function()
-                local old = mainFrame:FindFirstChild("ZryxLogoContainer")
-                if old then old:Destroy() end
-            end)
-            pcall(function()
-                mainFrame.BackgroundColor3 = ZRYX_COLORS.White
-            end)
-
-            local logoFrame = Instance.new("Frame")
-            logoFrame.Name = "ZryxLogoContainer"
-            logoFrame.Size = UDim2.new(1, 0, 0, 200)
-            logoFrame.Position = UDim2.new(0, 0, 0, 0)
-            logoFrame.BackgroundTransparency = 1
-            logoFrame.ZIndex = 100
-            logoFrame.Parent = mainFrame
-
-            local bgLogo = Instance.new("ImageLabel")
-            bgLogo.Name = "ZryxLogoBackground"
-            bgLogo.Size = UDim2.new(0, 500, 0, 160)
-            bgLogo.Position = UDim2.new(0.5, -250, 0, 15)
-            bgLogo.Image = LOGO_ID
-            bgLogo.BackgroundTransparency = 1
-            bgLogo.ImageTransparency = 0.85
-            bgLogo.ScaleType = Enum.ScaleType.Fit
-            bgLogo.ZIndex = 101
-            bgLogo.Parent = logoFrame
-            local bgLogoCorner = Instance.new("UICorner")
-            bgLogoCorner.CornerRadius = UDim.new(0, 25)
-            bgLogoCorner.Parent = bgLogo
-
-            local mainLogo = Instance.new("ImageLabel")
-            mainLogo.Name = "ZryxMainLogo"
-            mainLogo.Size = UDim2.new(0, 420, 0, 135)
-            mainLogo.Position = UDim2.new(0.5, -210, 0.5, -67)
-            mainLogo.Image = LOGO_ID
-            mainLogo.BackgroundTransparency = 1
-            mainLogo.ImageTransparency = 0
-            mainLogo.ScaleType = Enum.ScaleType.Fit
-            mainLogo.ZIndex = 102
-            mainLogo.Parent = logoFrame
-            local mainLogoCorner = Instance.new("UICorner")
-            mainLogoCorner.CornerRadius = UDim.new(0, 22)
-            mainLogoCorner.Parent = mainLogo
-
-            local titleText = Instance.new("TextLabel")
-            titleText.Name = "ZryxTitle"
-            titleText.Size = UDim2.new(1, 0, 0, 30)
-            titleText.Position = UDim2.new(0, 0, 0, 170)
-            titleText.BackgroundTransparency = 1
-            titleText.Text = "AUTO FARM MENU"
-            titleText.TextColor3 = ZRYX_COLORS.Magenta
-            titleText.TextSize = 20
-            titleText.Font = Enum.Font.GothamBold
-            titleText.ZIndex = 101
-            titleText.Parent = logoFrame
-        end
-    end)
-end
-
-task.spawn(ApplyZryxTheme)
-pcall(function()
-    task.spawn(function()
-        while not Library.Unloaded do
-            task.wait(5)
-            pcall(ApplyZryxTheme)
-        end
-    end)
-end)
-
---==================================================
--- TABS & UI GROUPS
+-- TABS
 --==================================================
 Window:SetSidebarWidth(40)
 local Tabs = {
-    AutoFarm = Window:AddTab("", "zap"),
-    Settings = Window:AddTab("", "settings"),
+	AutoFarm = Window:AddTab("", "zap"),
+	Settings = Window:AddTab("", "settings"),
 }
+
+--==================================================
+-- AUTO FARM TAB
+--==================================================
 local AutoFarmGroup = Tabs.AutoFarm:AddLeftGroupbox("Auto Farm", "zap")
 local WebhookGroup = Tabs.AutoFarm:AddRightGroupbox("Webhook", "webhook")
 
 --==================================================
--- STATE VARIABLES
+-- BEAT SURVIVOR STATE
 --==================================================
 local BeatState = {
-    LastFinishPos = nil,
-    BeatSurvivorDone = false,
+	LastFinishPos = nil,
+	BeatSurvivorDone = false,
+	LastRole = nil,
 }
-local HopAfterBeatTriggered = false
+local FinishWatchActive = false
+local ServerHop
+local ForceServerHop = false
+local LastNotifTime = 0
+
+local function NotifyAF(title, desc, icon)
+    local now = os.time()
+    if now - LastNotifTime < 2.5 then return end
+    LastNotifTime = now
+    Library:Notify({
+        Title = title .. "   \n",
+        Description = desc .. "   ",
+        Time = 3,
+    })
+end
 
 --==================================================
 -- HELPER FUNCTIONS
 --==================================================
 local function GetRole()
-    local player = game:GetService("Players").LocalPlayer
-    if not player.Team then return "Unknown" end
-    local name = player.Team.Name
-    if name == "Killer" then return "Killer" end
-    if name == "Survivors" then return "Survivor" end
-    if name == "Spectator" or name == "Spectators" then return "Spectator" end
-    return "Lobby"
+	local player = game:GetService("Players").LocalPlayer
+	if not player.Team then
+		return "Unknown"
+	end
+	local name = player.Team.Name
+	if name == "Killer" then
+		return "Killer"
+	end
+	if name == "Survivors" then
+		return "Survivor"
+	end
+	if name == "Spectator" or name == "Spectators" then
+		return "Spectator"
+	end
+	return "Lobby"
 end
 
 local function GetCharacterRoot()
-    local player = game:GetService("Players").LocalPlayer
-    local character = player.Character
-    return character and character:FindFirstChild("HumanoidRootPart")
+	local player = game:GetService("Players").LocalPlayer
+	local character = player.Character
+	return character and character:FindFirstChild("HumanoidRootPart")
 end
 
+-- Universal HTTP Request Fallback for All Modern Executors
 local function safeRequest(options)
-    local req = (syn and syn.request)
-             or (http and http.request)
-             or http_request
-             or request
-             or (fluxus and fluxus.request)
-             or (krnl and krnl.request)
-    if req then return req(options) end
-    return nil
+	local req = (syn and syn.request) or (http and http.request) or http_request or request or (fluxus and fluxus.request) or (krnl and krnl.request)
+	if req then
+		return req(options)
+	end
+	return nil
 end
 
+-- Detect Executor Name
 local function GetExecutorName()
-    return (identifyexecutor and identifyexecutor())
-        or (getexecutorname and getexecutorname())
-        or "Unknown Executor"
+	return (identifyexecutor and identifyexecutor()) or (getexecutorname and getexecutorname()) or "Unknown Executor"
 end
 
 --==================================================
--- 🔔 SMART NOTIFY (HORMATI TOGGLE NOTIFIKASI)
---==================================================
-local function ZryxNotify(config)
-    if Toggles.EnableNotifications and Toggles.EnableNotifications.Value == false then
-        return
-    end
-    Library:Notify(config)
-end
-
---==================================================
--- WEBHOOK ASSET URLs (LOGO & AVATAR)
---==================================================
-local function GetZryxLogoUrl()
-    local success, response = pcall(function()
-        return game:HttpGet(
-            "https://thumbnails.roblox.com/v1/assets?assetIds="
-            .. ZRYX_LOGO_ID
-            .. "&size=512x512&format=Png&isCircular=false"
-        )
-    end)
-    if success and response then
-        local HttpService = game:GetService("HttpService")
-        local ok, data = pcall(function()
-            return HttpService:JSONDecode(response)
-        end)
-        if ok and data and data.data and data.data[1] and data.data[1].imageUrl then
-            return data.data[1].imageUrl 
-                .. "?t=" .. tostring(os.time()) 
-                .. "&r=" .. tostring(math.random(1000, 9999))
-        end
-    end
-    return ZRYX_LOGO_FALLBACK 
-        .. "?t=" .. tostring(os.time()) 
-        .. "&r=" .. tostring(math.random(1000, 9999))
-end
-
-local cachedLogoUrl = nil
-local function GetCachedLogoUrl()
-    if not cachedLogoUrl then
-        cachedLogoUrl = GetZryxLogoUrl()
-    end
-    return cachedLogoUrl
-end
-
-local function GetPlayerHeadshotUrl(userId)
-    local HttpService = game:GetService("HttpService")
-    local cacheBuster = "?t=" .. tostring(os.time()) 
-        .. "&r=" .. tostring(math.random(10000, 99999))
-    
-    local ok1, res1 = pcall(function()
-        return game:HttpGet(
-            "https://thumbnails.roblox.com/v1/users/avatar-headshot"
-            .. "?userIds=" .. userId
-            .. "&size=100x100&format=Png&isCircular=false"
-        )
-    end)
-    if ok1 and res1 then
-        local ok, data = pcall(function()
-            return HttpService:JSONDecode(res1)
-        end)
-        if ok and data and data.data and data.data[1] 
-            and data.data[1].state == "Completed" 
-            and data.data[1].imageUrl then
-            return data.data[1].imageUrl .. cacheBuster
-        end
-    end
-    
-    local ok2, res2 = pcall(function()
-        return game:HttpGet(
-            "https://thumbnails.roblox.com/v1/avatar-headshot"
-            .. "?userIds=" .. userId
-            .. "&size=100x100&format=Png&isCircular=false"
-        )
-    end)
-    if ok2 and res2 then
-        local ok, data = pcall(function()
-            return HttpService:JSONDecode(res2)
-        end)
-        if ok and data and data.data and data.data[1] and data.data[1].imageUrl then
-            return data.data[1].imageUrl .. cacheBuster
-        end
-    end
-    
-    return "https://www.roblox.com/headshot-thumbnail/image?userId="
-        .. userId
-        .. "&width=150&height=150&format=png"
-        .. cacheBuster
-end
-
-local cachedAvatarUrls = {}
-local function GetCachedAvatarUrl(userId)
-    if not cachedAvatarUrls[userId] then
-        cachedAvatarUrls[userId] = GetPlayerHeadshotUrl(userId)
-    end
-    return cachedAvatarUrls[userId]
-end
-
---==================================================
--- WEBHOOK ATTRIBUTE PERSISTENCE
+-- WEBHOOK ATTRIBUTE STATE (PERSISTENT)
 --==================================================
 local ATTRIBUTE_FILE = "VD_AutoFarm_Attributes.json"
 local PreviousAttributes = nil
 
+--==================================================
+-- LOAD PREVIOUS ATTRIBUTES
+--==================================================
 local function LoadPreviousAttributes()
-    if type(isfile) ~= "function" or type(readfile) ~= "function" then
-        return nil
-    end
-    if not isfile(ATTRIBUTE_FILE) then
-        return nil
-    end
-    local HttpService = game:GetService("HttpService")
-    local success, data = pcall(function()
-        return HttpService:JSONDecode(readfile(ATTRIBUTE_FILE))
-    end)
-    if not success or type(data) ~= "table" then
-        return nil
-    end
-    local LocalPlayer = game:GetService("Players").LocalPlayer
-    if tonumber(data.UserId) ~= LocalPlayer.UserId then
-        return nil
-    end
-    return {
-        KillerChance = tonumber(data.KillerChance),
-        EXP = tonumber(data.EXP),
-        Screws = tonumber(data.Screws),
-        Gears = tonumber(data.Gears)
-    }
+	if type(isfile) ~= "function" or type(readfile) ~= "function" then
+		return nil
+	end
+	if not isfile(ATTRIBUTE_FILE) then
+		return nil
+	end
+	local HttpService = game:GetService("HttpService")
+	local success, data = pcall(function()
+		return HttpService:JSONDecode(readfile(ATTRIBUTE_FILE))
+	end)
+	if not success or type(data) ~= "table" then
+		return nil
+	end
+	local LocalPlayer = game:GetService("Players").LocalPlayer
+    -- Jangan gunakan snapshot milik player lain
+	if tonumber(data.UserId) ~= LocalPlayer.UserId then
+		return nil
+	end
+	return {
+		KillerChance = tonumber(data.KillerChance),
+		EXP = tonumber(data.EXP),
+		Screws = tonumber(data.Screws),
+		Gears = tonumber(data.Gears)
+	}
 end
 
+--==================================================
+-- SAVE PREVIOUS ATTRIBUTES
+--==================================================
 local function SavePreviousAttributes(attributes)
-    if type(writefile) ~= "function" then
-        return false
-    end
-    local HttpService = game:GetService("HttpService")
-    local LocalPlayer = game:GetService("Players").LocalPlayer
-    local data = {
-        UserId = LocalPlayer.UserId,
-        KillerChance = attributes.KillerChance,
-        EXP = attributes.EXP,
-        Screws = attributes.Screws,
-        Gears = attributes.Gears,
-        UpdatedAt = os.time()
-    }
-    return pcall(function()
-        writefile(ATTRIBUTE_FILE, HttpService:JSONEncode(data))
-    end)
+	if type(writefile) ~= "function" then
+		return false
+	end
+	local HttpService = game:GetService("HttpService")
+	local LocalPlayer = game:GetService("Players").LocalPlayer
+	local data = {
+		UserId = LocalPlayer.UserId,
+		KillerChance = attributes.KillerChance,
+		EXP = attributes.EXP,
+		Screws = attributes.Screws,
+		Gears = attributes.Gears,
+		UpdatedAt = os.time()
+	}
+	local success = pcall(function()
+		writefile(ATTRIBUTE_FILE, HttpService:JSONEncode(data))
+	end)
+	return success
 end
 
+-- Load snapshot dari server/session sebelumnya
 PreviousAttributes = LoadPreviousAttributes()
 
+--==================================================
+-- ATTRIBUTE DELTA
+--==================================================
 local function GetAttributeDelta(currentValue, previousValue)
-    currentValue = tonumber(currentValue) or 0
-    if previousValue == nil then return 0 end
-    return currentValue - (tonumber(previousValue) or 0)
+	currentValue = tonumber(currentValue) or 0
+	if previousValue == nil then
+		return 0
+	end
+	return currentValue - (tonumber(previousValue) or 0)
 end
 
 --==================================================
 -- WEBHOOK SYSTEM
 --==================================================
+-- Webhook khusus untuk debug (tidak update snapshot)
+local function SendDebugWebhook(title, description)
+	if not Toggles.EnableWebhook or not Toggles.EnableWebhook.Value then
+		return false
+	end
+	local webhookUrl = Options.WebhookLink and Options.WebhookLink.Value or ""
+	if webhookUrl == "" or not string.find(webhookUrl, "discord.com/api/webhooks") then
+		return false
+	end
+	local HttpService = game:GetService("HttpService")
+	local payload = {
+		["embeds"] = {
+			{
+				["title"] = title,
+				["description"] = description,
+				["color"] = 16711680, -- merah untuk debug
+				["footer"] = {
+					["text"] = "ServerHop Debug"
+				},
+				["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%S.000Z")
+			}
+		}
+	}
+	local response = safeRequest({
+		Url = webhookUrl,
+		Method = "POST",
+		Headers = {
+			["Content-Type"] = "application/json"
+		},
+		Body = HttpService:JSONEncode(payload)
+	})
+	return response and (response.StatusCode == 200 or response.StatusCode == 204)
+end
+
 local function SendDiscordWebhook(customTitle, customDesc, forceSend)
-    if not forceSend and (not Toggles.EnableWebhook or not Toggles.EnableWebhook.Value) then
-        return false, "Webhook Disabled"
-    end
+	if not forceSend and (not Toggles.EnableWebhook or not Toggles.EnableWebhook.Value) then
+		return false, "Webhook Disabled"
+	end
+	local webhookUrl = Options.WebhookLink and Options.WebhookLink.Value or ""
+	if not webhookUrl or webhookUrl == "" or not string.find(webhookUrl, "discord.com/api/webhooks") then
+		return false, "Invalid Webhook URL"
+	end
+	local HttpService = game:GetService("HttpService")
+	local Players = game:GetService("Players")
+	local LocalPlayer = Players.LocalPlayer
     
-    local webhookUrl = Options.WebhookLink and Options.WebhookLink.Value or ""
-    if not webhookUrl or webhookUrl == "" 
-        or not string.find(webhookUrl, "discord.com/api/webhooks") then
-        return false, "Invalid Webhook URL"
-    end
+    --==================================================
+    -- PLAYER INFO
+    --==================================================
+	local displayName = LocalPlayer.DisplayName
+	local userId = LocalPlayer.UserId
+	local serverId = game.JobId ~= "" and game.JobId or "Singleplayer"
+	local profileUrl = "https://www.roblox.com/users/" .. userId .. "/profile"
     
-    local HttpService = game:GetService("HttpService")
-    local LocalPlayer = game:GetService("Players").LocalPlayer
-    local displayName = LocalPlayer.DisplayName
-    local userId = LocalPlayer.UserId
-    local serverId = game.JobId ~= "" and game.JobId or "Singleplayer"
-    local profileUrl = "https://www.roblox.com/users/" .. userId .. "/profile"
+    --==================================================
+    -- READ CURRENT ATTRIBUTES
+    --==================================================
+	local attrs = LocalPlayer:GetAttributes()
+	local KillerChance = tonumber(attrs.KillerChance) or 0
+	local EXP = tonumber(attrs.EXP) or 0
+	local Screws = tonumber(attrs.Screws) or 0
+	local Gears = tonumber(attrs.Gears) or 0
+	local Level = tonumber(attrs.Level) or 0
     
-    local attrs = LocalPlayer:GetAttributes()
-    local KillerChance = tonumber(attrs.KillerChance) or 0
-    local EXP = tonumber(attrs.EXP) or 0
-    local Screws = tonumber(attrs.Screws) or 0
-    local Gears = tonumber(attrs.Gears) or 0
-    local Level = tonumber(attrs.Level) or 0
+    --==================================================
+    -- FIRST RUN
+    --==================================================
+	if not PreviousAttributes then
+		PreviousAttributes = {
+			KillerChance = KillerChance,
+			EXP = EXP,
+			Screws = Screws,
+			Gears = Gears
+		}
+	end
     
-    if not PreviousAttributes then
-        PreviousAttributes = {
-            KillerChance = KillerChance,
-            EXP = EXP,
-            Screws = Screws,
-            Gears = Gears
-        }
-    end
+    --==================================================
+    -- CALCULATE DELTA
+    --==================================================
+	local KillerChanceDelta = GetAttributeDelta(KillerChance, PreviousAttributes.KillerChance)
+	local EXPDelta = GetAttributeDelta(EXP, PreviousAttributes.EXP)
+	local ScrewsDelta = GetAttributeDelta(Screws, PreviousAttributes.Screws)
+	local GearsDelta = GetAttributeDelta(Gears, PreviousAttributes.Gears)
     
-    local logoUrl = GetCachedLogoUrl()
-    local avatarUrl = GetCachedAvatarUrl(userId)
-    
-    local payload = {
+    --==================================================
+    -- PAYLOAD (DENGAN LOGO & AVATAR HEADSHOT)
+    --==================================================
+	local payload = {
         ["username"] = "Zryx Auto Farm",
-        ["avatar_url"] = logoUrl,
-        ["embeds"] = {{
-            ["author"] = {
-                ["name"] = string.format("%s · Level %d", displayName, Level),
-                ["url"] = profileUrl,
-                ["icon_url"] = avatarUrl
-            },
-            ["title"] = customTitle or "Zryx Auto Farm",
-            ["description"] = customDesc or "Auto Farm Session",
-            ["url"] = profileUrl,
-            ["color"] = 2733558,
-            ["fields"] = {
-                {
-                    ["name"] = "💀 SIN",
-                    ["value"] = string.format(
-                        "%s (**%+d**)",
-                        tostring(KillerChance),
-                        GetAttributeDelta(KillerChance, PreviousAttributes.KillerChance)
-                    ),
-                    ["inline"] = false
+        ["avatar_url"] = "https://www.roblox.com/asset-thumbnail/image?assetId=94272208451726&width=512&height=512&format=png",
+		["embeds"] = {
+			{
+                ["author"] = {
+                    ["name"] = string.format("%s · Level %d", displayName, Level),
+                    ["url"] = profileUrl,
+                    ["icon_url"] = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. userId .. "&width=150&height=150&format=png"
                 },
-                {
-                    ["name"] = "🧪 EXP",
-                    ["value"] = string.format(
-                        "%s (**%+d**)",
-                        tostring(EXP),
-                        GetAttributeDelta(EXP, PreviousAttributes.EXP)
-                    ),
-                    ["inline"] = false
+				["title"] = customTitle or "Zryx Auto Farm Report",
+				["description"] = customDesc or "Auto farm stats update",
+				["url"] = profileUrl,
+				["color"] = 2733558,
+				["fields"] = {
+					{
+						["name"] = "💀 SIN",
+						["value"] = string.format("%s (**%+d**)", tostring(KillerChance), KillerChanceDelta),
+						["inline"] = false
+					},
+					{
+						["name"] = "🧪 EXP",
+						["value"] = string.format("%s (**%+d**)", tostring(EXP), EXPDelta),
+						["inline"] = false
+					},
+					{
+						["name"] = "🔩 Screws",
+						["value"] = string.format("%s (**%+d**)", tostring(Screws), ScrewsDelta),
+						["inline"] = false
+					},
+					{
+						["name"] = "⚙️ Gears",
+						["value"] = string.format("%s (**%+d**)", tostring(Gears), GearsDelta),
+						["inline"] = false
+					},
+					{
+						["name"] = "🆔 Server ID",
+						["value"] = string.format("```\n%s\n```", serverId),
+						["inline"] = false
+					}
+				},
+				["thumbnail"] = {
+                    ["url"] = "https://www.roblox.com/asset-thumbnail/image?assetId=94272208451726&width=512&height=512&format=png"
                 },
-                {
-                    ["name"] = "🔩 Screws",
-                    ["value"] = string.format(
-                        "%s (**%+d**)",
-                        tostring(Screws),
-                        GetAttributeDelta(Screws, PreviousAttributes.Screws)
-                    ),
-                    ["inline"] = false
-                },
-                {
-                    ["name"] = "⚙️ Gears",
-                    ["value"] = string.format(
-                        "%s (**%+d**)",
-                        tostring(Gears),
-                        GetAttributeDelta(Gears, PreviousAttributes.Gears)
-                    ),
-                    ["inline"] = false
-                },
-                {
-                    ["name"] = "🆔 Server ID",
-                    ["value"] = string.format("```\n%s\n```", serverId),
-                    ["inline"] = false
-                }
-            },
-            ["thumbnail"] = {["url"] = logoUrl},
-            ["footer"] = {
-                ["text"] = string.format("Zryx Auto Farm · %s", GetExecutorName()),
-                ["icon_url"] = logoUrl
-            },
-            ["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%S.000Z")
-        }}
-    }
+				["footer"] = {
+					["text"] = string.format("Zryx Auto Farm · %s", GetExecutorName()),
+                    ["icon_url"] = "https://www.roblox.com/asset-thumbnail/image?assetId=94272208451726&width=512&height=512&format=png"
+				},
+				["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%S.000Z")
+			}
+		}
+	}
     
-    local response = safeRequest({
-        Url = webhookUrl,
-        Method = "POST",
-        Headers = {["Content-Type"] = "application/json"},
-        Body = HttpService:JSONEncode(payload)
-    })
+    --==================================================
+    -- SEND WEBHOOK
+    --==================================================
+	local response = safeRequest({
+		Url = webhookUrl,
+		Method = "POST",
+		Headers = {
+			["Content-Type"] = "application/json"
+		},
+		Body = HttpService:JSONEncode(payload)
+	})
     
-    if response and (response.StatusCode == 200 or response.StatusCode == 204) then
-        local newSnapshot = {
-            KillerChance = KillerChance,
-            EXP = EXP,
-            Screws = Screws,
-            Gears = Gears
-        }
-        PreviousAttributes = newSnapshot
-        SavePreviousAttributes(newSnapshot)
-        return true, "Webhook successfully sent!"
-    end
+    --==================================================
+    -- SUCCESS
+    --==================================================
+	if response and (response.StatusCode == 200 or response.StatusCode == 204) then
+        --==================================================
+        -- ONLY UPDATE AFTER SUCCESS
+        --==================================================
+		local newSnapshot = {
+			KillerChance = KillerChance,
+			EXP = EXP,
+			Screws = Screws,
+			Gears = Gears
+		}
+		PreviousAttributes = newSnapshot
+		SavePreviousAttributes(newSnapshot)
+		return true, "Webhook successfully sent!"
+	end
     
-    return false, "Failed Status: " .. tostring(response and response.StatusCode or "No Response")
+    --==================================================
+    -- FAILED
+    --==================================================
+	local status = response and response.StatusCode or "No Response / Failed Request"
+    -- Jangan update PreviousAttributes kalau webhook gagal.
+	return false, "Failed Status: " .. tostring(status)
 end
 
 --==================================================
--- BEAT GAME SURVIVOR (AUTO FARM)
+-- BEAT GAME SURVIVOR
 --==================================================
 local function BeatGameSurvivor()
+    -- 1. Cek toggle
     if not Toggles.EnableAutoFarm.Value then
         BeatState.BeatSurvivorDone = false
         BeatState.LastFinishPos = nil
         return
     end
-    if GetRole() ~= "Survivor" then return end
-    
+
+    -- 2. Role check + notifikasi
+    local currentRole = GetRole()
+    if BeatState.LastRole ~= currentRole then
+        if currentRole == "Survivor" then
+            NotifyAF("🟢 Survivor!", "Ready to farm.")
+        end
+        BeatState.LastRole = currentRole
+    end
+    if currentRole ~= "Survivor" then
+        return
+    end
+
+    -- 3. Karakter & Map
     local root = GetCharacterRoot()
-    if not root then return end
-    
+    if not root then
+        NotifyAF("⏳ Waiting", "Character not loaded")
+        return
+    end
     local map = game:GetService("Workspace"):FindFirstChild("Map")
-    if not map then return end
-    
+    if not map then
+        NotifyAF("⚠️ No Map", "Waiting for map")
+        return
+    end
+
+    -- 4. Deteksi finish
     local exitPos = nil
     pcall(function()
         if map:FindFirstChild("RooftopHitbox") or map:FindFirstChild("Rooftop") then
@@ -642,10 +407,7 @@ local function BeatGameSurvivor()
             exitPos = Vector3.new(760.98, -20.14, -78.48)
             return
         end
-        
-        local finish = map:FindFirstChild("Finishline")
-            or map:FindFirstChild("FinishLine")
-            or map:FindFirstChild("Fininshline")
+        local finish = map:FindFirstChild("Finishline") or map:FindFirstChild("FinishLine") or map:FindFirstChild("Fininshline")
         if finish then
             if finish:IsA("BasePart") then
                 exitPos = finish.Position
@@ -655,7 +417,6 @@ local function BeatGameSurvivor()
             end
             return
         end
-        
         for _, obj in ipairs(map:GetDescendants()) do
             if obj.Name:lower():find("finish") then
                 if obj:IsA("BasePart") then
@@ -663,14 +424,10 @@ local function BeatGameSurvivor()
                     break
                 elseif obj:IsA("Model") then
                     local part = obj:FindFirstChildWhichIsA("BasePart")
-                    if part then
-                        exitPos = part.Position
-                        break
-                    end
+                    if part then exitPos = part.Position break end
                 end
             end
         end
-        
         if not exitPos then
             for _, obj in ipairs(map:GetDescendants()) do
                 if obj:IsA("MeshPart") and obj.Material == Enum.Material.Limestone then
@@ -679,7 +436,6 @@ local function BeatGameSurvivor()
                 end
             end
         end
-        
         if not exitPos then
             for _, obj in ipairs(map:GetDescendants()) do
                 if obj:IsA("MeshPart") and obj.Material == Enum.Material.Leather then
@@ -689,73 +445,217 @@ local function BeatGameSurvivor()
             end
         end
     end)
-    
-    if not exitPos then return end
-    
+
+    -- 5. Jika finish tidak ditemukan
+    if not exitPos then
+        NotifyAF("⚠️ Finish Not Found", "Map unsupported")
+        return
+    end
+
+    -- 6. Reset state jika map berubah
     if BeatState.LastFinishPos then
-        local dist = (exitPos - BeatState.LastFinishPos).Magnitude
-        if dist > 50 then
+        if (exitPos - BeatState.LastFinishPos).Magnitude > 50 then
             BeatState.BeatSurvivorDone = false
         end
     end
-    
-    if BeatState.BeatSurvivorDone then return end
-    
+
+    -- 7. Cegah teleport berulang di ronde yang sama
+    if BeatState.BeatSurvivorDone then
+        return
+    end
+
+    -- 8. Notifikasi finish ditemukan
+    NotifyAF("📍 Finish Found", "Waiting 6s...")
+
+    -- 9. Jeda 6 detik
     task.wait(6)
+
+    -- 10. Validasi ulang semua kondisi
+    if not Toggles.EnableAutoFarm.Value then
+        NotifyAF("⛔ Cancelled", "Toggle turned off")
+        return
+    end
+    if GetRole() ~= "Survivor" then
+        NotifyAF("⛔ Cancelled", "Not Survivor anymore")
+        return
+    end
     local currentRoot = GetCharacterRoot()
-    if not currentRoot then return end
-    
-    currentRoot.CFrame = CFrame.new(exitPos + Vector3.new(0, 3, 0))
+    if not currentRoot then
+        NotifyAF("⛔ Cancelled", "Character missing")
+        return
+    end
+
+    -- 11. Teleport!
+    NotifyAF("🚀 Teleporting", "Moving to finish...")
+    currentRoot.CFrame = CFrame.new(exitPos + Vector3.new(0, 0, 0))
     BeatState.BeatSurvivorDone = true
     BeatState.LastFinishPos = exitPos
-    
+
+    NotifyAF("✅ Teleport Success", "Round completed!")
+
+    --==================================================
+    -- FINISH -> SPECTATOR WATCHDOG
+    --==================================================
+    if not FinishWatchActive then
+        FinishWatchActive = true
+
+        task.spawn(function()
+            local watchStart = os.clock()
+            local WATCH_TIMEOUT = 10
+
+            while os.clock() - watchStart < WATCH_TIMEOUT do
+                if not Toggles.EnableAutoFarm.Value then
+                    FinishWatchActive = false
+                    return
+                end
+
+                local role = GetRole()
+
+                if role == "Spectator" then
+                    FinishWatchActive = false
+                    NotifyAF("👁️ Match Completed", "Role changed to Spectator.")
+                    return
+                end
+
+                task.wait(0.5)
+            end
+
+            local finalRole = GetRole()
+
+            if finalRole == "Survivor" then
+                NotifyAF("🔴 Match Stuck", "Still Survivor after finish. Server hopping...")
+
+                pcall(function()
+                    SendDebugWebhook(
+                        "🔴 Match Stuck",
+                        string.format(
+                            "Player finished but role remained `%s` after %d seconds.\nCurrent Server: `%s`",
+                            tostring(finalRole),
+                            WATCH_TIMEOUT,
+                            tostring(game.JobId)
+                        )
+                    )
+                end)
+
+                if Toggles.ServerHop and Toggles.ServerHop.Value then
+                    ForceServerHop = true
+                end
+            end
+
+            FinishWatchActive = false
+        end)
+    end
+
+    -- 12. Kirim webhook setelah 5 detik
     task.wait(5)
     SendDiscordWebhook()
-    
-    if Toggles.ServerHop and Toggles.ServerHop.Value then
-        HopAfterBeatTriggered = true
-    end
 end
 
 --==================================================
--- SERVER HOP SYSTEM
+-- SERVER HOP
+-- EVENT-DRIVEN + JOBID FALLBACK + PERSISTENT IGNORE
+-- + MATCH-STUCK RECOVERY
 --==================================================
 local IGNORE_FILE = "ServerHop.txt"
-local HOUR = 3600
-local HttpService = game:GetService("HttpService")
 local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+--==================================================
+-- SERVER HOP STATE
+--==================================================
 local IgnoredServers = {}
+local TargetServerId = nil
+local OriginalJobId = nil
+local TeleportInProgress = false
+local TeleportFailed = false
+local LastTeleportError = ""
+local LastTeleportResult = nil
+local IsHopping = false
 
-local RATE_LIMIT_WAIT = 8
-local GENERAL_ERROR_WAIT = 3
-local TWO_PLAYER_WAIT = 90  -- 🔥 TUNGGU 90 DETIK KALAU ADA 2 PLAYER
+--==================================================
+-- SERVER HOP CONFIG
+--==================================================
+local CANDIDATE_IGNORE_TIME = 180
+local FAILED_SERVER_IGNORE_TIME = 600
+local API_RETRY_DELAY = 3
+local PAGE_DELAY = 0.5
+local NO_SERVER_DELAY = 3
+local TELEPORT_EVENT_WINDOW = 7
+local TELEPORT_FAILURE_DELAY = 2.5
 
+--==================================================
+-- BLACKLIST FILE MANAGEMENT
+--==================================================
 local function GetIgnoredServers()
-    if not isfile(IGNORE_FILE) then return {} end
-    local list = {}
-    local now = os.time()
-    for _, line in ipairs(readfile(IGNORE_FILE):split("\n")) do
-        local serverId, timestamp = line:match("([^|]+)|?(%d*)")
-        timestamp = tonumber(timestamp) or 0
-        if serverId and serverId ~= "" and now - timestamp < HOUR then
-            list[serverId] = timestamp
-        end
-    end
-    return list
+	if type(isfile) ~= "function" or type(readfile) ~= "function" or not isfile(IGNORE_FILE) then
+		return {}
+	end
+
+	local success, content = pcall(readfile, IGNORE_FILE)
+	if not success or type(content) ~= "string" then
+		return {}
+	end
+
+	local now = os.time()
+	local list = {}
+
+	for _, line in ipairs(content:split("\n")) do
+		local serverId, expiredAt = line:match("^([^|]+)|(%d+)$")
+		expiredAt = tonumber(expiredAt)
+
+		if serverId and serverId ~= "" and expiredAt and now < expiredAt then
+			list[serverId] = expiredAt
+		end
+	end
+
+	return list
 end
 
 local function UpdateIgnoredServers(list)
-    local lines = {}
-    for serverId, timestamp in pairs(list) do
-        table.insert(lines, serverId .. "|" .. timestamp)
-    end
-    writefile(IGNORE_FILE, table.concat(lines, "\n"))
+	if type(writefile) ~= "function" then
+		return false
+	end
+
+	local now = os.time()
+	local lines = {}
+
+	for serverId, expiredAt in pairs(list) do
+		if serverId and expiredAt and now < expiredAt then
+			table.insert(lines, serverId .. "|" .. expiredAt)
+		end
+	end
+
+	local success = pcall(function()
+		writefile(IGNORE_FILE, table.concat(lines, "\n"))
+	end)
+
+	return success
 end
 
-IgnoredServers = GetIgnoredServers()
+local function AddIgnoredServer(serverId, duration)
+	if not serverId then return end
+	IgnoredServers[serverId] = os.time() + duration
+	UpdateIgnoredServers(IgnoredServers)
+end
 
--- Round detection
+local function IsServerIgnored(serverId)
+	local expiredAt = IgnoredServers[serverId]
+	if not expiredAt then return false end
+
+	if os.time() >= expiredAt then
+		IgnoredServers[serverId] = nil
+		UpdateIgnoredServers(IgnoredServers)
+		return false
+	end
+
+	return true
+end
+
+--==================================================
+-- ROUND / SERVER HOP STATE
+--==================================================
 local IsRound = false
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Remotes = ReplicatedStorage:WaitForChild("Remotes")
@@ -763,460 +663,445 @@ local StatusUpdateEvent = Remotes:WaitForChild("StatusUpdateEvent")
 local TimeUpdateEvent = Remotes:WaitForChild("TimeUpdateEvent")
 
 StatusUpdateEvent.OnClientEvent:Connect(function(Status)
-    if Status == "WaitingForPlayers" 
-        or Status == "IntermissionStarting" 
-        or Status == "Intermission" then
-        IsRound = false
-        BeatState.BeatSurvivorDone = false
-    end
+	if Status == "WaitingForPlayers" or Status == "IntermissionStarting" or Status == "Intermission" then
+		IsRound = false
+		BeatState.BeatSurvivorDone = false
+	end
 end)
 
 TimeUpdateEvent.OnClientEvent:Connect(function(Status)
-    if Status == "Round" then
-        IsRound = true
-    end
+	if Status == "Round" then
+		IsRound = true
+	end
 end)
 
--- Persistent hop (tidak menyerah sampai berhasil)
-local function PersistentServerHop()
-    local totalAttempts = 0
-    local cursor = ""
-
-    while Toggles.ServerHop.Value and not Library.Unloaded do
-        totalAttempts = totalAttempts + 1
-        
-        local success, result = pcall(function()
-            return HttpService:JSONDecode(game:HttpGet(
-                "https://games.roblox.com/v1/games/"
-                .. game.PlaceId
-                .. "/servers/Public?limit=100"
-                .. "&sortOrder=Asc"
-                .. "&excludeFullGames=true"
-                .. "&cursor=" .. cursor
-            ))
-        end)
-
-        if not success or not result or not result.data then
-            task.wait(5)
-            cursor = ""
-            continue
-        end
-
-        local foundTarget = false
-        for _, server in ipairs(result.data) do
-            if not Toggles.ServerHop.Value or Library.Unloaded then return end
-            
-            if server.id
-                and server.id ~= game.JobId
-                and server.playing
-                and server.playing >= 1
-                and server.playing <= 3
-                and not IgnoredServers[server.id]
-            then
-                foundTarget = true
-                local teleportSuccess = false
-                local attemptOnThisServer = 0
-
-                while not teleportSuccess 
-                    and Toggles.ServerHop.Value 
-                    and not Library.Unloaded 
-                do
-                    attemptOnThisServer = attemptOnThisServer + 1
-                    
-                    local teleportOk, teleportErr = pcall(function()
-                        TeleportService:TeleportToPlaceInstance(
-                            game.PlaceId,
-                            server.id,
-                            Players.LocalPlayer
-                        )
-                    end)
-
-                    if teleportOk then
-                        ZryxNotify({
-                            Title = "✅ HOP SUCCESS!",
-                            Description = string.format(
-                                "Teleported after %d attempts",
-                                totalAttempts
-                            ),
-                            Time = 3
-                        })
-                        return true
-                    else
-                        local errMsg = tostring(teleportErr)
-                        
-                        if string.find(errMsg, "771") 
-                            or string.find(errMsg, "Server is no longer available") then
-                            IgnoredServers[server.id] = os.time() + 300
-                            UpdateIgnoredServers(IgnoredServers)
-                            break
-                        elseif string.find(errMsg, "772") 
-                            or string.find(errMsg, "TooManyRequests") then
-                            task.wait(RATE_LIMIT_WAIT)
-                        elseif string.find(errMsg:lower(), "full") 
-                            or string.find(errMsg, "751") then
-                            IgnoredServers[server.id] = os.time() + 600
-                            UpdateIgnoredServers(IgnoredServers)
-                            break
-                        else
-                            task.wait(GENERAL_ERROR_WAIT)
-                        end
-                    end
-                end
-                task.wait(1)
-            end
-        end
-
-        if not foundTarget then
-            cursor = result.nextPageCursor or ""
-            if cursor == "" then
-                task.wait(5)
-                cursor = ""
-                local now = os.time()
-                for id, ts in pairs(IgnoredServers) do
-                    if now - ts > HOUR then
-                        IgnoredServers[id] = nil
-                    end
-                end
-                UpdateIgnoredServers(IgnoredServers)
-            else
-                task.wait(0.5)
-            end
-        else
-            cursor = ""
-        end
-        task.wait(1)
-    end
+--==================================================
+-- SERVER HOP PERMISSION
+--==================================================
+local function CanServerHop()
+	if not IsRound then return false end
+	local role = GetRole()
+	if role ~= "Spectator" and role ~= "Killer" then return false end
+	return true
 end
 
 --==================================================
--- 🎯 SMART SERVER HOP (MAIN LOGIC)
--- 
--- 1. Habis Escape       → HOP + NOTIF
--- 2. Sendirian (≤1)     → HOP + NOTIF
--- 3. 2 Player           → TUNGGU 90 DETIK → HOP + NOTIF
--- 4. Round + Survivor   → DIAM (auto farm)
--- 5. Round + Killer     → HOP + NOTIF
--- 6. Round + Spectator  → HOP SILENT (tanpa notif)
--- 7. Tidak ada round    → DIAM
+-- TELEPORT STATE MANAGEMENT
 --==================================================
-local function ServerHop()
-    -- 🔥 Variabel tracking untuk 2 player
-    local twoPlayerStartTime = nil
-    local twoPlayerNotified = false
+local function ResetTeleportState()
+	TargetServerId = nil
+	OriginalJobId = nil
+	TeleportInProgress = false
+	TeleportFailed = false
+	LastTeleportError = ""
+	LastTeleportResult = nil
+end
 
-    while Toggles.ServerHop.Value and not Library.Unloaded do
-        local playerCount = #Players:GetPlayers()
-        local role = GetRole()
+local function BeginTeleport(serverId)
+	TargetServerId = serverId
+	OriginalJobId = game.JobId
+	TeleportInProgress = true
+	TeleportFailed = false
+	LastTeleportError = ""
+	LastTeleportResult = nil
+end
 
-        -- 1. Habis Escape → HOP + NOTIF
-        if HopAfterBeatTriggered then
-            HopAfterBeatTriggered = false
-            twoPlayerStartTime = nil  -- Reset timer 2 player
-            twoPlayerNotified = false
-            ZryxNotify({
-                Title = "🏁 Escape Done!",
-                Description = "Hopping to new server NOW...",
-                Time = 2
-            })
-            PersistentServerHop()
-            task.wait(3)
-            continue
-        end
-
-        -- 2. Sendirian → HOP + NOTIF
-        if playerCount <= 1 then
-            twoPlayerStartTime = nil  -- Reset timer 2 player
-            twoPlayerNotified = false
-            ZryxNotify({
-                Title = "👤 Alone!",
-                Description = "Hopping immediately...",
-                Time = 2
-            })
-            PersistentServerHop()
-            task.wait(3)
-            continue
-        end
-
-        -- 3. 🔥 2 PLAYER → TUNGGU 90 DETIK → HOP
-        if playerCount == 2 then
-            -- Mulai timer kalau belum ada
-            if not twoPlayerStartTime then
-                twoPlayerStartTime = os.time()
-                twoPlayerNotified = false
-                ZryxNotify({
-                    Title = "👥 2 Players Detected",
-                    Description = string.format(
-                        "Waiting %ds before hopping...",
-                        TWO_PLAYER_WAIT
-                    ),
-                    Time = 3
-                })
-            end
-
-            local elapsed = os.time() - twoPlayerStartTime
-
-            -- Notif countdown tiap 30 detik
-            if not twoPlayerNotified and elapsed >= 30 then
-                ZryxNotify({
-                    Title = "⏱️ Still 2 Players",
-                    Description = string.format(
-                        "Hopping in %ds...",
-                        TWO_PLAYER_WAIT - elapsed
-                    ),
-                    Time = 2
-                })
-                twoPlayerNotified = true
-            end
-
-            -- Setelah 90 detik → HOP
-            if elapsed >= TWO_PLAYER_WAIT then
-                ZryxNotify({
-                    Title = "🔄 2 Players Timeout",
-                    Description = "90s passed, hopping now...",
-                    Time = 2
-                })
-                twoPlayerStartTime = nil
-                twoPlayerNotified = false
-                PersistentServerHop()
-                task.wait(3)
-                continue
-            end
-
-            -- Tunggu 1 detik sambil tetap di loop (biar bisa cek kondisi lain)
-            task.wait(1)
-            continue
-        else
-            -- Player count berubah (bukan 2), reset timer
-            if twoPlayerStartTime then
-                twoPlayerStartTime = nil
-                twoPlayerNotified = false
-            end
-        end
-
-        -- 4. Round + Survivor → DIAM
-        if IsRound and role == "Survivor" then
-            task.wait(1)
-            continue
-        end
-
-        -- 5. Round + Killer → HOP + NOTIF
-        if IsRound and role == "Killer" then
-            twoPlayerStartTime = nil
-            twoPlayerNotified = false
-            ZryxNotify({
-                Title = "🔪 Killer in Round",
-                Description = "Hopping now...",
-                Time = 2
-            })
-            PersistentServerHop()
-            task.wait(3)
-            continue
-        end
-
-        -- 6. Round + Spectator → HOP SILENT
-        if IsRound and role == "Spectator" then
-            twoPlayerStartTime = nil
-            twoPlayerNotified = false
-            PersistentServerHop()
-            task.wait(3)
-            continue
-        end
-
-        -- 7. Tidak ada round / Lobby → DIAM
-        task.wait(1)
-    end
+local function RegisterTeleportFailure(teleportResult, errorMessage)
+	if not TeleportInProgress then return false end
+	TeleportFailed = true
+	LastTeleportResult = teleportResult
+	LastTeleportError = tostring(errorMessage)
+	return true
 end
 
 --==================================================
--- UI CONTROLS - AUTO FARM TAB
+-- NATIVE TELEPORT FAILURE EVENT
+--==================================================
+TeleportService.TeleportInitFailed:Connect(function(player, teleportResult, errorMessage)
+	if player ~= LocalPlayer then return end
+	if not TeleportInProgress then return end
+
+	local targetId = TargetServerId
+	if not RegisterTeleportFailure(teleportResult, errorMessage) then return end
+
+	local resultText = tostring(teleportResult)
+	local errorText = tostring(errorMessage)
+
+	warn(string.format("[ServerHop] TeleportInitFailed | Server: %s | Code: %s | Error: %s", tostring(targetId), resultText, errorText))
+
+	if targetId then
+		AddIgnoredServer(targetId, FAILED_SERVER_IGNORE_TIME)
+		pcall(function()
+			Library:Notify({
+				Title = "❌ Teleport Failed   \n",
+				Description = string.format("Server %s gagal. Blacklist 10 menit.   ", targetId:sub(1, 8)),
+				Time = 3
+			})
+		end)
+		pcall(function()
+			SendDebugWebhook("🐛 Server Hop Error", string.format("Server: `%s`\nCode: `%s`\nError: `%s`", targetId, resultText, errorText))
+		end)
+	end
+end)
+
+--==================================================
+-- TELEPORT REQUEST
+--==================================================
+local function TryTeleport(serverId)
+	BeginTeleport(serverId)
+
+	local success, err = pcall(function()
+		TeleportService:TeleportToPlaceInstance(game.PlaceId, serverId, LocalPlayer)
+	end)
+
+	if not success then
+		TeleportInProgress = false
+		LastTeleportError = tostring(err)
+		AddIgnoredServer(serverId, FAILED_SERVER_IGNORE_TIME)
+
+		warn(string.format("[ServerHop] Teleport call failed | Server: %s | Error: %s", serverId, tostring(err)))
+		pcall(function()
+			SendDebugWebhook("🐛 Teleport Call Failed", string.format("Server: `%s`\nError: `%s`", serverId, tostring(err)))
+		end)
+
+		ResetTeleportState()
+		return false
+	end
+
+	return true
+end
+
+--==================================================
+-- WAIT FOR TELEPORT RESULT
+--==================================================
+local function WaitForTeleportResult()
+	local startTime = os.clock()
+
+	while TeleportInProgress and not TeleportFailed and os.clock() - startTime < TELEPORT_EVENT_WINDOW do
+		if game.JobId ~= OriginalJobId then
+			return "Success"
+		end
+		task.wait(0.1)
+	end
+
+	if TeleportFailed then return "Failed" end
+	if game.JobId ~= OriginalJobId then return "Success" end
+
+	return "Timeout"
+end
+
+--==================================================
+-- MAIN SERVER HOP
+--==================================================
+ServerHop = function()
+	if IsHopping then return end
+	IsHopping = true
+
+	IgnoredServers = GetIgnoredServers()
+	ResetTeleportState()
+
+	local cursor = ""
+	local consecutiveApiFailures = 0
+
+	while Toggles.ServerHop and Toggles.ServerHop.Value and not Library.Unloaded do
+		local forcedThisCycle = ForceServerHop
+		ForceServerHop = false
+
+		if not forcedThisCycle and not CanServerHop() then
+			ResetTeleportState()
+			task.wait(0.5)
+			continue
+		end
+
+		local url = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?limit=100&sortOrder=Asc&excludeFullGames=true&cursor=" .. HttpService:UrlEncode(cursor)
+
+		local success, result = pcall(function()
+			return HttpService:JSONDecode(game:HttpGet(url))
+		end)
+
+		if not success then
+			consecutiveApiFailures = consecutiveApiFailures + 1
+			warn("[ServerHop] API request failed:", tostring(result))
+			if consecutiveApiFailures >= 5 then
+				pcall(function()
+					SendDebugWebhook("Server API failed repeatedly", string.format("Failures: %d\nError: %s", consecutiveApiFailures, tostring(result)))
+				end)
+				consecutiveApiFailures = 0
+			end
+			task.wait(API_RETRY_DELAY)
+			continue
+		end
+
+		if not result or type(result.data) ~= "table" then
+			consecutiveApiFailures = consecutiveApiFailures + 1
+			warn("[ServerHop] API returned invalid data.")
+			if consecutiveApiFailures >= 5 then
+				pcall(function()
+					SendDebugWebhook("Server API returned invalid data", tostring(result))
+				end)
+				consecutiveApiFailures = 0
+			end
+			task.wait(API_RETRY_DELAY)
+			continue
+		end
+
+		consecutiveApiFailures = 0
+		local currentJobId = game.JobId
+		local foundServer = false
+
+		for _, server in ipairs(result.data) do
+			if not Toggles.ServerHop.Value or Library.Unloaded then break end
+			if not forcedThisCycle and not CanServerHop() then break end
+
+			local validServer = server and server.id and server.id ~= currentJobId and server.playing and server.playing >= 1 and server.playing <= 3 and not IsServerIgnored(server.id)
+
+			if not validServer then continue end
+
+			foundServer = true
+			local serverId = server.id
+			local playerCount = server.playing
+
+			AddIgnoredServer(serverId, CANDIDATE_IGNORE_TIME)
+
+			Library:Notify({
+				Title = "📡 Teleporting   \n",
+				Description = string.format("%d player | Server %s   ", playerCount, serverId:sub(1, 8)),
+				Time = 2
+			})
+
+			task.wait(2)
+			local teleportStarted = TryTeleport(serverId)
+
+			if not teleportStarted then
+				task.wait(TELEPORT_FAILURE_DELAY)
+				continue
+			end
+
+			local teleportResult = WaitForTeleportResult()
+
+			if teleportResult == "Success" then
+				ResetTeleportState()
+				IsHopping = false
+				return
+			end
+
+			if teleportResult == "Failed" then
+				ResetTeleportState()
+				task.wait(TELEPORT_FAILURE_DELAY)
+				continue
+			end
+
+			if teleportResult == "Timeout" then
+				local failedServerId = TargetServerId
+				warn(string.format("[ServerHop] Teleport timeout | Server: %s", tostring(failedServerId)))
+
+				if failedServerId then
+					AddIgnoredServer(failedServerId, FAILED_SERVER_IGNORE_TIME)
+					pcall(function()
+						SendDebugWebhook("🐛 Teleport Timeout", string.format("Server `%s` did not change JobId within %d seconds.", failedServerId, TELEPORT_EVENT_WINDOW))
+					end)
+				end
+
+				pcall(function()
+					Library:Notify({
+						Title = "⚠️ Teleport Timeout   \n",
+						Description = string.format("Server %s tidak berpindah. Mencoba server lain.   ", tostring(failedServerId):sub(1, 8)),
+						Time = 2.5
+					})
+				end)
+
+				ResetTeleportState()
+				task.wait(TELEPORT_FAILURE_DELAY)
+				continue
+			end
+		end
+
+		if not foundServer then
+			local nextCursor = result.nextPageCursor or ""
+			if nextCursor ~= "" then
+				cursor = nextCursor
+				task.wait(PAGE_DELAY)
+			else
+				cursor = ""
+				Library:Notify({
+					Title = "⚠️ Server Hop   \n",
+					Description = "Tidak ada server 1–3 player yang cocok.   ",
+					Time = 2
+				})
+				task.wait(NO_SERVER_DELAY)
+			end
+		end
+	end
+
+	ResetTeleportState()
+	IsHopping = false
+end
+
+--==================================================
+-- AUTO SERVER HOP
+--==================================================
+AutoFarmGroup:AddToggle("ServerHop", {
+	Text = "Server Hop",
+	Tooltip = "Hop to 1-3 player servers when round is active",
+	Default = false,
+	Callback = function(Value)
+		if Value then
+			task.spawn(function()
+				ServerHop()
+			end)
+		end
+	end,
+})
+
+--==================================================
+-- AUTO FARM TOGGLE
 --==================================================
 AutoFarmGroup:AddToggle("EnableAutoFarm", {
-    Text = "Enable Auto Farm",
-    Tooltip = "Teleport Survivor to the detected finish location",
-    Default = false,
-})
-
-AutoFarmGroup:AddToggle("ServerHop", {
-    Text = "Server Hop (Smart)",
-    Tooltip = "Alone/2p/Killer/Spec=Hop | Survivor=Farm | NoRound=Wait",
-    Default = false,
-    Callback = function(Value)
-        if Value then
-            task.spawn(function()
-                ServerHop()
-            end)
-        end
-    end,
+	Text = "Enable Auto Farm",
+	Tooltip = "Teleport Survivor to the detected finish location",
+	Default = false,
 })
 
 --==================================================
--- AUTO EXECUTE
+-- AUTO EXECUTE (URL BARU)
 --==================================================
 local LOADER_URL = "https://raw.githubusercontent.com/zaerrruwww/zaerytta/refs/heads/main/zaer.lua"
 local AutoExecuteQueued = false
 
 local function QueueAutoExecute()
-    if AutoExecuteQueued then return end
-    if not Toggles.AutoExecute.Value then return end
-    
-    if type(queue_on_teleport) ~= "function" then
-        ZryxNotify({
-            Title = "Auto Execute",
-            Description = "queue_on_teleport is not available.",
-            Time = 5,
-        })
-        return
-    end
-    
-    local queued = string.format([[loadstring(game:HttpGet(%q))()]], LOADER_URL)
-    local success, err = pcall(function()
-        queue_on_teleport(queued)
-    end)
-    
-    if success then
-        AutoExecuteQueued = true
-        ZryxNotify({
-            Title = "Auto Execute",
-            Description = "Script queued for next teleport.",
-            Time = 3,
-        })
-    else
-        ZryxNotify({
-            Title = "Auto Execute",
-            Description = "Failed: " .. tostring(err),
-            Time = 5,
-        })
-    end
+	if AutoExecuteQueued then return end
+	if not Toggles.AutoExecute.Value then return end
+	if type(queue_on_teleport) ~= "function" then
+		Library:Notify({
+			Title = "Auto Execute   \n",
+			Description = "queue_on_teleport is not available.",
+			Time = 5,
+		})
+		return
+	end
+	local queued = string.format([[loadstring(game:HttpGet(%q))()]], LOADER_URL)
+	local success, err = pcall(function()
+		queue_on_teleport(queued)
+	end)
+	if success then
+		AutoExecuteQueued = true
+		Library:Notify({
+			Title = "Auto Execute   \n",
+			Description = "Script queued for the next teleport.",
+			Time = 3,
+		})
+	else
+		Library:Notify({
+			Title = "Auto Execute   \n",
+			Description = "Failed to queue script: " .. tostring(err),
+			Time = 5,
+		})
+	end
 end
 
 AutoFarmGroup:AddToggle("AutoExecute", {
-    Text = "Auto Execute",
-    Tooltip = "Execute zaer.lua after server hop",
-    Default = false,
-    Callback = function(Value)
-        if Value then
-            QueueAutoExecute()
-        else
-            AutoExecuteQueued = false
-        end
-    end,
+	Text = "Auto Execute",
+	Tooltip = "Automatically execute the script after server hop",
+	Default = false,
+	Callback = function(Value)
+		if Value then
+			QueueAutoExecute()
+		else
+			AutoExecuteQueued = false
+		end
+	end,
 })
 
 --==================================================
--- WEBHOOK UI
+-- WEBHOOK GROUPBOX SETUP
 --==================================================
 WebhookGroup:AddToggle("EnableWebhook", {
-    Text = "Enable Webhook",
-    Tooltip = "Enable webhook notifications with Zryx branding",
-    Default = false,
+	Text = "Enable Webhook",
+	Tooltip = "Enable webhook notifications",
+	Default = false,
 })
-
 WebhookGroup:AddInput("WebhookLink", {
-    Text = "Webhook Link",
-    Default = "",
-    Placeholder = "Enter webhook URL...",
-    Numeric = false,
-    Finished = false,
-    ClearTextOnFocus = false,
+	Text = "Webhook Link",
+	Default = "",
+	Placeholder = "Enter webhook URL...",
+	Numeric = false,
+	Finished = false,
+	ClearTextOnFocus = false,
 })
-
 WebhookGroup:AddButton("Test Webhook", function()
-    cachedAvatarUrls = {}
-    cachedLogoUrl = nil
-    
-    local ok, msg = SendDiscordWebhook(
-        "🔔 Webhook Test",
-        "Configuration test from **Zryx Auto Farm**!",
-        true
-    )
-    
-    if ok then
-        ZryxNotify({
-            Title = "Webhook Success",
-            Description = "Test message sent!",
-            Icon = "check",
-            Time = 3
-        })
-    else
-        ZryxNotify({
-            Title = "Webhook Failed",
-            Description = msg,
-            Icon = "x",
-            Time = 4
-        })
-    end
+	local ok, msg = SendDiscordWebhook("🔔 Webhook Test", "Webhook configuration test from **Zryx Auto Farm** UI!", true)
+	if ok then
+		Library:Notify({
+			Title = "Webhook Success   \n",
+			Description = "Test message sent to Discord!",
+			Icon = "check",
+			Time = 4,
+		})
+	else
+		Library:Notify({
+			Title = "Webhook Failed   \n",
+			Description = msg,
+			Icon = "x",
+			Time = 5,
+		})
+	end
 end)
 
 --==================================================
--- SETTINGS TAB
+-- SETTINGS
 --==================================================
 local MenuGroup = Tabs.Settings:AddLeftGroupbox("Menu", "wrench")
-
 MenuGroup:AddToggle("KeybindMenuOpen", {
-    Default = Library.KeybindFrame.Visible,
-    Text = "Open Keybind Menu",
-    Callback = function(Value)
-        Library.KeybindFrame.Visible = Value
-    end,
+	Default = Library.KeybindFrame.Visible,
+	Text = "Open Keybind Menu",
+	Callback = function(Value)
+		Library.KeybindFrame.Visible = Value
+	end,
 })
-
 MenuGroup:AddToggle("ShowCustomCursor", {
-    Text = "Custom Cursor",
-    Default = Library.ShowCustomCursor,
-    Callback = function(Value)
-        Library.ShowCustomCursor = Value
-    end,
+	Text = "Custom Cursor",
+	Default = Library.ShowCustomCursor,
+	Callback = function(Value)
+		Library.ShowCustomCursor = Value
+	end,
 })
-
-MenuGroup:AddToggle("EnableNotifications", {
-    Text = "Enable Notifications",
-    Tooltip = "Toggle on/off semua notifikasi script",
-    Default = true,
-})
-
 MenuGroup:AddDropdown("NotificationSide", {
-    Values = {"Left", "Right"},
-    Default = "Right",
-    Text = "Notification Side",
-    Callback = function(Value)
-        Library:SetNotifySide(Value)
-    end,
+	Values = {"Left", "Right"},
+	Default = "Right",
+	Text = "Notification Side",
+	Callback = function(Value)
+		Library:SetNotifySide(Value)
+	end,
 })
-
 MenuGroup:AddDropdown("DPIDropdown", {
-    Values = {"50%", "75%", "100%", "125%", "150%", "175%", "200%"},
-    Default = "100%",
-    Text = "DPI Scale",
-    Callback = function(Value)
-        local DPI = tonumber(Value:gsub("%%", ""))
-        Library:SetDPIScale(DPI)
-    end,
+	Values = {"50%", "75%", "100%", "125%", "150%", "175%", "200%"},
+	Default = "100%",
+	Text = "DPI Scale",
+	Callback = function(Value)
+		Value = Value:gsub("%%", "")
+		local DPI = tonumber(Value)
+		Library:SetDPIScale(DPI)
+	end,
 })
-
 MenuGroup:AddSlider("UICornerSlider", {
-    Text = "Corner Radius",
-    Default = 14,
-    Min = 0,
-    Max = 25,
-    Rounding = 0,
-    Callback = function(Value)
-        Window:SetCornerRadius(Value)
-    end,
+	Text = "Corner Radius",
+	Default = Library.CornerRadius,
+	Min = 0,
+	Max = 20,
+	Rounding = 0,
+	Callback = function(Value)
+		Window:SetCornerRadius(Value)
+	end,
 })
-
 MenuGroup:AddDivider()
-
-MenuGroup:AddLabel("Menu bind")
-    :AddKeyPicker("MenuKeybind", {
-        Default = "RightShift",
-        NoUI = true,
-        Text = "Menu keybind",
-    })
-
+MenuGroup:AddLabel("Menu bind"):AddKeyPicker("MenuKeybind", {
+	Default = "RightShift",
+	NoUI = true,
+	Text = "Menu keybind",
+})
 MenuGroup:AddButton("Unload", function()
-    Library:Unload()
+	Library:Unload()
 end)
-
 Library.ToggleKeybind = Options.MenuKeybind
 
 --==================================================
@@ -1234,25 +1119,30 @@ ThemeManager:ApplyToTab(Tabs.Settings)
 SaveManager:LoadAutoloadConfig()
 
 --==================================================
--- INITIALIZATION
+-- INITIALIZE AUTO EXECUTE & EXECUTION NOTIFY
 --==================================================
 QueueAutoExecute()
 
+-- Notifikasi pembuka dengan Logo Zryx
 Library:Notify({
     Title = "Zryx Auto Farm",
     Description = "Script Loaded Successfully!",
-    Icon = "rbxassetid://" .. ZRYX_LOGO_ID,
-    Time = 4
+    Icon = "rbxassetid://94272208451726",
+    Time = 5
 })
+
+task.spawn(function()
+	task.wait(3)
+end)
 
 --==================================================
 -- MAIN LOOP
 --==================================================
 task.spawn(function()
-    while not Library.Unloaded do
-        pcall(function()
-            BeatGameSurvivor()
-        end)
-        task.wait(1)
-    end
+	while not Library.Unloaded do
+		pcall(function()
+			BeatGameSurvivor()
+		end)
+		task.wait(1)
+	end
 end)
